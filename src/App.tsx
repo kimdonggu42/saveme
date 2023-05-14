@@ -29,7 +29,7 @@ function App() {
 
   return (
     <div className='App'>
-      <Main userLocation={userLocation} />
+      <Main userLocation={userLocation} setUserLocation={setUserLocation} />
     </div>
   );
 }

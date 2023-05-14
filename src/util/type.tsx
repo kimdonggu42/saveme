@@ -5,4 +5,5 @@ export interface UserLocation {
 
 export interface UserLocationProps {
   userLocation: UserLocation;
+  setUserLocation: React.Dispatch<React.SetStateAction<UserLocation>>;
 }

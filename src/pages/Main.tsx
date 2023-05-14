@@ -2,11 +2,11 @@ import Header from "../components/Nav/Header";
 import Map from "../components/Main/Map";
 import { UserLocationProps } from "../util/type";
 
-function Main({ userLocation }: UserLocationProps) {
+function Main({ userLocation, setUserLocation }: UserLocationProps) {
   return (
     <>
       <Header />
-      <Map userLocation={userLocation} />
+      <Map userLocation={userLocation} setUserLocation={setUserLocation} />
     </>
   );
 }

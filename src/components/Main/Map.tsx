@@ -2,17 +2,38 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { UserLocationProps } from "../../util/type";
 import axios from "axios";
+import { SlLocationPin } from "react-icons/sl";
 
 const MapContainer = styled.div`
   width: 100vw;
   height: 700px;
+  position: relative;
 
   &:focus {
     outline: none;
   }
 `;
 
-function Map({ userLocation }: UserLocationProps) {
+const RePositionButton = styled.button`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  z-index: 999;
+  right: 10px;
+  top: 200px;
+  border: 1px solid black;
+  position: absolute;
+  background-color: white;
+  cursor: pointer;
+
+  > .positionIcon {
+    margin: -2px;
+  }
+`;
+
+function Map({ userLocation, setUserLocation }: UserLocationProps) {
   const [locationData, setLocationData] = useState<any>([]);
 
   // 내 현재 위치에서 거리가 가까운 순으로 정렬한 데이터
@@ -125,8 +146,9 @@ function Map({ userLocation }: UserLocationProps) {
           zoom: 15,
           minZoom: 10,
           zoomControl: true,
+          mapTypeControl: true,
           zoomControlOptions: {
-            position: naver.maps.Position.RIGHT_TOP,
+            position: naver.maps.Position.TOP_RIGHT,
           },
           logoControl: false,
           mapDataControl: false,
@@ -154,10 +176,31 @@ function Map({ userLocation }: UserLocationProps) {
     initMap();
   }, [nearByLocationData, userLocation]);
 
+  // 현재 내 위치로 이동하는 이벤트 핸들러
+  const rePositionMyLocation = () => {
+    const success = (position: any) => {
+      setUserLocation({
+        // lat: position.coords.latitude,
+        // lng: position.coords.longitude,
+        lat: 37.5666103,
+        lng: 126.9783882,
+      });
+    };
+    const error = () => {
+      setUserLocation({ lat: 37.5666103, lng: 126.9783882 });
+    };
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(success, error);
+    }
+  };
+
   return (
     <>
-      <h1>지도</h1>
-      <MapContainer id='map' />
+      <MapContainer id='map'>
+        <RePositionButton onClick={rePositionMyLocation}>
+          <SlLocationPin className='positionIcon' size={20} />
+        </RePositionButton>
+      </MapContainer>
     </>
   );
 }
