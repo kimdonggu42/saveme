@@ -24,7 +24,7 @@ function Map({ userLocation }: UserLocationProps) {
     }
   });
 
-  console.log(nearByLocationData);
+  // console.log(nearByLocationData);
 
   // 현재 내 위치와의 거리를 계산 해주는 함수
   const getDistance = (
@@ -37,11 +37,11 @@ function Map({ userLocation }: UserLocationProps) {
     if (myLat === dataLat && myLng === dataLng) {
       return 0;
     } else {
-      var radlat1 = (Math.PI * myLat) / 180;
-      var radlat2 = (Math.PI * dataLat) / 180;
-      var theta = myLng - dataLng;
-      var radtheta = (Math.PI * theta) / 180;
-      var dist =
+      const radlat1 = (Math.PI * myLat) / 180;
+      const radlat2 = (Math.PI * dataLat) / 180;
+      const theta = myLng - dataLng;
+      const radtheta = (Math.PI * theta) / 180;
+      let dist =
         Math.sin(radlat1) * Math.sin(radlat2) +
         Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
       if (dist > 1) {
@@ -65,24 +65,48 @@ function Map({ userLocation }: UserLocationProps) {
     const getData = async () => {
       try {
         if (userLocation.lat !== 0 && userLocation.lng !== 0) {
-          const res = await axios.get(
+          const resOne = await axios.get(
             `http://openAPI.seoul.go.kr:8088/${process.env.REACT_APP_SEOUL_PUBLIC_API_KEY}/json/SearchPublicToiletPOIService/1/1000/`
           );
-          const resData = res.data.SearchPublicToiletPOIService.row;
+          const resTwo = await axios.get(
+            `http://openAPI.seoul.go.kr:8088/${process.env.REACT_APP_SEOUL_PUBLIC_API_KEY}/json/SearchPublicToiletPOIService/1001/2000/`
+          );
+          const resThree = await axios.get(
+            `http://openAPI.seoul.go.kr:8088/${process.env.REACT_APP_SEOUL_PUBLIC_API_KEY}/json/SearchPublicToiletPOIService/2001/3000/`
+          );
+          const resFour = await axios.get(
+            `http://openAPI.seoul.go.kr:8088/${process.env.REACT_APP_SEOUL_PUBLIC_API_KEY}/json/SearchPublicToiletPOIService/3001/4000/`
+          );
+          const resFive = await axios.get(
+            `http://openAPI.seoul.go.kr:8088/${process.env.REACT_APP_SEOUL_PUBLIC_API_KEY}/json/SearchPublicToiletPOIService/4001/5000/`
+          );
+          const resDataOne = resOne.data.SearchPublicToiletPOIService.row;
+          const resDataTwo = resTwo.data.SearchPublicToiletPOIService.row;
+          const resDataThree = resThree.data.SearchPublicToiletPOIService.row;
+          const resDataFour = resFour.data.SearchPublicToiletPOIService.row;
+          const resDataFive = resFive.data.SearchPublicToiletPOIService.row;
+          // 데이터 병합
+          const combineData = [
+            ...resDataOne,
+            ...resDataTwo,
+            ...resDataThree,
+            ...resDataFour,
+            ...resDataFive,
+          ];
           // get 해온 화장실 위치 데이터에 현재 내 위치와의 거리 DISTANCE 값 추가
-          for (let i = 0; i < resData.length; i++) {
+          for (let i = 0; i < combineData.length; i++) {
             const distance = getDistance(
               userLocation.lat,
               userLocation.lng,
               // 37.5666103,
               // 126.9783882,
-              resData[i].Y_WGS84,
-              resData[i].X_WGS84,
+              combineData[i].Y_WGS84,
+              combineData[i].X_WGS84,
               "K"
             );
-            resData[i].DISTANCE = distance;
+            combineData[i].DISTANCE = distance;
           }
-          setLocationData(resData);
+          setLocationData(combineData);
         }
       } catch (err) {
         console.error(err);
@@ -98,7 +122,8 @@ function Map({ userLocation }: UserLocationProps) {
         const map = new naver.maps.Map("map", {
           center: new naver.maps.LatLng(userLocation.lat, userLocation.lng),
           // center: new naver.maps.LatLng(37.5666103, 126.9783882),
-          zoom: 11,
+          zoom: 15,
+          minZoom: 10,
           zoomControl: true,
           zoomControlOptions: {
             position: naver.maps.Position.RIGHT_TOP,
