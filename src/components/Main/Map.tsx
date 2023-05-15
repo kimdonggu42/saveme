@@ -1,8 +1,10 @@
 import styled from "styled-components";
 import { useState, useEffect } from "react";
-import { UserLocationProps } from "../../util/type";
+import { CurrentMyLocation } from "../../util/type";
 import axios from "axios";
 import { SlLocationPin } from "react-icons/sl";
+import { useRecoilState } from "recoil";
+import { currentMyLocationAtom } from "../../Recoil/atom";
 
 const MapContainer = styled.div`
   width: 100vw;
@@ -33,7 +35,9 @@ const RePositionButton = styled.button`
   }
 `;
 
-function Map({ userLocation, setUserLocation }: UserLocationProps) {
+function Map() {
+  const [currentMyLocation, setCurrentMyLocation] =
+    useRecoilState<CurrentMyLocation>(currentMyLocationAtom);
   const [locationData, setLocationData] = useState<any>([]);
 
   // 내 현재 위치에서 거리가 가까운 순으로 정렬한 데이터
@@ -44,8 +48,6 @@ function Map({ userLocation, setUserLocation }: UserLocationProps) {
       return value;
     }
   });
-
-  // console.log(nearByLocationData);
 
   // 현재 내 위치와의 거리를 계산 해주는 함수
   const getDistance = (
@@ -85,7 +87,7 @@ function Map({ userLocation, setUserLocation }: UserLocationProps) {
   useEffect(() => {
     const getData = async () => {
       try {
-        if (userLocation.lat !== 0 && userLocation.lng !== 0) {
+        if (currentMyLocation.lat !== 0 && currentMyLocation.lng !== 0) {
           const resOne = await axios.get(
             `http://openAPI.seoul.go.kr:8088/${process.env.REACT_APP_SEOUL_PUBLIC_API_KEY}/json/SearchPublicToiletPOIService/1/1000/`
           );
@@ -117,8 +119,8 @@ function Map({ userLocation, setUserLocation }: UserLocationProps) {
           // get 해온 화장실 위치 데이터에 현재 내 위치와의 거리 DISTANCE 값 추가
           for (let i = 0; i < combineData.length; i++) {
             const distance = getDistance(
-              userLocation.lat,
-              userLocation.lng,
+              currentMyLocation.lat,
+              currentMyLocation.lng,
               // 37.5666103,
               // 126.9783882,
               combineData[i].Y_WGS84,
@@ -134,14 +136,14 @@ function Map({ userLocation, setUserLocation }: UserLocationProps) {
       }
     };
     getData();
-  }, [userLocation]);
+  }, [currentMyLocation]);
 
   // 현재 내 위치를 중심으로 하는 지도 생성
   useEffect(() => {
     const initMap = () => {
-      if (userLocation.lat !== 0 && userLocation.lng !== 0) {
+      if (currentMyLocation.lat !== 0 && currentMyLocation.lng !== 0) {
         const map = new naver.maps.Map("map", {
-          center: new naver.maps.LatLng(userLocation.lat, userLocation.lng),
+          center: new naver.maps.LatLng(currentMyLocation.lat, currentMyLocation.lng),
           // center: new naver.maps.LatLng(37.5666103, 126.9783882),
           zoom: 15,
           minZoom: 10,
@@ -155,7 +157,7 @@ function Map({ userLocation, setUserLocation }: UserLocationProps) {
         });
         // 현재 내 위치 마커 표시
         new naver.maps.Marker({
-          position: new naver.maps.LatLng(userLocation.lat, userLocation.lng),
+          position: new naver.maps.LatLng(currentMyLocation.lat, currentMyLocation.lng),
           // position: new naver.maps.LatLng(37.5666103, 126.9783882),
           map: map,
           icon: {
@@ -174,12 +176,12 @@ function Map({ userLocation, setUserLocation }: UserLocationProps) {
       }
     };
     initMap();
-  }, [nearByLocationData, userLocation]);
+  }, [nearByLocationData, currentMyLocation]);
 
   // 현재 내 위치로 이동하는 이벤트 핸들러
   const rePositionMyLocation = () => {
     const success = (position: any) => {
-      setUserLocation({
+      setCurrentMyLocation({
         // lat: position.coords.latitude,
         // lng: position.coords.longitude,
         lat: 37.5666103,
@@ -187,7 +189,7 @@ function Map({ userLocation, setUserLocation }: UserLocationProps) {
       });
     };
     const error = () => {
-      setUserLocation({ lat: 37.5666103, lng: 126.9783882 });
+      setCurrentMyLocation({ lat: 37.5666103, lng: 126.9783882 });
     };
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(success, error);
@@ -195,13 +197,11 @@ function Map({ userLocation, setUserLocation }: UserLocationProps) {
   };
 
   return (
-    <>
-      <MapContainer id='map'>
-        <RePositionButton onClick={rePositionMyLocation}>
-          <SlLocationPin className='positionIcon' size={20} />
-        </RePositionButton>
-      </MapContainer>
-    </>
+    <MapContainer id='map'>
+      <RePositionButton onClick={rePositionMyLocation}>
+        <SlLocationPin className='positionIcon' size={20} />
+      </RePositionButton>
+    </MapContainer>
   );
 }
 

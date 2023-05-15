@@ -1,9 +1,9 @@
-export interface UserLocation {
+export interface CurrentMyLocation {
   lat: number;
   lng: number;
 }
 
-export interface UserLocationProps {
-  userLocation: UserLocation;
-  setUserLocation: React.Dispatch<React.SetStateAction<UserLocation>>;
+export interface CurrentMyLocationProps {
+  userLocation: CurrentMyLocation;
+  setUserLocation: React.Dispatch<React.SetStateAction<CurrentMyLocation>>;
 }
