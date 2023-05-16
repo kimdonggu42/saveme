@@ -49,6 +49,8 @@ function Map() {
     }
   });
 
+  // console.log(nearByLocationData);
+
   // 현재 내 위치와의 거리를 계산 해주는 함수
   const getDistance = (
     myLat: number,
@@ -155,6 +157,7 @@ function Map() {
           logoControl: false,
           mapDataControl: false,
         });
+
         // 현재 내 위치 마커 표시
         new naver.maps.Marker({
           position: new naver.maps.LatLng(currentMyLocation.lat, currentMyLocation.lng),
@@ -168,7 +171,7 @@ function Map() {
         });
 
         // 현재 나와 제일 가까운 화장실의 마커 표시
-        new naver.maps.Marker({
+        const myMarker = new naver.maps.Marker({
           position: new naver.maps.LatLng(
             nearByLocationData[0].Y_WGS84,
             nearByLocationData[0].X_WGS84
@@ -185,7 +188,7 @@ function Map() {
         // 나머지 화장실 위치 마커 표시
         nearByLocationData.filter((value: any) => {
           if (nearByLocationData.indexOf(value) !== 0) {
-            return new naver.maps.Marker({
+            new naver.maps.Marker({
               position: new naver.maps.LatLng(value.Y_WGS84, value.X_WGS84),
               map: map,
               icon: {
@@ -196,8 +199,36 @@ function Map() {
             });
           }
         });
+
+        // 현재 나와 가장 가까이 있는 화장실의 정보창 내용
+        const contentString = [
+          '<div style="padding: 10px;">',
+          `   <div style="font-weight: bold; margin-bottom: 5px;">${nearByLocationData[0].FNAME}</div>`,
+          `   <div style="font-size: 13px;">${nearByLocationData[0].ANAME}<div>`,
+          "</div>",
+        ].join("");
+
+        // 정보창 생성
+        const infowindow = new naver.maps.InfoWindow({
+          content: contentString,
+          maxWidth: 300,
+          anchorSize: {
+            width: 12,
+            height: 14,
+          },
+        });
+
+        // 정보창 이벤트 핸들러
+        naver.maps.Event.addListener(myMarker, "click", function () {
+          if (infowindow.getMap()) {
+            infowindow.close();
+          } else {
+            infowindow.open(map, myMarker);
+          }
+        });
       }
     };
+
     initMap();
   }, [nearByLocationData, currentMyLocation]);
 
