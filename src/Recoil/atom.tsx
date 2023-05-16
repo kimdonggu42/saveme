@@ -10,3 +10,8 @@ export const currentMyLocationAtom = atom<CurrentMyLocation>({
     // lng: 126.9783882,
   },
 });
+
+export const toiletLocationDataAtom = atom<any>({
+  key: "toiletLocationDataAtom",
+  default: [],
+});

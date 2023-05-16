@@ -1,7 +1,7 @@
 function Header() {
   return (
     <>
-      <h2>지도</h2>
+      <h2>save me!</h2>
     </>
   );
 }

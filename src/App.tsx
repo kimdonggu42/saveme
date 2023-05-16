@@ -22,7 +22,7 @@ function App() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(success, error);
     }
-  }, []);
+  }, [setCurrentMyLocation]);
 
   return (
     <div className='App'>
