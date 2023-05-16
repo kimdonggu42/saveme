@@ -1,7 +1,7 @@
-export interface CurrentMyLocation {
+export type CurrentMyLocation = {
   lat: number;
   lng: number;
-}
+};
 
 export interface CurrentMyLocationProps {
   userLocation: CurrentMyLocation;

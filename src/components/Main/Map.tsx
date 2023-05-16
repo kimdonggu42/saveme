@@ -141,7 +141,7 @@ function Map() {
   // 현재 내 위치를 중심으로 하는 지도 생성
   useEffect(() => {
     const initMap = () => {
-      if (currentMyLocation.lat !== 0 && currentMyLocation.lng !== 0) {
+      if (currentMyLocation.lat !== 0 && currentMyLocation.lng !== 0 && nearByLocationData[0]) {
         const map = new naver.maps.Map("map", {
           center: new naver.maps.LatLng(currentMyLocation.lat, currentMyLocation.lng),
           // center: new naver.maps.LatLng(37.5666103, 126.9783882),
@@ -161,17 +161,40 @@ function Map() {
           // position: new naver.maps.LatLng(37.5666103, 126.9783882),
           map: map,
           icon: {
-            url: "https://cdn.icon-icons.com/icons2/317/PNG/512/map-marker-icon_34392.png",
+            url: "https://cdn-icons-png.flaticon.com/256/2344/2344085.png",
             size: new naver.maps.Size(40, 40),
             scaledSize: new naver.maps.Size(40, 40),
           },
         });
-        // 화장실 위치 마커 표시
-        nearByLocationData.map((value: any) => {
-          return new naver.maps.Marker({
-            position: new naver.maps.LatLng(value.Y_WGS84, value.X_WGS84),
-            map: map,
-          });
+
+        // 현재 나와 제일 가까운 화장실의 마커 표시
+        new naver.maps.Marker({
+          position: new naver.maps.LatLng(
+            nearByLocationData[0].Y_WGS84,
+            nearByLocationData[0].X_WGS84
+          ),
+          // position: new naver.maps.LatLng(37.5666103, 126.9783882),
+          map: map,
+          icon: {
+            url: "https://cdn-icons-png.flaticon.com/512/5695/5695144.png",
+            size: new naver.maps.Size(35, 35),
+            scaledSize: new naver.maps.Size(35, 35),
+          },
+        });
+
+        // 나머지 화장실 위치 마커 표시
+        nearByLocationData.filter((value: any) => {
+          if (nearByLocationData.indexOf(value) !== 0) {
+            return new naver.maps.Marker({
+              position: new naver.maps.LatLng(value.Y_WGS84, value.X_WGS84),
+              map: map,
+              icon: {
+                url: "https://cdn-icons-png.flaticon.com/512/5695/5695154.png",
+                size: new naver.maps.Size(35, 35),
+                scaledSize: new naver.maps.Size(35, 35),
+              },
+            });
+          }
         });
       }
     };
@@ -197,11 +220,13 @@ function Map() {
   };
 
   return (
-    <MapContainer id='map'>
-      <RePositionButton onClick={rePositionMyLocation}>
-        <SlLocationPin className='positionIcon' size={20} />
-      </RePositionButton>
-    </MapContainer>
+    <>
+      <MapContainer id='map'>
+        <RePositionButton onClick={rePositionMyLocation}>
+          <SlLocationPin className='positionIcon' size={20} />
+        </RePositionButton>
+      </MapContainer>
+    </>
   );
 }
 
