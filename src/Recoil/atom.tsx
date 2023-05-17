@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { CurrentMyLocation } from "../util/type";
+import { CurrentMyLocation, ToiletData } from "../util/type";
 
 export const currentMyLocationAtom = atom<CurrentMyLocation>({
   key: "currentMyLocationAtom",
