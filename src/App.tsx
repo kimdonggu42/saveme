@@ -1,4 +1,6 @@
+import Header from "./components/Nav/Header";
 import Main from "./pages/Main";
+import GlobalStyle from "./assets/style/globalStyle";
 import { useEffect } from "react";
 import { currentMyLocationAtom } from "./Recoil/atom";
 import { useSetRecoilState } from "recoil";
@@ -26,6 +28,8 @@ function App() {
 
   return (
     <div className='App'>
+      <GlobalStyle />
+      <Header />
       <Main />
     </div>
   );

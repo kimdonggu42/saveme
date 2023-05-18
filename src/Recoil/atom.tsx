@@ -11,7 +11,12 @@ export const currentMyLocationAtom = atom<CurrentMyLocation>({
   },
 });
 
-export const toiletLocationDataAtom = atom<any>({
+export const toiletLocationDataAtom = atom<ToiletData[]>({
   key: "toiletLocationDataAtom",
   default: [],
+});
+
+export const isLoadingAtom = atom<boolean>({
+  key: "isLoadingAtom",
+  default: true,
 });

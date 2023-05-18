@@ -3,12 +3,14 @@ import { useEffect, useRef } from "react";
 import { CurrentMyLocation, ToiletData } from "../../util/type";
 import { SlLocationPin } from "react-icons/sl";
 import { useRecoilState } from "recoil";
-import { currentMyLocationAtom } from "../../Recoil/atom";
+import { currentMyLocationAtom, isLoadingAtom } from "../../Recoil/atom";
 import useFetch from "../hooks/useFetch";
+import Spinner from "../common/Spinner";
+import { useRecoilValue } from "recoil";
 
 const MapContainer = styled.div`
   width: 100vw;
-  height: 700px;
+  height: 92vh;
   position: relative;
 
   &:focus {
@@ -39,6 +41,8 @@ function Map() {
   const [currentMyLocation, setCurrentMyLocation] =
     useRecoilState<CurrentMyLocation>(currentMyLocationAtom);
 
+  const isLoading = useRecoilValue<boolean>(isLoadingAtom);
+
   const mapRef = useRef<HTMLElement | null | any>(null);
   // 전체 화장실 데이터
   const mergeToiletData: ToiletData[] = useFetch(
@@ -54,16 +58,17 @@ function Map() {
   );
   // 정렬한 데이터 중 내 현재 위치에서 가장 가까운 화장실 50개만 필터링한 데이터
   const nearByToiletData: ToiletData[] = [...sortedToiletData].filter(
-    (value: any, index: number) => {
+    (value: ToiletData, index: number) => {
       if (index < 50) {
         return value;
       }
     }
   );
 
-  // 현재 내 위치를 중심으로 하는 지도 생성
+  // 현재 내 위치를 중심으로 하는 지도 생성 및 내 위치 마커 표시
   useEffect(() => {
-    if (currentMyLocation.lat !== 0 && currentMyLocation.lng !== 0 && nearByToiletData[0]) {
+    if (currentMyLocation.lat !== 0 && currentMyLocation.lng !== 0) {
+      // 현재 내 위치를 중심으로 하는 지도 생성
       mapRef.current = new naver.maps.Map("map", {
         center: new naver.maps.LatLng(currentMyLocation.lat, currentMyLocation.lng),
         // center: new naver.maps.LatLng(37.5666103, 126.9783882),
@@ -89,7 +94,12 @@ function Map() {
           scaledSize: new naver.maps.Size(40, 40),
         },
       });
+    }
+  }, [currentMyLocation]);
 
+  // 나와 제일 가까운 화장실과 나머지 인접한 49개의 화장실 마커 표시 및 정보창 생성
+  useEffect(() => {
+    if (currentMyLocation.lat !== 0 && currentMyLocation.lng !== 0 && nearByToiletData[0]) {
       // 현재 나와 제일 가까운 화장실의 마커 표시
       const closetMarker = new naver.maps.Marker({
         position: new naver.maps.LatLng(nearByToiletData[0].Y_WGS84, nearByToiletData[0].X_WGS84),
@@ -102,10 +112,37 @@ function Map() {
         },
       });
 
-      // 나머지 화장실 위치 마커 표시
-      const markers: any = [];
+      // 현재 나와 가장 가까이 있는 화장실의 정보창 생성
+      const infoWindow = new naver.maps.InfoWindow({
+        content: [
+          '<div style="padding: 10px;">',
+          `   <div style="font-weight: bold; margin-bottom: 5px;">${nearByToiletData[0].FNAME}</div>`,
+          `   <div style="font-size: 13px;">${nearByToiletData[0].ANAME}<div>`,
+          "</div>",
+        ].join(""),
+        maxWidth: 300,
+        anchorSize: {
+          width: 12,
+          height: 14,
+        },
+      });
+
+      // 현재 나와 가장 가까이 있는 화장실의 정보창 이벤트 핸들러
+      naver.maps.Event.addListener(closetMarker, "click", () => {
+        if (infoWindow.getMap()) {
+          infoWindow.close();
+        } else {
+          infoWindow.open(mapRef.current, closetMarker);
+        }
+      });
+
+      // 나머지 화장실 위치 마커가 담겨있는 배열
+      const markers: object[] = [];
+      // 나머지 화장실 정보창이 담겨있는 배열
+      const infoWindows: any = [];
 
       for (let i = 1; i < nearByToiletData.length; i++) {
+        // 나머지 화장실 위치 마커 생성
         const marker = new naver.maps.Marker({
           map: mapRef.current,
           position: new naver.maps.LatLng(nearByToiletData[i].Y_WGS84, nearByToiletData[i].X_WGS84),
@@ -115,7 +152,40 @@ function Map() {
             scaledSize: new naver.maps.Size(35, 35),
           },
         });
+
+        // 나머지 화장실의 정보창 생성
+        const infoWindow = new naver.maps.InfoWindow({
+          content: [
+            '<div style="padding: 10px;">',
+            `   <div style="font-weight: bold; margin-bottom: 5px;">${nearByToiletData[i].FNAME}</div>`,
+            `   <div style="font-size: 13px;">${nearByToiletData[i].ANAME}<div>`,
+            "</div>",
+          ].join(""),
+          maxWidth: 300,
+          anchorSize: {
+            width: 12,
+            height: 14,
+          },
+        });
+
         markers.push(marker);
+        infoWindows.push(infoWindow);
+      }
+
+      // 나머지 화장실 마커의 인덱스를 클로저 변수로 저장하는 이벤트 핸들러를 리턴하는 함수
+      const getClickHandler = (index: number) => {
+        return () => {
+          if (infoWindows[index].getMap()) {
+            infoWindows[index].close();
+          } else {
+            infoWindows[index].open(mapRef.current, markers[index]);
+          }
+        };
+      };
+
+      // 나머지 각 화장실의 정보창 이벤트 핸들러
+      for (let i = 0; i < markers.length; i++) {
+        naver.maps.Event.addListener(markers[i], "click", getClickHandler(i));
       }
 
       // 마커 숨김 함수
@@ -123,6 +193,7 @@ function Map() {
         if (marker.setMap()) return;
         marker.setMap(map);
       };
+
       // 마커 표시 함수
       const hideMarker = (map: any, marker: any) => {
         if (!marker.setMap()) return;
@@ -153,33 +224,6 @@ function Map() {
       naver.maps.Event.addListener(mapRef.current, "dragend", function () {
         updateMarkers(mapRef.current, markers);
       });
-
-      // 현재 나와 가장 가까이 있는 화장실의 정보창 내용
-      const contentString = [
-        '<div style="padding: 10px;">',
-        `   <div style="font-weight: bold; margin-bottom: 5px;">${nearByToiletData[0].FNAME}</div>`,
-        `   <div style="font-size: 13px;">${nearByToiletData[0].ANAME}<div>`,
-        "</div>",
-      ].join("");
-
-      // 정보창 생성
-      const infowindow = new naver.maps.InfoWindow({
-        content: contentString,
-        maxWidth: 300,
-        anchorSize: {
-          width: 12,
-          height: 14,
-        },
-      });
-
-      // 정보창 이벤트 핸들러
-      naver.maps.Event.addListener(closetMarker, "click", function () {
-        if (infowindow.getMap()) {
-          infowindow.close();
-        } else {
-          infowindow.open(mapRef.current, closetMarker);
-        }
-      });
     }
   }, [nearByToiletData, currentMyLocation]);
 
@@ -187,10 +231,10 @@ function Map() {
   const rePositionMyLocation = () => {
     const success = (position: any) => {
       setCurrentMyLocation({
-        // lat: position.coords.latitude,
-        // lng: position.coords.longitude,
-        lat: 37.5666103,
-        lng: 126.9783882,
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+        // lat: 37.5666103,
+        // lng: 126.9783882,
       });
     };
     const error = () => {
@@ -201,8 +245,11 @@ function Map() {
     }
   };
 
+  console.log(isLoading);
+
   return (
     <>
+      {isLoading && <Spinner />}
       <MapContainer id='map'>
         <RePositionButton onClick={rePositionMyLocation}>
           <SlLocationPin className='positionIcon' size={20} />
