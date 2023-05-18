@@ -1,4 +1,3 @@
-import Header from "./components/Nav/Header";
 import Main from "./pages/Main";
 import GlobalStyle from "./assets/style/globalStyle";
 import { useEffect } from "react";
@@ -29,7 +28,6 @@ function App() {
   return (
     <div className='App'>
       <GlobalStyle />
-      <Header />
       <Main />
     </div>
   );

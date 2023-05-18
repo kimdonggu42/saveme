@@ -5,7 +5,7 @@ import { isMapLoadingAtom } from "../../Recoil/atom";
 
 const LoadingContainer = styled.div`
   width: 100vw;
-  height: 92vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;

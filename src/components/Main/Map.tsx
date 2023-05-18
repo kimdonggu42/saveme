@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { useEffect, useRef } from "react";
 import { CurrentMyLocation, ToiletData } from "../../util/type";
-import { SlLocationPin } from "react-icons/sl";
+import { IoMdLocate } from "react-icons/io";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { currentMyLocationAtom, isLoadingAtom, isMapLoadingAtom } from "../../Recoil/atom";
 import useFetch from "../hooks/useFetch";
@@ -9,7 +9,7 @@ import Spinner from "../common/Spinner";
 
 const MapContainer = styled.div`
   width: 100vw;
-  height: 92vh;
+  height: 100vh;
   position: relative;
 
   &:focus {
@@ -25,7 +25,7 @@ const MainLogo = styled.div`
   left: 10px;
   width: 100px;
   height: 35px;
-  border: none;
+  outline: none;
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
   color: white;
@@ -34,8 +34,13 @@ const MainLogo = styled.div`
   z-index: 999;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px 0px;
 
-  > span {
-    font-weight: 600;
+  > .text {
+    margin-bottom: 3px;
+    font-size: 18px;
+
+    > span {
+      font-weight: 600;
+    }
   }
 `;
 
@@ -43,23 +48,26 @@ const RePositionButton = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 35px;
+  width: 40px;
   height: 35px;
   z-index: 999;
   left: 110px;
   top: 10px;
   border: none;
+  outline: 0.5px solid #cecdc7;
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
   position: absolute;
   background-color: white;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px 0px;
   cursor: pointer;
-
-  > .positionIcon {
-    margin: -2px;
-  }
 `;
+
+// const Select = styled.select`
+//   position: absolute;
+//   left: 200px;
+//   z-index: 999;
+// `;
 
 function Map() {
   const [currentMyLocation, setCurrentMyLocation] =
@@ -80,14 +88,6 @@ function Map() {
   // 내 현재 위치에서 거리가 가까운 순으로 정렬한 데이터
   const sortedToiletData: ToiletData[] = [...mergeToiletData].sort(
     (a: any, b: any) => a.DISTANCE - b.DISTANCE
-  );
-  // 정렬한 데이터 중 내 현재 위치에서 가장 가까운 화장실 50개만 필터링한 데이터
-  const nearByToiletData: ToiletData[] = [...sortedToiletData].filter(
-    (value: ToiletData, index: number) => {
-      if (index < 50) {
-        return value;
-      }
-    }
   );
 
   // 현재 내 위치를 중심으로 하는 지도 생성 및 내 위치 마커 표시
@@ -125,10 +125,10 @@ function Map() {
 
   // 나와 제일 가까운 화장실과 나머지 인접한 49개의 화장실 마커 표시 및 정보창 생성
   useEffect(() => {
-    if (currentMyLocation.lat !== 0 && currentMyLocation.lng !== 0 && nearByToiletData[0]) {
+    if (currentMyLocation.lat !== 0 && currentMyLocation.lng !== 0 && sortedToiletData[0]) {
       // 현재 나와 제일 가까운 화장실의 마커 표시
       const closetMarker = new naver.maps.Marker({
-        position: new naver.maps.LatLng(nearByToiletData[0].Y_WGS84, nearByToiletData[0].X_WGS84),
+        position: new naver.maps.LatLng(sortedToiletData[0].Y_WGS84, sortedToiletData[0].X_WGS84),
         // position: new naver.maps.LatLng(37.5666103, 126.9783882),
         map: mapRef.current,
         icon: {
@@ -142,8 +142,8 @@ function Map() {
       const infoWindow = new naver.maps.InfoWindow({
         content: [
           '<div style="padding: 10px;">',
-          `   <div style="font-weight: bold; margin-bottom: 5px;">${nearByToiletData[0].FNAME}</div>`,
-          `   <div style="font-size: 13px;">${nearByToiletData[0].ANAME}<div>`,
+          `   <div style="font-weight: bold; margin-bottom: 5px;">${sortedToiletData[0].FNAME}</div>`,
+          `   <div style="font-size: 13px;">${sortedToiletData[0].ANAME}<div>`,
           "</div>",
         ].join(""),
         maxWidth: 300,
@@ -163,15 +163,16 @@ function Map() {
       });
 
       // 나머지 화장실 위치 마커가 담겨있는 배열
-      const markers: object[] = [];
+      const markers: any = [];
       // 나머지 화장실 정보창이 담겨있는 배열
       const infoWindows: any = [];
 
-      for (let i = 1; i < nearByToiletData.length; i++) {
+      // 내 현재 위치에서 가장 가까운 화장실 50개만 마커 생성
+      for (let i = 0; i < 50; i++) {
         // 나머지 화장실 위치 마커 생성
         const marker = new naver.maps.Marker({
           map: mapRef.current,
-          position: new naver.maps.LatLng(nearByToiletData[i].Y_WGS84, nearByToiletData[i].X_WGS84),
+          position: new naver.maps.LatLng(sortedToiletData[i].Y_WGS84, sortedToiletData[i].X_WGS84),
           icon: {
             url: "https://cdn-icons-png.flaticon.com/512/5695/5695154.png",
             size: new naver.maps.Size(35, 35),
@@ -183,8 +184,8 @@ function Map() {
         const infoWindow = new naver.maps.InfoWindow({
           content: [
             '<div style="padding: 10px;">',
-            `   <div style="font-weight: bold; margin-bottom: 5px;">${nearByToiletData[i].FNAME}</div>`,
-            `   <div style="font-size: 13px;">${nearByToiletData[i].ANAME}<div>`,
+            `   <div style="font-weight: bold; margin-bottom: 5px;">${sortedToiletData[i].FNAME}</div>`,
+            `   <div style="font-size: 13px;">${sortedToiletData[i].ANAME}<div>`,
             "</div>",
           ].join(""),
           maxWidth: 300,
@@ -214,13 +215,13 @@ function Map() {
         naver.maps.Event.addListener(markers[i], "click", getClickHandler(i));
       }
 
-      // 마커 숨김 함수
+      // 마커 표시 함수
       const showMarker = (map: any, marker: any) => {
         if (marker.setMap()) return;
         marker.setMap(map);
       };
 
-      // 마커 표시 함수
+      // 마커 숨김 함수
       const hideMarker = (map: any, marker: any) => {
         if (!marker.setMap()) return;
         marker.setMap(null);
@@ -231,13 +232,12 @@ function Map() {
         const mapBounds = map.getBounds();
 
         for (let i = 0; i < markers.length; i++) {
-          const marker = markers[i];
-          const position = marker.getPosition();
+          const position = markers[i].getPosition();
 
           if (mapBounds.hasLatLng(position)) {
-            showMarker(map, marker);
+            showMarker(map, markers[i]);
           } else {
-            hideMarker(map, marker);
+            hideMarker(map, markers[i]);
           }
         }
       };
@@ -251,7 +251,7 @@ function Map() {
         updateMarkers(mapRef.current, markers);
       });
     }
-  }, [nearByToiletData, currentMyLocation]);
+  }, [sortedToiletData, currentMyLocation]);
 
   // 현재 내 위치로 이동하는 이벤트 핸들러
   const rePositionMyLocation = () => {
@@ -276,11 +276,17 @@ function Map() {
       {isLoading && <Spinner />}
       <MapContainer id='map'>
         <MainLogo>
-          save<span>me</span>
+          <div className='text'>
+            save<span>me</span>
+          </div>
         </MainLogo>
         <RePositionButton onClick={rePositionMyLocation}>
-          <SlLocationPin className='positionIcon' size={20} />
+          <IoMdLocate size={21} />
         </RePositionButton>
+        {/* <Select value={test} onChange={(e) => setTest(Number(e.target.value))}>
+          <option value='50'>50개</option>
+          <option value='100'>100개</option>
+        </Select> */}
       </MapContainer>
     </>
   );
