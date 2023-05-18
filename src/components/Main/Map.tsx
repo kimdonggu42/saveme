@@ -2,11 +2,10 @@ import styled from "styled-components";
 import { useEffect, useRef } from "react";
 import { CurrentMyLocation, ToiletData } from "../../util/type";
 import { SlLocationPin } from "react-icons/sl";
-import { useRecoilState } from "recoil";
-import { currentMyLocationAtom, isLoadingAtom } from "../../Recoil/atom";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { currentMyLocationAtom, isLoadingAtom, isMapLoadingAtom } from "../../Recoil/atom";
 import useFetch from "../hooks/useFetch";
 import Spinner from "../common/Spinner";
-import { useRecoilValue } from "recoil";
 
 const MapContainer = styled.div`
   width: 100vw;
@@ -18,18 +17,43 @@ const MapContainer = styled.div`
   }
 `;
 
+const MainLogo = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 10px;
+  left: 10px;
+  width: 100px;
+  height: 35px;
+  border: none;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  color: white;
+  background-color: #2e87ec;
+  position: absolute;
+  z-index: 999;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px 0px;
+
+  > span {
+    font-weight: 600;
+  }
+`;
+
 const RePositionButton = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 30px;
-  height: 30px;
+  width: 35px;
+  height: 35px;
   z-index: 999;
-  right: 10px;
-  top: 200px;
-  border: 1px solid black;
+  left: 110px;
+  top: 10px;
+  border: none;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
   position: absolute;
   background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px 0px;
   cursor: pointer;
 
   > .positionIcon {
@@ -41,6 +65,7 @@ function Map() {
   const [currentMyLocation, setCurrentMyLocation] =
     useRecoilState<CurrentMyLocation>(currentMyLocationAtom);
 
+  const setIsMapLoading = useSetRecoilState<boolean>(isMapLoadingAtom);
   const isLoading = useRecoilValue<boolean>(isLoadingAtom);
 
   const mapRef = useRef<HTMLElement | null | any>(null);
@@ -94,8 +119,9 @@ function Map() {
           scaledSize: new naver.maps.Size(40, 40),
         },
       });
+      setIsMapLoading(false);
     }
-  }, [currentMyLocation]);
+  }, [currentMyLocation, setIsMapLoading]);
 
   // 나와 제일 가까운 화장실과 나머지 인접한 49개의 화장실 마커 표시 및 정보창 생성
   useEffect(() => {
@@ -245,12 +271,13 @@ function Map() {
     }
   };
 
-  console.log(isLoading);
-
   return (
     <>
       {isLoading && <Spinner />}
       <MapContainer id='map'>
+        <MainLogo>
+          save<span>me</span>
+        </MainLogo>
         <RePositionButton onClick={rePositionMyLocation}>
           <SlLocationPin className='positionIcon' size={20} />
         </RePositionButton>

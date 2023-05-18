@@ -17,7 +17,7 @@ function App() {
         lng: position.coords.longitude,
       });
     };
-    // 내 현재 위치 값 반홚 실패 시 실행 함수 -> 지도 중심을 서울시청 위치로 설정
+    // 내 현재 위치 값 반환 실패 시 실행 함수 -> 지도 중심을 서울시청 위치로 설정
     const error = () => {
       setCurrentMyLocation({ lat: 37.5666103, lng: 126.9783882 });
     };
