@@ -19,7 +19,7 @@ const MainIconImg = styled.img`
   margin-bottom: 30px;
   animation: shake 1.5s infinite;
 
-  @media screen and (max-width: 721px) {
+  @media screen and (max-width: 700px) {
     width: 150px;
     height: 150px;
   }
@@ -38,9 +38,16 @@ const MainIconImg = styled.img`
 `;
 
 const InfoText = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   font-size: 25px;
   font-weight: 600;
   margin-top: 10px;
+
+  @media screen and (max-width: 700px) {
+    font-size: 20px;
+  }
 `;
 
 function Spinner() {
@@ -52,7 +59,10 @@ function Spinner() {
       {isMapLoading ? (
         <InfoText>현재 내 위치를 찾고 있어요</InfoText>
       ) : (
-        <InfoText>내 주변의 화장실을 찾고 있어요 잠시만 기다려주세요</InfoText>
+        <InfoText>
+          <div>내 주변의 화장실을 찾고 있어요</div>
+          <div>잠시만 기다려주세요</div>
+        </InfoText>
       )}
     </LoadingContainer>
   );
