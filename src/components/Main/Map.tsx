@@ -6,6 +6,9 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import { currentMyLocationAtom, isDataLoadingAtom, isMapLoadingAtom } from "../../Recoil/atom";
 import useFetch from "../hooks/useFetch";
 import Spinner from "../common/Spinner";
+import myMarker from "../../assets/images/myMarker.png";
+import closetToilet from "../../assets/images/closetToilet.png";
+import aroundToilet from "../../assets/images/aroundToilet.png";
 
 const MapContainer = styled.div`
   width: 100vw;
@@ -63,9 +66,8 @@ const RePositionButton = styled.button`
   cursor: pointer;
 
   > p {
-    z-index: 999;
     display: none;
-    background-color: #1b1a17;
+    background-color: #222222;
     padding: 6px;
     text-align: center;
     width: 60px;
@@ -77,11 +79,10 @@ const RePositionButton = styled.button`
     font-weight: 500;
 
     &::before {
-      z-index: 999;
       position: absolute;
       content: "";
       border: 5px solid transparent;
-      border-bottom-color: #1b1a17;
+      border-bottom-color: #222222;
       top: -10px;
       left: 25px;
     }
@@ -95,7 +96,6 @@ const RePositionButton = styled.button`
 
   &:hover p {
     top: 45px;
-    z-index: 999;
     display: block;
   }
 `;
@@ -145,10 +145,11 @@ function Map() {
         // position: new naver.maps.LatLng(37.5666103, 126.9783882),
         map: mapRef.current,
         icon: {
-          url: "https://cdn-icons-png.flaticon.com/256/2344/2344085.png",
-          size: new naver.maps.Size(40, 40),
-          scaledSize: new naver.maps.Size(40, 40),
+          url: `${myMarker}`,
+          size: new naver.maps.Size(43, 43),
+          scaledSize: new naver.maps.Size(43, 43),
         },
+        zIndex: 999,
       });
       setIsMapLoading(false);
     }
@@ -163,10 +164,11 @@ function Map() {
         // position: new naver.maps.LatLng(37.5666103, 126.9783882),
         map: mapRef.current,
         icon: {
-          url: "https://cdn-icons-png.flaticon.com/512/5695/5695144.png",
-          size: new naver.maps.Size(35, 35),
-          scaledSize: new naver.maps.Size(35, 35),
+          url: `${closetToilet}`,
+          size: new naver.maps.Size(40, 40),
+          scaledSize: new naver.maps.Size(40, 40),
         },
+        zIndex: 999,
       });
 
       // 현재 나와 가장 가까이 있는 화장실의 정보창 생성
@@ -206,7 +208,7 @@ function Map() {
           map: mapRef.current,
           position: new naver.maps.LatLng(sortedToiletData[i].Y_WGS84, sortedToiletData[i].X_WGS84),
           icon: {
-            url: "https://cdn-icons-png.flaticon.com/512/5695/5695154.png",
+            url: `${aroundToilet}`,
             size: new naver.maps.Size(35, 35),
             scaledSize: new naver.maps.Size(35, 35),
           },

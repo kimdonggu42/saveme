@@ -52,10 +52,7 @@ function Spinner() {
       {isMapLoading ? (
         <InfoText>현재 내 위치를 찾고 있어요</InfoText>
       ) : (
-        <InfoText>
-          내 주변의 화장실을 찾고 있어요 <br />
-          잠시만 기다려주세요
-        </InfoText>
+        <InfoText>내 주변의 화장실을 찾고 있어요 잠시만 기다려주세요</InfoText>
       )}
     </LoadingContainer>
   );
