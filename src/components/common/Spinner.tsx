@@ -50,9 +50,12 @@ function Spinner() {
     <LoadingContainer>
       <MainIconImg src={MainIcon} alt='loading' />
       {isMapLoading ? (
-        <InfoText>현재 내 위치 정보를 불러오는 중이에요</InfoText>
+        <InfoText>현재 내 위치를 찾고 있어요</InfoText>
       ) : (
-        <InfoText>내 주변의 화장실 정보를 불러오는 중이에요</InfoText>
+        <InfoText>
+          내 주변의 화장실을 찾고 있어요 <br />
+          잠시만 기다려주세요
+        </InfoText>
       )}
     </LoadingContainer>
   );

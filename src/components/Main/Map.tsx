@@ -2,8 +2,8 @@ import styled from "styled-components";
 import { useEffect, useRef } from "react";
 import { CurrentMyLocation, ToiletData } from "../../util/type";
 import { IoMdLocate } from "react-icons/io";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { currentMyLocationAtom, isLoadingAtom, isMapLoadingAtom } from "../../Recoil/atom";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { currentMyLocationAtom, isDataLoadingAtom, isMapLoadingAtom } from "../../Recoil/atom";
 import useFetch from "../hooks/useFetch";
 import Spinner from "../common/Spinner";
 
@@ -61,20 +61,20 @@ const RePositionButton = styled.button`
   background-color: white;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px 0px;
   cursor: pointer;
-`;
 
-// const Select = styled.select`
-//   position: absolute;
-//   left: 200px;
-//   z-index: 999;
-// `;
+  &:hover {
+    .locateIcon {
+      opacity: 0.5;
+    }
+  }
+`;
 
 function Map() {
   const [currentMyLocation, setCurrentMyLocation] =
     useRecoilState<CurrentMyLocation>(currentMyLocationAtom);
+  const [isLoading, setIsLoading] = useRecoilState<boolean>(isDataLoadingAtom);
 
   const setIsMapLoading = useSetRecoilState<boolean>(isMapLoadingAtom);
-  const isLoading = useRecoilValue<boolean>(isLoadingAtom);
 
   const mapRef = useRef<HTMLElement | null | any>(null);
   // 전체 화장실 데이터
@@ -141,7 +141,7 @@ function Map() {
       // 현재 나와 가장 가까이 있는 화장실의 정보창 생성
       const infoWindow = new naver.maps.InfoWindow({
         content: [
-          '<div style="padding: 10px;">',
+          '<div style="padding: 10px; box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px 0px;">',
           `   <div style="font-weight: bold; margin-bottom: 5px;">${sortedToiletData[0].FNAME}</div>`,
           `   <div style="font-size: 13px;">${sortedToiletData[0].ANAME}<div>`,
           "</div>",
@@ -151,6 +151,7 @@ function Map() {
           width: 12,
           height: 14,
         },
+        borderColor: "#cecdc7",
       });
 
       // 현재 나와 가장 가까이 있는 화장실의 정보창 이벤트 핸들러
@@ -167,8 +168,8 @@ function Map() {
       // 나머지 화장실 정보창이 담겨있는 배열
       const infoWindows: any = [];
 
-      // 내 현재 위치에서 가장 가까운 화장실 50개만 마커 생성
-      for (let i = 0; i < 50; i++) {
+      // 내 현재 위치에서 가장 가까운 화장실 100개만 마커 생성
+      for (let i = 1; i < 100; i++) {
         // 나머지 화장실 위치 마커 생성
         const marker = new naver.maps.Marker({
           map: mapRef.current,
@@ -183,7 +184,7 @@ function Map() {
         // 나머지 화장실의 정보창 생성
         const infoWindow = new naver.maps.InfoWindow({
           content: [
-            '<div style="padding: 10px;">',
+            '<div style="padding: 10px; box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px 0px;">',
             `   <div style="font-weight: bold; margin-bottom: 5px;">${sortedToiletData[i].FNAME}</div>`,
             `   <div style="font-size: 13px;">${sortedToiletData[i].ANAME}<div>`,
             "</div>",
@@ -193,6 +194,7 @@ function Map() {
             width: 12,
             height: 14,
           },
+          borderColor: "#cecdc7",
         });
 
         markers.push(marker);
@@ -224,7 +226,7 @@ function Map() {
       // 마커 숨김 함수
       const hideMarker = (map: any, marker: any) => {
         if (!marker.setMap()) return;
-        marker.setMap(null);
+        marker.setMap();
       };
 
       // 마커 업데이트 유/무 판별 함수
@@ -243,11 +245,11 @@ function Map() {
       };
 
       // 지도 줌 인/아웃 시 마커 업데이트 이벤트 핸들러
-      naver.maps.Event.addListener(mapRef.current, "zoom_changed", function () {
+      naver.maps.Event.addListener(mapRef.current, "zoom_changed", () => {
         updateMarkers(mapRef.current, markers);
       });
       // 지도 드래그 시 마커 업데이트 이벤트 핸들러
-      naver.maps.Event.addListener(mapRef.current, "dragend", function () {
+      naver.maps.Event.addListener(mapRef.current, "dragend", () => {
         updateMarkers(mapRef.current, markers);
       });
     }
@@ -255,6 +257,7 @@ function Map() {
 
   // 현재 내 위치로 이동하는 이벤트 핸들러
   const rePositionMyLocation = () => {
+    setIsMapLoading(true);
     const success = (position: any) => {
       setCurrentMyLocation({
         lat: position.coords.latitude,
@@ -267,6 +270,7 @@ function Map() {
       setCurrentMyLocation({ lat: 37.5666103, lng: 126.9783882 });
     };
     if (navigator.geolocation) {
+      setIsLoading(true);
       navigator.geolocation.getCurrentPosition(success, error);
     }
   };
@@ -281,12 +285,8 @@ function Map() {
           </div>
         </MainLogo>
         <RePositionButton onClick={rePositionMyLocation}>
-          <IoMdLocate size={21} />
+          <IoMdLocate className='locateIcon' size={21} />
         </RePositionButton>
-        {/* <Select value={test} onChange={(e) => setTest(Number(e.target.value))}>
-          <option value='50'>50개</option>
-          <option value='100'>100개</option>
-        </Select> */}
       </MapContainer>
     </>
   );

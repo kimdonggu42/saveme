@@ -12,20 +12,14 @@ export const currentMyLocationAtom = atom<CurrentMyLocation>({
   },
 });
 
-// 화장실 데이터
-export const toiletLocationDataAtom = atom<ToiletData[]>({
-  key: "toiletLocationDataAtom",
-  default: [],
-});
-
-// 화장실 데이터 GET 요청 완료 여부
-export const isLoadingAtom = atom<boolean>({
-  key: "isLoadingAtom",
-  default: true,
-});
-
 // 지도 렌더링 완료 여부
 export const isMapLoadingAtom = atom<boolean>({
   key: "isMapLoadingAtom",
+  default: true,
+});
+
+// 화장실 데이터 GET 요청 완료 여부
+export const isDataLoadingAtom = atom<boolean>({
+  key: "isDataLoadingAtom",
   default: true,
 });

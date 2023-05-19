@@ -1,11 +1,9 @@
-import { useEffect } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { currentMyLocationAtom, toiletLocationDataAtom } from "../../Recoil/atom";
+import { useState, useEffect } from "react";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { currentMyLocationAtom, isDataLoadingAtom } from "../../Recoil/atom";
 import { getDistance } from "../../util/helperFunc";
 import { PROXY_API } from "../../util/axiosInstance";
 import { CurrentMyLocation, ToiletData } from "../../util/type";
-import { isLoadingAtom } from "../../Recoil/atom";
-import { useSetRecoilState } from "recoil";
 
 const useFetch = (
   rowOneApi: string,
@@ -14,11 +12,10 @@ const useFetch = (
   rowFourApi: string,
   rowFiveApi: string
 ) => {
-  const [toiletLocationData, setToiletLocationData] =
-    useRecoilState<ToiletData[]>(toiletLocationDataAtom);
+  const [toiletLocationData, setToiletLocationData] = useState<ToiletData[]>([]);
 
   const currentMyLocation = useRecoilValue<CurrentMyLocation>(currentMyLocationAtom);
-  const setIsLoading = useSetRecoilState<boolean>(isLoadingAtom);
+  const setIsLoading = useSetRecoilState<boolean>(isDataLoadingAtom);
 
   useEffect(() => {
     const getData = async () => {
