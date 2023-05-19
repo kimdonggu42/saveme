@@ -34,7 +34,7 @@ const MainLogo = styled.div`
   z-index: 999;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px 0px;
 
-  > .text {
+  > .title {
     margin-bottom: 3px;
     font-size: 18px;
 
@@ -62,10 +62,41 @@ const RePositionButton = styled.button`
   box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px 0px;
   cursor: pointer;
 
+  > p {
+    z-index: 999;
+    display: none;
+    background-color: #1b1a17;
+    padding: 6px;
+    text-align: center;
+    width: 60px;
+    position: absolute;
+    border-radius: 4px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px 0px;
+    font-size: 12px;
+    color: white;
+    font-weight: 500;
+
+    &::before {
+      z-index: 999;
+      position: absolute;
+      content: "";
+      border: 5px solid transparent;
+      border-bottom-color: #1b1a17;
+      top: -10px;
+      left: 25px;
+    }
+  }
+
   &:hover {
     .locateIcon {
       opacity: 0.5;
     }
+  }
+
+  &:hover p {
+    top: 45px;
+    z-index: 999;
+    display: block;
   }
 `;
 
@@ -280,12 +311,13 @@ function Map() {
       {isLoading && <Spinner />}
       <MapContainer id='map'>
         <MainLogo>
-          <div className='text'>
+          <div className='title'>
             save<span>me</span>
           </div>
         </MainLogo>
         <RePositionButton onClick={rePositionMyLocation}>
           <IoMdLocate className='locateIcon' size={21} />
+          <p>현재위치</p>
         </RePositionButton>
       </MapContainer>
     </>
