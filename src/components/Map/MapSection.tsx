@@ -101,7 +101,7 @@ const RePositionButton = styled.button`
   }
 `;
 
-function Map() {
+function MapSection() {
   const [currentMyLocation, setCurrentMyLocation] =
     useRecoilState<CurrentMyLocation>(currentMyLocationAtom);
   const [isLoading, setIsLoading] = useRecoilState<boolean>(isDataLoadingAtom);
@@ -329,4 +329,4 @@ function Map() {
   );
 }
 
-export default Map;
+export default MapSection;

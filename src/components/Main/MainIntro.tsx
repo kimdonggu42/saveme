@@ -15,14 +15,11 @@ const MainWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   min-width: 450px;
-  /* margin-right: -60px; */
-  /* border: 1px solid red; */
 `;
 
 const MainTitle = styled.div`
   color: white;
   font-size: 100px;
-  /* border: 1px solid red; */
 
   > span {
     font-weight: 600;
@@ -34,7 +31,6 @@ const SubTitle = styled.div`
   color: white;
   font-size: 17px;
   margin-left: -90px;
-  /* border: 1px solid pink; */
 `;
 
 const MoveMapBtn = styled.button`
@@ -59,10 +55,9 @@ const PhoneImgWrapper = styled.div`
   justify-content: center;
   width: 500px;
   height: 600px;
-  /* border: 1px solid orange; */
 `;
 
-function Introduce() {
+function MainIntro() {
   return (
     <IntroContainer>
       <MainWrapper>
@@ -84,4 +79,4 @@ function Introduce() {
   );
 }
 
-export default Introduce;
+export default MainIntro;

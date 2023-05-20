@@ -1,5 +1,5 @@
-import Intro from "./pages/Intro";
-import Main from "./pages/Main";
+import MainIntro from "./components/Main/MainIntro";
+import Map from "./pages/Map";
 import GlobalStyle from "./assets/style/globalStyle";
 import { useEffect } from "react";
 import { currentMyLocationAtom } from "./Recoil/atom";
@@ -31,8 +31,8 @@ function App() {
     <div className='App'>
       <GlobalStyle />
       <Routes>
-        <Route path='/' element={<Intro />} />
-        <Route path='/Main' element={<Main />} />
+        <Route path='/' element={<MainIntro />} />
+        <Route path='/Main' element={<Map />} />
       </Routes>
     </div>
   );

@@ -1,11 +1,11 @@
-import Map from "../components/Main/Map";
+import MainIntro from "../components/Main/MainIntro";
 
-function Main() {
+function Intro() {
   return (
     <>
-      <Map />
+      <MainIntro />
     </>
   );
 }
 
-export default Main;
+export default Intro;
