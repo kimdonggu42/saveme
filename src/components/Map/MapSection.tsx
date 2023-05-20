@@ -309,6 +309,8 @@ function MapSection() {
     }
   };
 
+  console.log(sortedToiletData);
+
   return (
     <>
       {isLoading && <Spinner />}

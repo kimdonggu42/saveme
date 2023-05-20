@@ -14,7 +14,16 @@ const MainWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 450px;
+  width: 400px;
+  padding: 20px;
+  margin-right: 20px;
+  /* border: 1px solid red; */
+
+  > :not(:second-child) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 `;
 
 const MainTitle = styled.div`
@@ -30,12 +39,11 @@ const SubTitle = styled.div`
   margin-top: 20px;
   color: white;
   font-size: 17px;
-  margin-left: -90px;
 `;
 
 const MoveMapBtn = styled.button`
   color: #2a2c32;
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 700;
   margin-top: 30px;
   width: 330px;
@@ -53,8 +61,17 @@ const MoveMapBtn = styled.button`
 const PhoneImgWrapper = styled.div`
   display: flex;
   justify-content: center;
-  width: 500px;
-  height: 600px;
+  margin-left: 20px;
+  /* border: 1px solid red; */
+
+  > img {
+    width: 400px;
+    height: 540px;
+  }
+
+  @media screen and (max-width: 900px) {
+    display: none;
+  }
 `;
 
 function MainIntro() {
@@ -66,10 +83,10 @@ function MainIntro() {
         </MainTitle>
         <SubTitle>
           별도의 검색 필요없이 <br />
-          바로 내 주위의 화장실을 찾아보세요.
+          바로 내 주변의 화장실을 찾아보세요.
         </SubTitle>
         <Link to='Main'>
-          <MoveMapBtn>주위의 화장실 찾아보기</MoveMapBtn>
+          <MoveMapBtn>내 주변의 화장실 찾기</MoveMapBtn>
         </Link>
       </MainWrapper>
       <PhoneImgWrapper>
