@@ -4,6 +4,7 @@ import { CurrentMyLocation, ToiletData } from "../../util/type";
 import { IoMdLocate } from "react-icons/io";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { currentMyLocationAtom, isDataLoadingAtom, isMapLoadingAtom } from "../../Recoil/atom";
+import { Link } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 import Spinner from "../common/Spinner";
 import myMarker from "../../assets/images/myMarker.png";
@@ -291,10 +292,10 @@ function Map() {
   // 현재 내 위치로 이동하는 이벤트 핸들러
   const rePositionMyLocation = () => {
     setIsMapLoading(true);
-    const success = (position: any) => {
+    const success = (location: { coords: { latitude: number; longitude: number } }) => {
       setCurrentMyLocation({
-        lat: position.coords.latitude,
-        lng: position.coords.longitude,
+        lat: location.coords.latitude,
+        lng: location.coords.longitude,
         // lat: 37.5666103,
         // lng: 126.9783882,
       });
@@ -312,11 +313,13 @@ function Map() {
     <>
       {isLoading && <Spinner />}
       <MapContainer id='map'>
-        <MainLogo>
-          <div className='title'>
-            save<span>me</span>
-          </div>
-        </MainLogo>
+        <Link to='/'>
+          <MainLogo>
+            <div className='title'>
+              save<span>me</span>
+            </div>
+          </MainLogo>
+        </Link>
         <RePositionButton onClick={rePositionMyLocation}>
           <IoMdLocate className='locateIcon' size={21} />
           <p>현재위치</p>

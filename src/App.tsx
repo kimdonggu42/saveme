@@ -1,8 +1,10 @@
+import Intro from "./pages/Intro";
 import Main from "./pages/Main";
 import GlobalStyle from "./assets/style/globalStyle";
 import { useEffect } from "react";
 import { currentMyLocationAtom } from "./Recoil/atom";
 import { useSetRecoilState } from "recoil";
+import { Routes, Route } from "react-router-dom";
 
 function App() {
   const setCurrentMyLocation = useSetRecoilState(currentMyLocationAtom);
@@ -10,10 +12,10 @@ function App() {
   // 내 현재 위치 계산
   useEffect(() => {
     // 내 현재 위치 값 번환 성공 시 실행 함수 -> 내 현재 위치 값을 userLocation state에 저장
-    const success = (position: any) => {
+    const success = (location: { coords: { latitude: number; longitude: number } }) => {
       setCurrentMyLocation({
-        lat: position.coords.latitude,
-        lng: position.coords.longitude,
+        lat: location.coords.latitude,
+        lng: location.coords.longitude,
       });
     };
     // 내 현재 위치 값 반환 실패 시 실행 함수 -> 지도 중심을 서울시청 위치로 설정
@@ -28,7 +30,10 @@ function App() {
   return (
     <div className='App'>
       <GlobalStyle />
-      <Main />
+      <Routes>
+        <Route path='/' element={<Intro />} />
+        <Route path='/Main' element={<Main />} />
+      </Routes>
     </div>
   );
 }
