@@ -11,7 +11,7 @@ function App() {
 
   // 내 현재 위치 계산
   useEffect(() => {
-    // 내 현재 위치 값 번환 성공 시 실행 함수 -> 내 현재 위치 값을 userLocation state에 저장
+    // 내 현재 위치 값 번환 성공 시 실행 함수 -> 내 현재 위치 값을 currentMyLocationAtom에 저장
     const success = (location: { coords: { latitude: number; longitude: number } }) => {
       setCurrentMyLocation({
         lat: location.coords.latitude,
@@ -32,7 +32,7 @@ function App() {
       <GlobalStyle />
       <Routes>
         <Route path='/' element={<MainIntro />} />
-        <Route path='/Main' element={<Map />} />
+        <Route path='/Map' element={<Map />} />
       </Routes>
     </div>
   );
