@@ -128,7 +128,6 @@ function MapSection() {
       // 현재 내 위치를 중심으로 하는 지도 생성
       mapRef.current = new naver.maps.Map("map", {
         center: new naver.maps.LatLng(currentMyLocation.lat, currentMyLocation.lng),
-        // center: new naver.maps.LatLng(37.5666103, 126.9783882),
         zoom: 15,
         minZoom: 10,
         zoomControl: true,
@@ -143,7 +142,6 @@ function MapSection() {
       // 현재 내 위치 마커 표시
       new naver.maps.Marker({
         position: new naver.maps.LatLng(currentMyLocation.lat, currentMyLocation.lng),
-        // position: new naver.maps.LatLng(37.5666103, 126.9783882),
         map: mapRef.current,
         icon: {
           url: `${myMarker}`,
@@ -162,7 +160,6 @@ function MapSection() {
       // 현재 나와 제일 가까운 화장실의 마커 표시
       const closetMarker = new naver.maps.Marker({
         position: new naver.maps.LatLng(sortedToiletData[0].Y_WGS84, sortedToiletData[0].X_WGS84),
-        // position: new naver.maps.LatLng(37.5666103, 126.9783882),
         map: mapRef.current,
         icon: {
           url: `${closetToilet}`,
@@ -296,8 +293,6 @@ function MapSection() {
       setCurrentMyLocation({
         lat: location.coords.latitude,
         lng: location.coords.longitude,
-        // lat: 37.5666103,
-        // lng: 126.9783882,
       });
     };
     const error = () => {
@@ -308,8 +303,6 @@ function MapSection() {
       navigator.geolocation.getCurrentPosition(success, error);
     }
   };
-
-  console.log(sortedToiletData);
 
   return (
     <>

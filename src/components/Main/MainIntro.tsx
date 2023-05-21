@@ -39,7 +39,6 @@ const InnerMoveMapBtn = styled.div`
 
 const OuttetMoveMapBtn = styled.button`
   background: white;
-  /* margin-top: 30px; */
   width: 330px;
   height: 50px;
   overflow: hidden;
@@ -52,7 +51,7 @@ const OuttetMoveMapBtn = styled.button`
     margin-top: 13px;
     font-size: 19px;
     font-weight: 700;
-    color: #2a2c32;
+    color: #1e2236;
     transition: 0.3s;
   }
 

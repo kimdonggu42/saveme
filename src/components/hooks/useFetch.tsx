@@ -44,8 +44,6 @@ const useFetch = (
             const distance = getDistance(
               currentMyLocation.lat,
               currentMyLocation.lng,
-              // 37.5666103,
-              // 126.9783882,
               combineData[i].Y_WGS84,
               combineData[i].X_WGS84,
               "K"

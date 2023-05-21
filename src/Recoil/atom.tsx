@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { CurrentMyLocation, ToiletData } from "../util/type";
+import { CurrentMyLocation } from "../util/type";
 
 // 현재 위치 정보
 export const currentMyLocationAtom = atom<CurrentMyLocation>({
@@ -7,8 +7,6 @@ export const currentMyLocationAtom = atom<CurrentMyLocation>({
   default: {
     lat: 0,
     lng: 0,
-    // lat: 37.5666103,
-    // lng: 126.9783882,
   },
 });
 
