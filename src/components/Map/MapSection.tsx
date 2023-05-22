@@ -291,8 +291,10 @@ function MapSection() {
     setIsMapLoading(true);
     const success = (location: { coords: { latitude: number; longitude: number } }) => {
       setCurrentMyLocation({
-        lat: location.coords.latitude,
-        lng: location.coords.longitude,
+        // lat: location.coords.latitude,
+        // lng: location.coords.longitude,
+        lat: 37.5666103,
+        lng: 126.9783882,
       });
     };
     const error = () => {

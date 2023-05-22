@@ -17,6 +17,10 @@ const MainWrapper = styled.div`
   width: 400px;
   padding: 20px;
   margin-right: 20px;
+
+  @media screen and (max-width: 900px) {
+    margin: 0;
+  }
 `;
 
 const InnerMoveMapBtn = styled.div`
@@ -109,7 +113,7 @@ function MainIntro() {
           별도의 검색 필요없이 바로
           <br />내 주변의 화장실을 찾아보세요.
         </SubTitle>
-        <Link to='Main'>
+        <Link to='Map'>
           <OuttetMoveMapBtn>
             <p className='btnText'>내 주변의 화장실 찾기</p>
             <InnerMoveMapBtn>
