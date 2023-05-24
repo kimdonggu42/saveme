@@ -11,7 +11,7 @@
 
 - **`프로젝트 기간` :** 2023.05.12. - 2023.05.21.
 - **`프로젝트 소개` :** saveme는 검색 필요없이 바로 내 주변의 공공화장실을 찾을 수 있는 서비스입니다.
-- **`링크` :** [saveme 홈페이지](https://save-me-bd34d.web.app/)
+- **`링크` :** [saveme 홈페이지](https://save-me-bd34d.web.app/), [서울 열린데이터 광장 활용사례(갤러리) > saveme](https://data.seoul.go.kr/dataVisual/gallery/galleryView.do?bbsCd=10005&seq=4c72e2e003d527921170806b1d757cb9&ditcCd=WEB&ver=1)
 </br>
 
 ## :computer: 기술 스택
