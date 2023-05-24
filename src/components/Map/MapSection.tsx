@@ -108,7 +108,7 @@ function MapSection() {
 
   const setIsMapLoading = useSetRecoilState<boolean>(isMapLoadingAtom);
 
-  const mapRef = useRef<HTMLElement | null | any>(null);
+  const mapRef = useRef<naver.maps.Map | null>(null);
   // 전체 화장실 데이터
   const mergeToiletData: ToiletData[] = useFetch(
     `/1/1000`,
@@ -119,7 +119,7 @@ function MapSection() {
   );
   // 내 현재 위치에서 거리가 가까운 순으로 정렬한 데이터
   const sortedToiletData: ToiletData[] = [...mergeToiletData].sort(
-    (a: any, b: any) => a.DISTANCE - b.DISTANCE
+    (a, b) => a.DISTANCE - b.DISTANCE
   );
 
   // 현재 내 위치를 중심으로 하는 지도 생성 및 내 위치 마커 표시
@@ -154,9 +154,14 @@ function MapSection() {
     }
   }, [currentMyLocation, setIsMapLoading]);
 
-  // 나와 제일 가까운 화장실과 나머지 인접한 49개의 화장실 마커 표시 및 정보창 생성
+  // 나와 제일 가까운 화장실과 나머지 인접한 100개의 화장실 마커 표시 및 정보창 생성
   useEffect(() => {
-    if (currentMyLocation.lat !== 0 && currentMyLocation.lng !== 0 && sortedToiletData[0]) {
+    if (
+      currentMyLocation.lat !== 0 &&
+      currentMyLocation.lng !== 0 &&
+      sortedToiletData[0] &&
+      mapRef.current !== null
+    ) {
       // 현재 나와 제일 가까운 화장실의 마커 표시
       const closetMarker = new naver.maps.Marker({
         position: new naver.maps.LatLng(sortedToiletData[0].Y_WGS84, sortedToiletData[0].X_WGS84),
@@ -189,15 +194,15 @@ function MapSection() {
       naver.maps.Event.addListener(closetMarker, "click", () => {
         if (infoWindow.getMap()) {
           infoWindow.close();
-        } else {
+        } else if (mapRef.current !== null) {
           infoWindow.open(mapRef.current, closetMarker);
         }
       });
 
       // 나머지 화장실 위치 마커가 담겨있는 배열
-      const markers: any = [];
+      const markers: naver.maps.Marker[] = [];
       // 나머지 화장실 정보창이 담겨있는 배열
-      const infoWindows: any = [];
+      const infoWindows: naver.maps.InfoWindow[] = [];
 
       // 내 현재 위치에서 가장 가까운 화장실 100개만 마커 생성
       for (let i = 1; i < 100; i++) {
@@ -237,7 +242,7 @@ function MapSection() {
         return () => {
           if (infoWindows[index].getMap()) {
             infoWindows[index].close();
-          } else {
+          } else if (mapRef.current !== null) {
             infoWindows[index].open(mapRef.current, markers[index]);
           }
         };
@@ -249,20 +254,18 @@ function MapSection() {
       }
 
       // 마커 표시 함수
-      const showMarker = (map: any, marker: any) => {
-        if (marker.setMap()) return;
+      const showMarker = (map: naver.maps.Map, marker: naver.maps.Marker) => {
         marker.setMap(map);
       };
 
       // 마커 숨김 함수
-      const hideMarker = (map: any, marker: any) => {
-        if (!marker.setMap()) return;
-        marker.setMap();
+      const hideMarker = (marker: naver.maps.Marker) => {
+        marker.setMap(null);
       };
 
       // 마커 업데이트 유/무 판별 함수
-      const updateMarkers = (map: any, markers: any) => {
-        const mapBounds = map.getBounds();
+      const updateMarkers = (map: naver.maps.Map, markers: naver.maps.Marker[]) => {
+        const mapBounds: any = map.getBounds();
 
         for (let i = 0; i < markers.length; i++) {
           const position = markers[i].getPosition();
@@ -270,18 +273,22 @@ function MapSection() {
           if (mapBounds.hasLatLng(position)) {
             showMarker(map, markers[i]);
           } else {
-            hideMarker(map, markers[i]);
+            hideMarker(markers[i]);
           }
         }
       };
 
       // 지도 줌 인/아웃 시 마커 업데이트 이벤트 핸들러
       naver.maps.Event.addListener(mapRef.current, "zoom_changed", () => {
-        updateMarkers(mapRef.current, markers);
+        if (mapRef.current !== null) {
+          updateMarkers(mapRef.current, markers);
+        }
       });
       // 지도 드래그 시 마커 업데이트 이벤트 핸들러
       naver.maps.Event.addListener(mapRef.current, "dragend", () => {
-        updateMarkers(mapRef.current, markers);
+        if (mapRef.current !== null) {
+          updateMarkers(mapRef.current, markers);
+        }
       });
     }
   }, [sortedToiletData, currentMyLocation]);
@@ -291,10 +298,8 @@ function MapSection() {
     setIsMapLoading(true);
     const success = (location: { coords: { latitude: number; longitude: number } }) => {
       setCurrentMyLocation({
-        // lat: location.coords.latitude,
-        // lng: location.coords.longitude,
-        lat: 37.5666103,
-        lng: 126.9783882,
+        lat: location.coords.latitude,
+        lng: location.coords.longitude,
       });
     };
     const error = () => {

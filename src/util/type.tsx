@@ -19,5 +19,5 @@ export type ToiletData = {
   UPDATEDATE: string;
   X_WGS84: number;
   Y_WGS84: number;
-  DISTANCE?: number;
+  DISTANCE: number;
 };
