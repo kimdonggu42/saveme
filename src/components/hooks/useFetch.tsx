@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { currentMyLocationAtom, isDataLoadingAtom } from "../../Recoil/atom";
 import { getDistance } from "../../util/helperFunc";
-import { PROXY_API } from "../../util/axiosInstance";
+import { PROXY_API } from "../../util/api";
 import { CurrentMyLocation, ToiletData } from "../../util/type";
 
 const useFetch = (
