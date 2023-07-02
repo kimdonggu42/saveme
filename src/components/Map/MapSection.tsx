@@ -5,7 +5,7 @@ import { IoMdLocate } from "react-icons/io";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { currentMyLocationAtom, isDataLoadingAtom, isMapLoadingAtom } from "../../Recoil/atom";
 import { Link } from "react-router-dom";
-import useFetch from "../hooks/useFetch";
+import useFetch from "../../hooks/useFetch";
 import Spinner from "../common/Spinner";
 import myMarker from "../../assets/images/myMarker.png";
 import closetToilet from "../../assets/images/closetToilet.png";
