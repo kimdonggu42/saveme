@@ -1,8 +1,8 @@
-import MainIntro from "./components/Main/MainIntro";
-import Map from "./pages/Map";
+import Intro from "./pages/Intro";
+import MainMap from "./pages/MainMap";
 import GlobalStyle from "./assets/style/globalStyle";
 import { useEffect } from "react";
-import { currentMyLocationAtom } from "./Recoil/atom";
+import { currentMyLocationAtom } from "./recoil/atom";
 import { useSetRecoilState } from "recoil";
 import { Routes, Route } from "react-router-dom";
 
@@ -31,8 +31,8 @@ function App() {
     <div className='App'>
       <GlobalStyle />
       <Routes>
-        <Route path='/' element={<MainIntro />} />
-        <Route path='/Map' element={<Map />} />
+        <Route path='/' element={<Intro />} />
+        <Route path='/Map' element={<MainMap />} />
       </Routes>
     </div>
   );

@@ -1,15 +1,15 @@
 import styled from "styled-components";
 import { useEffect, useRef } from "react";
-import { CurrentMyLocation, ToiletData } from "../../util/interface";
+import { CurrentMyLocation, ToiletData } from "../util/interface";
 import { IoMdLocate } from "react-icons/io";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { currentMyLocationAtom, isDataLoadingAtom, isMapLoadingAtom } from "../../Recoil/atom";
+import { currentMyLocationAtom, isDataLoadingAtom, isMapLoadingAtom } from "../recoil/atom";
 import { Link } from "react-router-dom";
-import useFetch from "../../hooks/useFetch";
-import Spinner from "../common/Spinner";
-import myMarker from "../../assets/images/myMarker.png";
-import closetToilet from "../../assets/images/closetToilet.png";
-import aroundToilet from "../../assets/images/aroundToilet.png";
+import useFetch from "../hooks/useFetch";
+import Spinner from "../components/Spinner";
+import myMarker from "../assets/images/myMarker.png";
+import closetToilet from "../assets/images/closetToilet.png";
+import aroundToilet from "../assets/images/aroundToilet.png";
 
 const MapContainer = styled.div`
   width: 100vw;
@@ -101,7 +101,7 @@ const RePositionButton = styled.button`
   }
 `;
 
-function MapSection() {
+function MainMap() {
   const [currentMyLocation, setCurrentMyLocation] =
     useRecoilState<CurrentMyLocation>(currentMyLocationAtom);
   const [isLoading, setIsLoading] = useRecoilState<boolean>(isDataLoadingAtom);
@@ -333,4 +333,4 @@ function MapSection() {
   );
 }
 
-export default MapSection;
+export default MainMap;

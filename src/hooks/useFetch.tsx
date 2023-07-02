@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { currentMyLocationAtom, isDataLoadingAtom } from "../Recoil/atom";
+import { currentMyLocationAtom, isDataLoadingAtom } from "../recoil/atom";
 import { getDistance } from "../util/helperFunc";
 import { PROXY_API } from "../util/api";
 import { CurrentMyLocation, ToiletData } from "../util/interface";

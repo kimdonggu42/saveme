@@ -1,7 +1,7 @@
 import styled from "styled-components";
-import MainIcon from "../../assets/images/mainIcon.png";
+import MainIcon from "../assets/images/mainIcon.png";
 import { useRecoilValue } from "recoil";
-import { isMapLoadingAtom } from "../../Recoil/atom";
+import { isMapLoadingAtom } from "../recoil/atom";
 
 const LoadingContainer = styled.div`
   width: 100vw;
