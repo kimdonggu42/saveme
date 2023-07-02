@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { CurrentMyLocation } from "../util/type";
+import { CurrentMyLocation } from "../util/interface";
 
 // 현재 위치 정보
 export const currentMyLocationAtom = atom<CurrentMyLocation>({

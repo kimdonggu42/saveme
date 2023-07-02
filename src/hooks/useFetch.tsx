@@ -3,7 +3,7 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import { currentMyLocationAtom, isDataLoadingAtom } from "../Recoil/atom";
 import { getDistance } from "../util/helperFunc";
 import { PROXY_API } from "../util/api";
-import { CurrentMyLocation, ToiletData } from "../util/type";
+import { CurrentMyLocation, ToiletData } from "../util/interface";
 
 const useFetch = (
   rowOneApi: string,

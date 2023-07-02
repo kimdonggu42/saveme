@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useEffect, useRef } from "react";
-import { CurrentMyLocation, ToiletData } from "../../util/type";
+import { CurrentMyLocation, ToiletData } from "../../util/interface";
 import { IoMdLocate } from "react-icons/io";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { currentMyLocationAtom, isDataLoadingAtom, isMapLoadingAtom } from "../../Recoil/atom";
