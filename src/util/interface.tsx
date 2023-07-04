@@ -8,7 +8,7 @@ export interface CurrentMyLocationProps {
   setUserLocation: React.Dispatch<React.SetStateAction<CurrentMyLocation>>;
 }
 
-export type ToiletData = {
+export interface ToiletData {
   POI_ID: string;
   ANAME: string;
   CENTER_X1: number;
@@ -20,4 +20,4 @@ export type ToiletData = {
   X_WGS84: number;
   Y_WGS84: number;
   DISTANCE: number;
-};
+}
