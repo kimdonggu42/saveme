@@ -18,6 +18,8 @@
 
 - [서울 열린데이터 광장 활용사례(갤러리) > saveme](https://data.seoul.go.kr/dataVisual/gallery/galleryView.do?bbsCd=10005&seq=4c72e2e003d527921170806b1d757cb9&ditcCd=WEB&ver=1)
 
+<br>
+
 ## 개발 환경
 
 ### Developement
@@ -27,6 +29,8 @@
 ### Styling
 
 <img src="https://img.shields.io/badge/styled components-DB7093?style=for-the-badge&logo=styled-components&logoColor=white">
+
+<br>
 
 ## 실행 방법
 
@@ -44,6 +48,8 @@ $ npm install
 $ npm start
 ```
 
+<br>
+
 ## 디렉토리 구조
 
 ```
@@ -60,6 +66,8 @@ $ npm start
  ┗ 📜 index.tsx
 ```
 
+<br>
+
 ## 개발 내용
 
 ### 1. 지도 및 마커 생성
@@ -75,6 +83,8 @@ $ npm start
 ### 3. UX 사용성 개선
 
 - 현재 사용자가 있는 위치 정보 요청과 화장실 위치 데이터 요청 상태를 분리하여 현재 어떤 데이터를 불러오고 있는지 사용자가 인지할 수 있도록 개선
+
+<br>
 
 ## 시연 영상
 
