@@ -78,8 +78,8 @@ $ npm start
 
 ## 시연 영상
 
-|                                                      **메인화면**                                                       |                                                      **로딩화면**                                                       |
-| :---------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------: |
-| <img width="360px" src="https://github.com/kimdonggu42/save-me/assets/115632555/15eb758c-8a99-4232-9400-d5df04caa98b"/> | <img width="360px" src="https://github.com/kimdonggu42/save-me/assets/115632555/b4037b91-4926-4c9f-b77c-18538de8fab1"/> |
-|                                                        **지도**                                                         |                                                  **현재 위치로 이동**                                                   |
-| <img width="360px" src="https://github.com/kimdonggu42/save-me/assets/115632555/55678aed-8c78-4011-82e2-f7f130b92608"/> | <img width="360px" src="https://github.com/kimdonggu42/save-me/assets/115632555/13db9f1d-b8fd-4c49-b921-f06085217d43"/> |
+|                                                      **메인화면**                                                      |                                                      **로딩화면**                                                      |
+| :--------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------: |
+| <img width="100%" src="https://github.com/kimdonggu42/save-me/assets/115632555/15eb758c-8a99-4232-9400-d5df04caa98b"/> | <img width="100%" src="https://github.com/kimdonggu42/save-me/assets/115632555/b4037b91-4926-4c9f-b77c-18538de8fab1"/> |
+|                                                        **지도**                                                        |                                                  **현재 위치로 이동**                                                  |
+| <img width="100%" src="https://github.com/kimdonggu42/save-me/assets/115632555/55678aed-8c78-4011-82e2-f7f130b92608"/> | <img width="100%" src="https://github.com/kimdonggu42/save-me/assets/115632555/13db9f1d-b8fd-4c49-b921-f06085217d43"/> |
