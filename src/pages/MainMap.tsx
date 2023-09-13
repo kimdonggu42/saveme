@@ -8,7 +8,8 @@ import myMarker from "../assets/images/myMarker.png";
 import closetToilet from "../assets/images/closetToilet.png";
 import aroundToilet from "../assets/images/aroundToilet.png";
 import { useGeolocation } from "../hooks/useGeolocation";
-import { getDistance } from "../util/helperFunc";
+import { distanceCalculation } from "../util/helperFunc/distanceCalculation";
+import { checkForMarkersRendering } from "../util/helperFunc/checkForMarkersRendering";
 
 export default function MainMap() {
   const mapRef = useRef<naver.maps.Map | null>(null);
@@ -18,7 +19,7 @@ export default function MainMap() {
 
   const sortedToiletData = toiletData
     .map((item) => {
-      const distance = getDistance(
+      const distance = distanceCalculation(
         currentMyLocation.lat,
         currentMyLocation.lng,
         item.Y_WGS84,
@@ -53,7 +54,6 @@ export default function MainMap() {
           size: new naver.maps.Size(43, 43),
           scaledSize: new naver.maps.Size(43, 43),
         },
-        zIndex: 999,
       });
     }
   }, [currentMyLocation]);
@@ -75,7 +75,6 @@ export default function MainMap() {
           size: new naver.maps.Size(40, 40),
           scaledSize: new naver.maps.Size(40, 40),
         },
-        zIndex: 999,
       });
 
       // 현재 나와 가장 가까이 있는 화장실의 정보창 생성
@@ -157,41 +156,16 @@ export default function MainMap() {
         naver.maps.Event.addListener(markers[i], "click", getClickHandler(i));
       }
 
-      // 마커 표시 함수
-      const showMarker = (map: naver.maps.Map, marker: naver.maps.Marker) => {
-        marker.setMap(map);
-      };
-
-      // 마커 숨김 함수
-      const hideMarker = (marker: naver.maps.Marker) => {
-        marker.setMap(null);
-      };
-
-      // 마커 업데이트 유/무 판별 함수
-      const updateMarkers = (map: naver.maps.Map, markers: naver.maps.Marker[]) => {
-        const mapBounds: any = map.getBounds();
-
-        for (let i = 0; i < markers.length; i++) {
-          const position = markers[i].getPosition();
-
-          if (mapBounds.hasLatLng(position)) {
-            showMarker(map, markers[i]);
-          } else {
-            hideMarker(markers[i]);
-          }
-        }
-      };
-
       // 지도 줌 인/아웃 시 마커 업데이트 이벤트 핸들러
       naver.maps.Event.addListener(mapRef.current, "zoom_changed", () => {
         if (mapRef.current !== null) {
-          updateMarkers(mapRef.current, markers);
+          checkForMarkersRendering(mapRef.current, markers);
         }
       });
       // 지도 드래그 시 마커 업데이트 이벤트 핸들러
       naver.maps.Event.addListener(mapRef.current, "dragend", () => {
         if (mapRef.current !== null) {
-          updateMarkers(mapRef.current, markers);
+          checkForMarkersRendering(mapRef.current, markers);
         }
       });
     }

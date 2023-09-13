@@ -1,5 +1,4 @@
-// 현재 내 위치와의 거리를 계산 해주는 함수
-export const getDistance = (
+export const distanceCalculation = (
   myLat: number,
   myLng: number,
   dataLat: number,
