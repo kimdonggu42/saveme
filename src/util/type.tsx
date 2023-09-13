@@ -16,3 +16,7 @@ export interface ToiletData {
   Y_WGS84: number;
   DISTANCE: number;
 }
+
+export interface LocationLoadingProps {
+  locationLoading: boolean;
+}

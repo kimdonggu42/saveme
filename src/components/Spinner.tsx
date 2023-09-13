@@ -1,10 +1,8 @@
 import styled from "styled-components";
 import MainIcon from "../assets/images/mainIcon.png";
-import { useGeolocation } from "../hooks/useGeolocation";
+import { LocationLoadingProps } from "../util/type";
 
-export default function Spinner() {
-  const { locationLoading } = useGeolocation();
-
+export default function Spinner({ locationLoading }: LocationLoadingProps) {
   return (
     <LoadingContainer>
       <MainIconImg src={MainIcon} alt='loading' />

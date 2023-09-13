@@ -13,7 +13,7 @@ import { getDistance } from "../util/helperFunc";
 export default function MainMap() {
   const mapRef = useRef<naver.maps.Map | null>(null);
 
-  const { currentMyLocation, getCurPosition } = useGeolocation();
+  const { currentMyLocation, locationLoading, getCurPosition } = useGeolocation();
   const { toiletData, dataLoading } = useGetData();
 
   const sortedToiletData = toiletData
@@ -32,7 +32,6 @@ export default function MainMap() {
   // 현재 내 위치를 중심으로 하는 지도 생성 및 내 위치 마커 표시
   useEffect(() => {
     if (currentMyLocation.lat !== 0 && currentMyLocation.lng !== 0) {
-      // 현재 내 위치를 중심으로 하는 지도 생성
       mapRef.current = new naver.maps.Map("map", {
         center: new naver.maps.LatLng(currentMyLocation.lat, currentMyLocation.lng),
         zoom: 15,
@@ -46,7 +45,6 @@ export default function MainMap() {
         mapDataControl: false,
       });
 
-      // 현재 내 위치 마커 표시
       new naver.maps.Marker({
         position: new naver.maps.LatLng(currentMyLocation.lat, currentMyLocation.lng),
         map: mapRef.current,
@@ -57,7 +55,6 @@ export default function MainMap() {
         },
         zIndex: 999,
       });
-      // setIsMapLoading(false);
     }
   }, [currentMyLocation]);
 
@@ -202,7 +199,7 @@ export default function MainMap() {
 
   return (
     <>
-      {dataLoading && <Spinner />}
+      {(locationLoading || dataLoading) && <Spinner locationLoading={locationLoading} />}
       <MapContainer id='map'>
         <Link to='/'>
           <MainLogo>
