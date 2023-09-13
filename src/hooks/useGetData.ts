@@ -8,34 +8,35 @@ export const useGetData = () => {
   const [toiletData, setToiletData] = useState<ToiletData[]>([]);
   const [dataLoading, setDataLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        let start = 1;
-        let end = MAX_ROWS;
-        const allRowData = [];
+  const getData = async () => {
+    try {
+      let start = 1;
+      let end = MAX_ROWS;
+      const allRowData = [];
 
-        while (true) {
-          const res = await PROXY_API.get(`${start}/${end}`);
-          const rowData = res.data.SearchPublicToiletPOIService.row;
-          const totalCount = res.data.SearchPublicToiletPOIService.list_total_count;
+      while (true) {
+        const res = await PROXY_API.get(`${start}/${end}`);
+        const rowData = res.data.SearchPublicToiletPOIService.row;
+        const totalCount = res.data.SearchPublicToiletPOIService.list_total_count;
 
-          allRowData.push(...rowData);
+        allRowData.push(...rowData);
 
-          if (totalCount <= end) {
-            break;
-          }
-
-          start = end + 1;
-          end = Math.min(end + MAX_ROWS, totalCount);
+        if (totalCount <= end) {
+          break;
         }
-        setToiletData(allRowData);
-        setDataLoading(false);
-      } catch (err) {
-        console.error(err);
+
+        start = end + 1;
+        end = Math.min(end + MAX_ROWS, totalCount);
       }
-    };
-    fetchData();
+      setToiletData(allRowData);
+      setDataLoading(false);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    getData();
   }, []);
 
   return { toiletData, dataLoading };
