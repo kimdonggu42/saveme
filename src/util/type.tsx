@@ -1,11 +1,6 @@
-export interface CurrentMyLocation {
+export interface CurrentUserLocation {
   lat: number;
   lng: number;
-}
-
-export interface CurrentMyLocationProps {
-  userLocation: CurrentMyLocation;
-  setUserLocation: React.Dispatch<React.SetStateAction<CurrentMyLocation>>;
 }
 
 export interface ToiletData {

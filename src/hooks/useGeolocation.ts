@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
+import { CurrentUserLocation } from "../util/type";
 
 export const useGeolocation = () => {
-  const [currentMyLocation, setCurrentMyLocation] = useState({ lat: 0, lng: 0 });
-  const [locationLoading, setLocationLoading] = useState(true);
+  const [currentMyLocation, setCurrentMyLocation] = useState<CurrentUserLocation>({
+    lat: 0,
+    lng: 0,
+  });
+  const [locationLoading, setLocationLoading] = useState<boolean>(true);
 
   const getCurPosition = () => {
     const success = (location: { coords: { latitude: number; longitude: number } }) => {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { PROXY_API } from "../util/api";
-import { ToiletData } from "../util/interface";
+import { ToiletData } from "../util/type";
 
 const MAX_ROWS = 1000;
 
