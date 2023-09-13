@@ -1,15 +1,14 @@
 import styled from "styled-components";
 import { useEffect, useRef } from "react";
-import { CurrentMyLocation, ToiletData } from "../util/interface";
 import { IoMdLocate } from "react-icons/io";
-import { useRecoilState, useSetRecoilState } from "recoil";
-import { currentMyLocationAtom, isDataLoadingAtom, isMapLoadingAtom } from "../recoil/atom";
 import { Link } from "react-router-dom";
-import useFetch from "../hooks/useFetch";
+import { useGetData } from "../hooks/useGetData";
 import Spinner from "../components/Spinner";
 import myMarker from "../assets/images/myMarker.png";
 import closetToilet from "../assets/images/closetToilet.png";
 import aroundToilet from "../assets/images/aroundToilet.png";
+import { useGeolocation } from "../hooks/useGeolocation";
+import { getDistance } from "../util/helperFunc";
 
 const MapContainer = styled.div`
   width: 100vw;
@@ -102,25 +101,23 @@ const RePositionButton = styled.button`
 `;
 
 function MainMap() {
-  const [currentMyLocation, setCurrentMyLocation] =
-    useRecoilState<CurrentMyLocation>(currentMyLocationAtom);
-  const [isLoading, setIsLoading] = useRecoilState<boolean>(isDataLoadingAtom);
-
-  const setIsMapLoading = useSetRecoilState<boolean>(isMapLoadingAtom);
-
   const mapRef = useRef<naver.maps.Map | null>(null);
-  // 전체 화장실 데이터
-  const mergeToiletData: ToiletData[] = useFetch(
-    `/1/1000`,
-    `/1001/2000/`,
-    `/2001/3000/`,
-    `/3001/4000/`,
-    `/4001/5000/`
-  );
-  // 내 현재 위치에서 거리가 가까운 순으로 정렬한 데이터
-  const sortedToiletData: ToiletData[] = [...mergeToiletData].sort(
-    (a, b) => a.DISTANCE - b.DISTANCE
-  );
+
+  const { currentMyLocation, getCurPosition } = useGeolocation();
+  const { toiletData, dataLoading } = useGetData();
+
+  const sortedToiletData = toiletData
+    .map((item) => {
+      const distance = getDistance(
+        currentMyLocation.lat,
+        currentMyLocation.lng,
+        item.Y_WGS84,
+        item.X_WGS84,
+        "K"
+      );
+      return { ...item, DISTANCE: distance };
+    })
+    .sort((a, b) => a.DISTANCE - b.DISTANCE);
 
   // 현재 내 위치를 중심으로 하는 지도 생성 및 내 위치 마커 표시
   useEffect(() => {
@@ -150,9 +147,9 @@ function MainMap() {
         },
         zIndex: 999,
       });
-      setIsMapLoading(false);
+      // setIsMapLoading(false);
     }
-  }, [currentMyLocation, setIsMapLoading]);
+  }, [currentMyLocation]);
 
   // 나와 제일 가까운 화장실과 나머지 인접한 100개의 화장실 마커 표시 및 정보창 생성
   useEffect(() => {
@@ -293,29 +290,9 @@ function MainMap() {
     }
   }, [sortedToiletData, currentMyLocation]);
 
-  // 현재 내 위치로 이동하는 이벤트 핸들러
-  const rePositionMyLocation = () => {
-    setIsMapLoading(true);
-    const success = (location: { coords: { latitude: number; longitude: number } }) => {
-      setCurrentMyLocation({
-        lat: location.coords.latitude,
-        lng: location.coords.longitude,
-        // lat: 37.5666103,
-        // lng: 126.9783882,
-      });
-    };
-    const error = () => {
-      setCurrentMyLocation({ lat: 37.5666103, lng: 126.9783882 });
-    };
-    if (navigator.geolocation) {
-      setIsLoading(true);
-      navigator.geolocation.getCurrentPosition(success, error);
-    }
-  };
-
   return (
     <>
-      {isLoading && <Spinner />}
+      {dataLoading && <Spinner />}
       <MapContainer id='map'>
         <Link to='/'>
           <MainLogo>
@@ -324,7 +301,7 @@ function MainMap() {
             </div>
           </MainLogo>
         </Link>
-        <RePositionButton onClick={rePositionMyLocation}>
+        <RePositionButton onClick={getCurPosition}>
           <IoMdLocate className='locateIcon' size={21} />
           <p>현재위치</p>
         </RePositionButton>

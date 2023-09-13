@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import MainIcon from "../assets/images/mainIcon.png";
-import { useRecoilValue } from "recoil";
-import { isMapLoadingAtom } from "../recoil/atom";
+import { useGeolocation } from "../hooks/useGeolocation";
 
 const LoadingContainer = styled.div`
   width: 100vw;
@@ -51,12 +50,12 @@ const InfoText = styled.div`
 `;
 
 function Spinner() {
-  const isMapLoading = useRecoilValue<boolean>(isMapLoadingAtom);
+  const { locationLoading } = useGeolocation();
 
   return (
     <LoadingContainer>
       <MainIconImg src={MainIcon} alt='loading' />
-      {isMapLoading ? (
+      {locationLoading ? (
         <InfoText>현재 내 위치를 찾고 있어요</InfoText>
       ) : (
         <InfoText>
