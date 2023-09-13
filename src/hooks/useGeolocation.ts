@@ -6,9 +6,10 @@ export const useGeolocation = () => {
     lat: 0,
     lng: 0,
   });
-  const [locationLoading, setLocationLoading] = useState<boolean>(true);
+  const [locationLoading, setLocationLoading] = useState<boolean>(false);
 
   const getCurPosition = () => {
+    setLocationLoading(true);
     const success = (location: { coords: { latitude: number; longitude: number } }) => {
       setCurrentMyLocation({
         lat: location.coords.latitude,

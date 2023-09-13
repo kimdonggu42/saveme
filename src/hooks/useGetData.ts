@@ -6,9 +6,10 @@ const MAX_ROWS = 1000;
 
 export const useGetData = () => {
   const [toiletData, setToiletData] = useState<ToiletData[]>([]);
-  const [dataLoading, setDataLoading] = useState<boolean>(true);
+  const [dataLoading, setDataLoading] = useState<boolean>(false);
 
   const getData = async () => {
+    setDataLoading(true);
     try {
       let start = 1;
       let end = MAX_ROWS;
