@@ -2,6 +2,24 @@ import styled from "styled-components";
 import MainIcon from "../assets/images/mainIcon.png";
 import { useGeolocation } from "../hooks/useGeolocation";
 
+export default function Spinner() {
+  const { locationLoading } = useGeolocation();
+
+  return (
+    <LoadingContainer>
+      <MainIconImg src={MainIcon} alt='loading' />
+      {locationLoading ? (
+        <InfoText>현재 내 위치를 찾고 있어요</InfoText>
+      ) : (
+        <InfoText>
+          <div>내 주변의 화장실을 찾고 있어요</div>
+          <div>잠시만 기다려주세요</div>
+        </InfoText>
+      )}
+    </LoadingContainer>
+  );
+}
+
 const LoadingContainer = styled.div`
   width: 100vw;
   height: 100vh;
@@ -48,23 +66,3 @@ const InfoText = styled.div`
     font-size: 20px;
   }
 `;
-
-function Spinner() {
-  const { locationLoading } = useGeolocation();
-
-  return (
-    <LoadingContainer>
-      <MainIconImg src={MainIcon} alt='loading' />
-      {locationLoading ? (
-        <InfoText>현재 내 위치를 찾고 있어요</InfoText>
-      ) : (
-        <InfoText>
-          <div>내 주변의 화장실을 찾고 있어요</div>
-          <div>잠시만 기다려주세요</div>
-        </InfoText>
-      )}
-    </LoadingContainer>
-  );
-}
-
-export default Spinner;

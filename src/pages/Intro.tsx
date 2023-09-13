@@ -2,6 +2,33 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import mainImg from "../assets/images/mainImg.png";
 
+export default function Intro() {
+  return (
+    <IntroContainer>
+      <MainWrapper>
+        <MainTitle>
+          save<span>me</span>
+        </MainTitle>
+        <SubTitle>
+          별도의 검색 필요없이 바로
+          <br />내 주변의 화장실을 찾아보세요.
+        </SubTitle>
+        <Link to='Map'>
+          <OuttetMoveMapBtn>
+            <p className='btnText'>내 주변의 화장실 찾기</p>
+            <InnerMoveMapBtn>
+              <p className='btnText2'>GO!</p>
+            </InnerMoveMapBtn>
+          </OuttetMoveMapBtn>
+        </Link>
+      </MainWrapper>
+      <PhoneImgWrapper className='test'>
+        <img src={mainImg} alt='메인 페이지 모바일 이미지' />
+      </PhoneImgWrapper>
+    </IntroContainer>
+  );
+}
+
 const IntroContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -101,32 +128,3 @@ const PhoneImgWrapper = styled.div`
     display: none;
   }
 `;
-
-function Intro() {
-  return (
-    <IntroContainer>
-      <MainWrapper>
-        <MainTitle>
-          save<span>me</span>
-        </MainTitle>
-        <SubTitle>
-          별도의 검색 필요없이 바로
-          <br />내 주변의 화장실을 찾아보세요.
-        </SubTitle>
-        <Link to='Map'>
-          <OuttetMoveMapBtn>
-            <p className='btnText'>내 주변의 화장실 찾기</p>
-            <InnerMoveMapBtn>
-              <p className='btnText2'>GO!</p>
-            </InnerMoveMapBtn>
-          </OuttetMoveMapBtn>
-        </Link>
-      </MainWrapper>
-      <PhoneImgWrapper className='test'>
-        <img src={mainImg} alt='메인 페이지 모바일 이미지' />
-      </PhoneImgWrapper>
-    </IntroContainer>
-  );
-}
-
-export default Intro;

@@ -10,97 +10,7 @@ import aroundToilet from "../assets/images/aroundToilet.png";
 import { useGeolocation } from "../hooks/useGeolocation";
 import { getDistance } from "../util/helperFunc";
 
-const MapContainer = styled.div`
-  width: 100vw;
-  height: 100vh;
-  position: relative;
-
-  &:focus {
-    outline: none;
-  }
-`;
-
-const MainLogo = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  top: 10px;
-  left: 10px;
-  width: 100px;
-  height: 35px;
-  outline: none;
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
-  color: white;
-  background-color: #2e87ec;
-  position: absolute;
-  z-index: 999;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px 0px;
-
-  > .title {
-    margin-bottom: 3px;
-    font-size: 18px;
-
-    > span {
-      font-weight: 600;
-    }
-  }
-`;
-
-const RePositionButton = styled.button`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 40px;
-  height: 35px;
-  z-index: 999;
-  left: 110px;
-  top: 10px;
-  border: none;
-  outline: 0.5px solid #cecdc7;
-  border-top-right-radius: 4px;
-  border-bottom-right-radius: 4px;
-  position: absolute;
-  background-color: white;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px 0px;
-  cursor: pointer;
-
-  > p {
-    display: none;
-    background-color: #222222;
-    padding: 6px;
-    text-align: center;
-    width: 60px;
-    position: absolute;
-    border-radius: 4px;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px 0px;
-    font-size: 12px;
-    color: white;
-    font-weight: 500;
-
-    &::before {
-      position: absolute;
-      content: "";
-      border: 5px solid transparent;
-      border-bottom-color: #222222;
-      top: -10px;
-      left: 25px;
-    }
-  }
-
-  &:hover {
-    .locateIcon {
-      opacity: 0.5;
-    }
-  }
-
-  &:hover p {
-    top: 45px;
-    display: block;
-  }
-`;
-
-function MainMap() {
+export default function MainMap() {
   const mapRef = useRef<naver.maps.Map | null>(null);
 
   const { currentMyLocation, getCurPosition } = useGeolocation();
@@ -310,4 +220,92 @@ function MainMap() {
   );
 }
 
-export default MainMap;
+const MapContainer = styled.div`
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+
+  &:focus {
+    outline: none;
+  }
+`;
+
+const MainLogo = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 10px;
+  left: 10px;
+  width: 100px;
+  height: 35px;
+  outline: none;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  color: white;
+  background-color: #2e87ec;
+  position: absolute;
+  z-index: 999;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px 0px;
+
+  > .title {
+    margin-bottom: 3px;
+    font-size: 18px;
+
+    > span {
+      font-weight: 600;
+    }
+  }
+`;
+
+const RePositionButton = styled.button`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 35px;
+  z-index: 999;
+  left: 110px;
+  top: 10px;
+  border: none;
+  outline: 0.5px solid #cecdc7;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  position: absolute;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px 0px;
+  cursor: pointer;
+
+  > p {
+    display: none;
+    background-color: #222222;
+    padding: 6px;
+    text-align: center;
+    width: 60px;
+    position: absolute;
+    border-radius: 4px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px 0px;
+    font-size: 12px;
+    color: white;
+    font-weight: 500;
+
+    &::before {
+      position: absolute;
+      content: "";
+      border: 5px solid transparent;
+      border-bottom-color: #222222;
+      top: -10px;
+      left: 25px;
+    }
+  }
+
+  &:hover {
+    .locateIcon {
+      opacity: 0.5;
+    }
+  }
+
+  &:hover p {
+    top: 45px;
+    display: block;
+  }
+`;
