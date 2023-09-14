@@ -10,7 +10,6 @@ import aroundToilet from "../assets/images/aroundToilet.png";
 import { useGeolocation } from "../hooks/useGeolocation";
 import { distanceCalculation } from "../util/helperFunc/distanceCalculation";
 import { checkForMarkersRendering } from "../util/helperFunc/checkForMarkersRendering";
-import { useState } from "react";
 
 export default function MainMap() {
   const mapRef = useRef<naver.maps.Map | null>(null);
@@ -39,7 +38,7 @@ export default function MainMap() {
       mapRef.current = new naver.maps.Map("map", {
         center: new naver.maps.LatLng(currentMyLocation.lat, currentMyLocation.lng),
         zoom: 15,
-        minZoom: 15,
+        minZoom: 12,
         zoomControl: true,
         mapTypeControl: true,
         zoomControlOptions: {
