@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { PROXY_API } from "../util/api";
 import { ToiletData } from "../util/type";
+import { AxiosResponse } from "axios";
 
 const MAX_ROWS = 1000;
 
@@ -11,28 +12,35 @@ export const useGetData = () => {
   const getData = async () => {
     setDataLoading(true);
     try {
-      let start = 1;
-      let end = MAX_ROWS;
-      const allRowData = [];
+      const totalCount = await getTotalCount();
+      const promises: Promise<AxiosResponse>[] = [];
 
-      while (true) {
-        const res = await PROXY_API.get(`${start}/${end}`);
-        const rowData = res.data.SearchPublicToiletPOIService.row;
-        const totalCount = res.data.SearchPublicToiletPOIService.list_total_count;
-
-        allRowData.push(...rowData);
-
-        if (totalCount <= end) {
-          break;
-        }
-
-        start = end + 1;
-        end = Math.min(end + MAX_ROWS, totalCount);
+      for (let start = 1; start <= totalCount; start += MAX_ROWS) {
+        const end = Math.min(start + MAX_ROWS - 1, totalCount);
+        promises.push(PROXY_API.get(`${start}/${end}`));
       }
+
+      const res = await Promise.all(promises);
+
+      const allRowData = res.reduce((acc, cur) => {
+        const rowData = cur.data.SearchPublicToiletPOIService.row;
+        return acc.concat(rowData);
+      }, []);
+
       setToiletData(allRowData);
       setDataLoading(false);
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const getTotalCount = async () => {
+    try {
+      const res = await PROXY_API.get("1/1");
+      return res.data.SearchPublicToiletPOIService.list_total_count;
+    } catch (err) {
+      console.error(err);
+      return 0;
     }
   };
 
