@@ -18,5 +18,5 @@ export interface ToiletData {
 }
 
 export interface LocationLoadingProps {
-  locationLoading: boolean;
+  locationLoading?: boolean;
 }
