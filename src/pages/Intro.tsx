@@ -1,4 +1,3 @@
-import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import mainImg from "../assets/images/mainImg.png";
 
