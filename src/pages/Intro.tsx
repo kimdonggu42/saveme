@@ -1,8 +1,14 @@
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import mainImg from "../assets/images/mainImg.png";
 
 export default function Intro() {
+  const navigate = useNavigate();
+
+  const moveMapPage = () => {
+    navigate("/map");
+  };
+
   return (
     <IntroContainer>
       <MainWrapper>
@@ -13,14 +19,12 @@ export default function Intro() {
           별도의 검색 필요없이 바로
           <br />내 주변의 화장실을 찾아보세요.
         </SubTitle>
-        <Link to='Map'>
-          <OuttetMoveMapBtn>
-            <p className='btnText'>내 주변의 화장실 찾기</p>
-            <InnerMoveMapBtn>
-              <p className='btnText2'>GO!</p>
-            </InnerMoveMapBtn>
-          </OuttetMoveMapBtn>
-        </Link>
+        <OuttetMoveMapBtn onClick={moveMapPage}>
+          <p className='btnText'>내 주변의 화장실 찾기</p>
+          <InnerMoveMapBtn>
+            <p className='btnText2'>GO!</p>
+          </InnerMoveMapBtn>
+        </OuttetMoveMapBtn>
       </MainWrapper>
       <PhoneImgWrapper className='test'>
         <img src={mainImg} alt='메인 페이지 모바일 이미지' />
@@ -33,6 +37,7 @@ const IntroContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  column-gap: 70px;
   height: 100vh;
   background-color: #2e87ec;
 `;
@@ -41,26 +46,36 @@ const MainWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 400px;
-  padding: 20px;
-  margin-right: 20px;
+  row-gap: 20px;
+`;
 
-  @media screen and (max-width: 900px) {
-    margin: 0;
+const MainTitle = styled.div`
+  color: white;
+  font-size: 100px;
+  line-height: 1;
+
+  > span {
+    font-weight: 600;
   }
+`;
+
+const SubTitle = styled.div`
+  margin-right: 120px;
+  color: white;
+  font-size: 17px;
 `;
 
 const InnerMoveMapBtn = styled.div`
   position: relative;
   width: 200px;
   height: 50px;
-  margin-top: -37px;
+  margin-top: -39px;
   background: #55b290;
   left: -250px;
   transition: 0.3s;
 
   > .btnText2 {
-    padding-top: 13px;
+    padding-top: 11px;
     font-size: 19px;
     font-weight: 700;
     margin-right: -130px;
@@ -79,7 +94,7 @@ const OuttetMoveMapBtn = styled.button`
   cursor: pointer;
 
   > .btnText {
-    margin-top: 13px;
+    margin-top: 10px;
     font-size: 19px;
     font-weight: 700;
     color: #1e2236;
@@ -98,26 +113,9 @@ const OuttetMoveMapBtn = styled.button`
   }
 `;
 
-const MainTitle = styled.div`
-  color: white;
-  font-size: 100px;
-
-  > span {
-    font-weight: 600;
-  }
-`;
-
-const SubTitle = styled.div`
-  margin: 15px 0 30px 0;
-  color: white;
-  font-size: 17px;
-  margin-right: 120px;
-`;
-
 const PhoneImgWrapper = styled.div`
   display: flex;
   justify-content: center;
-  margin-left: 20px;
 
   > img {
     width: 400px;
