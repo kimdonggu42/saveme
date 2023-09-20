@@ -1,7 +1,6 @@
-import styled from "styled-components";
 import { useEffect, useRef } from "react";
 import { IoMdLocate } from "react-icons/io";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useGetData } from "../hooks/useGetData";
 import Spinner from "../components/Spinner";
 import myMarker from "../assets/images/myMarker.png";
@@ -13,6 +12,7 @@ import { checkForMarkersRendering } from "../util/helperFunc/checkForMarkersRend
 
 export default function MainMap() {
   const mapRef = useRef<naver.maps.Map | null>(null);
+  const navigate = useNavigate();
 
   const { currentMyLocation, locationLoading, getCurPosition } = useGeolocation();
   const { toiletData, dataLoading } = useGetData();
@@ -32,6 +32,10 @@ export default function MainMap() {
     .filter((_, index) => {
       return index < 100;
     });
+
+  const moveIntroPage = () => {
+    navigate("/");
+  };
 
   useEffect(() => {
     if (currentMyLocation.lat !== 0 && currentMyLocation.lng !== 0) {
@@ -142,109 +146,25 @@ export default function MainMap() {
   return (
     <>
       {(locationLoading || dataLoading) && <Spinner locationLoading={locationLoading} />}
-      <MapContainer id='map'>
-        <Link to='/'>
-          <MainLogo>
-            <div className='title'>
-              save<span>me</span>
-            </div>
-          </MainLogo>
-        </Link>
-        <RePositionButton onClick={getCurPosition}>
+      <div id='map' className='w-screen h-screen relative focus:outline-none'>
+        <div
+          onClick={moveIntroPage}
+          className='flex justify-center items-center absolute top-[10px] left-[10px] w-[100px] h-[35px] outline-none rounded-t rounded-l bg-[#2e87ec] shadow-md z-10 cursor-pointer'
+        >
+          <div className='text-lg  text-white'>
+            save<span className='font-semibold'>me</span>
+          </div>
+        </div>
+        <button
+          onClick={getCurPosition}
+          className='flex justify-center items-center absolute w-[40px] h-[35px] top-[10px] left-[110px] border-none outline outline-[0.5px] outline-white bg-white shadow-md z-10 [&>p]:hover:top-[45px] [&>p]:hover:block'
+        >
           <IoMdLocate className='locateIcon' size={21} />
-          <p>현재위치</p>
-        </RePositionButton>
-      </MapContainer>
+          <p className='hidden absolute p-1.5 text-center w-[60px] text-white bg-[#222222] rounded text-xs color-white shadow-md before:absolute before:top-[-10px] before:left-[25px] before:border-[5px] before:border-solid before:border-transparent before:border-[#222222]'>
+            현재위치
+          </p>
+        </button>
+      </div>
     </>
   );
 }
-
-const MapContainer = styled.div`
-  width: 100vw;
-  height: 100vh;
-  position: relative;
-
-  &:focus {
-    outline: none;
-  }
-`;
-
-const MainLogo = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  top: 10px;
-  left: 10px;
-  width: 100px;
-  height: 35px;
-  outline: none;
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
-  color: white;
-  background-color: #2e87ec;
-  position: absolute;
-  z-index: 999;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px 0px;
-
-  > .title {
-    margin-bottom: 3px;
-    font-size: 18px;
-
-    > span {
-      font-weight: 600;
-    }
-  }
-`;
-
-const RePositionButton = styled.button`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 40px;
-  height: 35px;
-  z-index: 999;
-  left: 110px;
-  top: 10px;
-  border: none;
-  outline: 0.5px solid #cecdc7;
-  border-top-right-radius: 4px;
-  border-bottom-right-radius: 4px;
-  position: absolute;
-  background-color: white;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px 0px;
-  cursor: pointer;
-
-  > p {
-    display: none;
-    background-color: #222222;
-    padding: 6px;
-    text-align: center;
-    width: 60px;
-    position: absolute;
-    border-radius: 4px;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px 0px;
-    font-size: 12px;
-    color: white;
-    font-weight: 500;
-
-    &::before {
-      position: absolute;
-      content: "";
-      border: 5px solid transparent;
-      border-bottom-color: #222222;
-      top: -10px;
-      left: 25px;
-    }
-  }
-
-  &:hover {
-    .locateIcon {
-      opacity: 0.5;
-    }
-  }
-
-  &:hover p {
-    top: 45px;
-    display: block;
-  }
-`;
