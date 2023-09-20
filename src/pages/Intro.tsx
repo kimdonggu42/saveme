@@ -31,7 +31,11 @@ export default function Intro() {
           </div>
         </button>
       </div>
-      <img src={mainImg} alt='메인 페이지 모바일 이미지' className='w-[400px] h-[540px]' />
+      <img
+        src={mainImg}
+        alt='메인 페이지 모바일 이미지'
+        className='w-[400px] h-[540px] hidden md:block'
+      />
     </div>
   );
 }
