@@ -24,7 +24,7 @@
 
 ### Developement
 
-<img src="https://img.shields.io/badge/-TypeScript-3178C6?style=for-the-badge&logo=TypeScript&logoColor=white"/> <img src="https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=Axios&logoColor=white"> <img src="https://img.shields.io/badge/REACT-61DAFB?style=for-the-badge&logo=REACT&logoColor=black"> <img src="https://img.shields.io/badge/REACT ROUTER-CA4245?style=for-the-badge&logo=REACT ROUTER&logoColor=white"> <img src="https://img.shields.io/badge/Recoil-0C0C0E?style=for-the-badge&logo=Recoil&logoColor=white"> <img src="https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=Firebase&logoColor=white"> <img src="https://img.shields.io/badge/Naver Maps API-03C75A?style=for-the-badge&logo=Naver&logoColor=white">
+<img src="https://img.shields.io/badge/-TypeScript-3178C6?style=for-the-badge&logo=TypeScript&logoColor=white"/> <img src="https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=Axios&logoColor=white"> <img src="https://img.shields.io/badge/REACT-61DAFB?style=for-the-badge&logo=REACT&logoColor=black"> <img src="https://img.shields.io/badge/REACT ROUTER-CA4245?style=for-the-badge&logo=REACT ROUTER&logoColor=white"> <img src="https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=Firebase&logoColor=white"> <img src="https://img.shields.io/badge/Naver Maps API-03C75A?style=for-the-badge&logo=Naver&logoColor=white">
 
 ### Styling
 
