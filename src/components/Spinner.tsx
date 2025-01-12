@@ -1,20 +1,22 @@
-import MainIcon from "../assets/images/mainIcon.png";
-import { LocationLoadingProps } from "../util/type";
+import Image from 'next/image';
+import { LocationLoadingProps } from '@/util/type';
 
 export default function Spinner({ locationLoading }: LocationLoadingProps) {
   return (
-    <div className='flex flex-col justify-center items-center w-screen h-screen bg-white'>
-      <img
-        src={MainIcon}
+    <div className='flex h-screen w-screen flex-col items-center justify-center bg-white'>
+      <Image
+        src='/mainIcon.png'
         alt='spinner'
-        className='w-[150px] h-[150px] mb-[30px] animate-shake md:w-[250px] md:h-[250px]'
+        width='150'
+        height='150'
+        className='mb-[30px] animate-shake md:h-[250px] md:w-[250px]'
       />
       {locationLoading ? (
-        <div className='text-[20px] font-semibold mt-[10px] md:text-[25px]'>
+        <div className='mt-[10px] text-[20px] font-semibold md:text-[25px]'>
           현재 내 위치를 찾고 있어요
         </div>
       ) : (
-        <div className='text-[20px] font-semibold mt-[10px] md:text-[25px]'>
+        <div className='mt-[10px] text-[20px] font-semibold md:text-[25px]'>
           <div className='text-center'>
             내 주변의 화장실을 찾고 있어요
             <br />

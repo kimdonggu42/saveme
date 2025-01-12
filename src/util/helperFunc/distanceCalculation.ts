@@ -3,7 +3,7 @@ export const distanceCalculation = (
   myLng: number,
   dataLat: number,
   dataLng: number,
-  unit: string
+  unit: string,
 ) => {
   if (myLat === dataLat && myLng === dataLng) {
     return 0;
@@ -21,10 +21,10 @@ export const distanceCalculation = (
     dist = Math.acos(dist);
     dist = (dist * 180) / Math.PI;
     dist = dist * 60 * 1.1515;
-    if (unit === "K") {
+    if (unit === 'K') {
       dist = dist * 1.609344;
     }
-    if (unit === "N") {
+    if (unit === 'N') {
       dist = dist * 0.8684;
     }
     return dist;
