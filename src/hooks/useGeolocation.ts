@@ -1,5 +1,7 @@
-import { useState, useEffect } from "react";
-import { CurrentUserLocation } from "../util/type";
+'use client';
+
+import { useState, useEffect } from 'react';
+import { CurrentUserLocation } from '@/util/type';
 
 export const useGeolocation = () => {
   const [currentMyLocation, setCurrentMyLocation] = useState<CurrentUserLocation>({
