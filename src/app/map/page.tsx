@@ -1,30 +1,25 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import { IoMdLocate } from 'react-icons/io';
-import { useGetData } from '@/hooks/useGetData';
+import Link from 'next/link';
+import { useEffect, useRef } from 'react';
 import Spinner from '@/components/Spinner';
+import { useGetToilets } from '@/hooks/useGetToilets';
 import { useGeolocation } from '@/hooks/useGeolocation';
-import { distanceCalculation } from '@/util/helperFunc/distanceCalculation';
-import { checkForMarkersRendering } from '@/util/helperFunc/checkForMarkersRendering';
+import { distanceCalculation } from '@/util/helpers/distanceCalculation';
+import { checkForMarkersRendering } from '@/util/helpers/checkForMarkersRendering';
 
 export default function MainMap() {
   const mapRef = useRef<naver.maps.Map | null>(null);
-  const router = useRouter();
 
-  const { currentMyLocation, locationLoading, getCurPosition } = useGeolocation();
-  const { toiletData, dataLoading } = useGetData();
+  const { currentMyCoordinates, isCoordinatesLoading, getCurPosition } = useGeolocation();
+  const { toilets, isToiletsLoading } = useGetToilets();
 
-  const filterdToiletData = toiletData
+  const { lat, lng } = currentMyCoordinates;
+
+  const filterdToilets = toilets
     .map((item) => {
-      const distance = distanceCalculation(
-        currentMyLocation.lat,
-        currentMyLocation.lng,
-        item.Y_WGS84,
-        item.X_WGS84,
-        'K',
-      );
+      const distance = distanceCalculation(lat, lng, item.Y_WGS84, item.X_WGS84, 'K');
       return { ...item, DISTANCE: distance };
     })
     .sort((a, b) => a.DISTANCE - b.DISTANCE)
@@ -32,61 +27,46 @@ export default function MainMap() {
       return index < 100;
     });
 
-  const moveIntroPage = () => {
-    router.push('/');
-  };
+  useEffect(() => {
+    if (lat !== 0 && lng !== 0) {
+      mapRef.current = new naver.maps.Map('map', {
+        center: new naver.maps.LatLng(lat, lng),
+        zoom: 15,
+        minZoom: 12,
+        zoomControl: true,
+        mapTypeControl: true,
+        zoomControlOptions: {
+          position: naver.maps.Position.TOP_RIGHT,
+        },
+        logoControl: false,
+        mapDataControl: false,
+      });
+
+      new naver.maps.Marker({
+        position: new naver.maps.LatLng(lat, lng),
+        map: mapRef.current,
+        icon: {
+          url: '/myMarker.png',
+          size: new naver.maps.Size(43, 43),
+          scaledSize: new naver.maps.Size(43, 43),
+        },
+      });
+    }
+  }, [currentMyCoordinates]);
 
   useEffect(() => {
-    if (typeof naver !== 'undefined' && naver.maps)
-      if (currentMyLocation.lat !== 0 && currentMyLocation.lng !== 0) {
-        mapRef.current = new naver.maps.Map('map', {
-          center: new naver.maps.LatLng(currentMyLocation.lat, currentMyLocation.lng),
-          zoom: 15,
-          minZoom: 12,
-          zoomControl: true,
-          mapTypeControl: true,
-          zoomControlOptions: {
-            position: naver.maps.Position.TOP_RIGHT,
-          },
-          logoControl: false,
-          mapDataControl: false,
-        });
-
-        new naver.maps.Marker({
-          position: new naver.maps.LatLng(currentMyLocation.lat, currentMyLocation.lng),
-          map: mapRef.current,
-          icon: {
-            url: '/myMarker.png',
-            size: new naver.maps.Size(43, 43),
-            scaledSize: new naver.maps.Size(43, 43),
-          },
-        });
-      }
-  }, [currentMyLocation]);
-
-  useEffect(() => {
-    if (
-      currentMyLocation.lat !== 0 &&
-      currentMyLocation.lng !== 0 &&
-      filterdToiletData.length !== 0 &&
-      mapRef.current !== null
-    ) {
+    if (lat !== 0 && lng !== 0 && filterdToilets.length !== 0 && mapRef.current !== null) {
       const markers: naver.maps.Marker[] = [];
       const infoWindows: naver.maps.InfoWindow[] = [];
 
-      for (let i = 0; i < filterdToiletData.length; i++) {
+      for (let i = 0; i < filterdToilets.length; i++) {
         let iconUrl: any = '/aroundToilet.png';
 
-        if (i === 0) {
-          iconUrl = '/closetToilet.png';
-        }
+        if (i === 0) iconUrl = '/closetToilet.png';
 
         const marker = new naver.maps.Marker({
           map: mapRef.current,
-          position: new naver.maps.LatLng(
-            filterdToiletData[i].Y_WGS84,
-            filterdToiletData[i].X_WGS84,
-          ),
+          position: new naver.maps.LatLng(filterdToilets[i].Y_WGS84, filterdToilets[i].X_WGS84),
           icon: {
             url: iconUrl,
             size: new naver.maps.Size(35, 35),
@@ -97,8 +77,8 @@ export default function MainMap() {
         const infoWindow = new naver.maps.InfoWindow({
           content: [
             '<div style="padding: 10px; box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px 0px;">',
-            `   <div style="font-weight: bold; margin-bottom: 5px;">${filterdToiletData[i].FNAME}</div>`,
-            `   <div style="font-size: 13px;">${filterdToiletData[i].ANAME}<div>`,
+            `   <div style="font-weight: bold; margin-bottom: 5px;">${filterdToilets[i].FNAME}</div>`,
+            `   <div style="font-size: 13px;">${filterdToilets[i].ANAME}<div>`,
             '</div>',
           ].join(''),
           maxWidth: 300,
@@ -141,20 +121,19 @@ export default function MainMap() {
         }
       });
     }
-  }, [filterdToiletData, currentMyLocation]);
+  }, [filterdToilets, currentMyCoordinates]);
 
   return (
     <>
-      {(locationLoading || dataLoading) && <Spinner locationLoading={locationLoading} />}
+      {(isCoordinatesLoading || isToiletsLoading) && <Spinner isLoading={isCoordinatesLoading} />}
       <div id='map' className='relative h-screen w-screen focus:outline-none'>
-        <div
-          onClick={moveIntroPage}
-          className='absolute left-[10px] top-[10px] z-10 flex h-[35px] w-[100px] cursor-pointer items-center justify-center rounded-l rounded-t bg-[#2e87ec] shadow-md outline-none'
-        >
-          <div className='text-lg text-white'>
-            save<span className='font-semibold'>me</span>
+        <Link href='/'>
+          <div className='absolute left-[10px] top-[10px] z-10 flex h-[35px] w-[100px] cursor-pointer items-center justify-center rounded-l rounded-t bg-[#2e87ec] shadow-md outline-none'>
+            <div className='text-lg text-white'>
+              save<span className='font-semibold'>me</span>
+            </div>
           </div>
-        </div>
+        </Link>
         <button
           onClick={getCurPosition}
           className='absolute left-[110px] top-[10px] z-10 flex h-[35px] w-[40px] items-center justify-center border-none bg-white shadow-md outline outline-[0.5px] outline-white [&>p]:hover:top-[45px] [&>p]:hover:block'
