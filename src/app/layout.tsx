@@ -24,6 +24,7 @@ export default function RootLayout({
           src={`https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${process.env.NEXT_PUBLIC_NAVER_MAP_API_KEY}`}
           strategy='beforeInteractive'
         />
+        <Script src='/MarkerClustering.js' />
       </body>
     </html>
   );
