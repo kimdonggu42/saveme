@@ -1,33 +1,37 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CurrentUserLocation } from '@/util/type';
+
+interface CurrentUserLocation {
+  lat: number;
+  lng: number;
+}
+
+const DEFAULT_COORDINATES = { lat: 33.450701, lng: 126.570667 } as const;
 
 export const useGeolocation = () => {
-  const [currentMyLocation, setCurrentMyLocation] = useState<CurrentUserLocation>({
+  const [currentMyCoordinates, setCurrentMyCoordinates] = useState<CurrentUserLocation>({
     lat: 0,
     lng: 0,
   });
-  const [locationLoading, setLocationLoading] = useState<boolean>(false);
+  const [isCoordinatesLoading, setIsCoordinatesLoading] = useState<boolean>(false);
 
   const getCurPosition = () => {
-    setLocationLoading(true);
+    setIsCoordinatesLoading(true);
     const success = (location: { coords: { latitude: number; longitude: number } }) => {
-      setCurrentMyLocation({
+      setCurrentMyCoordinates({
         lat: location.coords.latitude,
         lng: location.coords.longitude,
       });
-      setLocationLoading(false);
+      setIsCoordinatesLoading(false);
     };
 
     const error = () => {
-      setCurrentMyLocation({ lat: 33.450701, lng: 126.570667 });
-      setLocationLoading(false);
+      setCurrentMyCoordinates(DEFAULT_COORDINATES);
+      setIsCoordinatesLoading(false);
     };
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(success, error);
-    }
+    if (navigator.geolocation) navigator.geolocation.getCurrentPosition(success, error);
   };
 
   useEffect(() => {
@@ -35,8 +39,8 @@ export const useGeolocation = () => {
   }, []);
 
   return {
-    currentMyLocation,
-    locationLoading,
+    currentMyCoordinates,
+    isCoordinatesLoading,
     getCurPosition,
   };
 };

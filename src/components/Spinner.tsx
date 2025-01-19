@@ -1,7 +1,10 @@
 import Image from 'next/image';
-import { LocationLoadingProps } from '@/util/type';
 
-export default function Spinner({ locationLoading }: LocationLoadingProps) {
+interface LocationLoadingProps {
+  isLoading?: boolean;
+}
+
+export default function Spinner({ isLoading }: LocationLoadingProps) {
   return (
     <div className='flex h-screen w-screen flex-col items-center justify-center bg-white'>
       <Image
@@ -11,7 +14,7 @@ export default function Spinner({ locationLoading }: LocationLoadingProps) {
         height='150'
         className='mb-[30px] animate-shake md:h-[250px] md:w-[250px]'
       />
-      {locationLoading ? (
+      {isLoading ? (
         <div className='mt-[10px] text-[20px] font-semibold md:text-[25px]'>
           현재 내 위치를 찾고 있어요
         </div>
