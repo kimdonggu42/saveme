@@ -12,6 +12,7 @@ declare const MarkerClustering: any;
 
 export default function MainMap() {
   const mapRef = useRef<naver.maps.Map | null>(null);
+  const addressInputRef = useRef<HTMLInputElement | null>(null);
 
   const { currentMyCoordinates, isCoordinatesLoading, getCurPosition } = useGeolocation();
   const { toilets, isToiletsLoading } = useGetToilets();
@@ -112,7 +113,6 @@ export default function MainMap() {
               <div style="font-size: 13px;">${toilet.ANAME}</div>
             </div>
           `,
-          maxWidth: 300,
           anchorSize: {
             width: 12,
             height: 14,
@@ -154,10 +154,76 @@ export default function MainMap() {
     }
   }, [toilets, currentMyCoordinates]);
 
+  // 주소 -> 좌표 검색 기능
+  const searchAddressToCoordinate = (address: string) => {
+    if (!address) return;
+    const naverMaps = window.naver.maps;
+
+    naverMaps.Service.geocode({ query: address }, (status, response) => {
+      if (!mapRef.current) return;
+
+      if (status === naverMaps.Service.Status.ERROR) {
+        alert('주소 검색 중 문제가 발생했습니다.');
+        return;
+      }
+
+      if (response.v2.meta.totalCount === 0) {
+        alert('검색 결과가 없습니다.');
+        return;
+      }
+
+      const item = response.v2.addresses[0];
+      const point = new naverMaps.Point(Number(item.x), Number(item.y));
+      const htmlAddresses = [];
+
+      if (item.roadAddress) htmlAddresses.push('[도로명 주소] ' + item.roadAddress);
+      if (item.jibunAddress) htmlAddresses.push('[지번 주소] ' + item.jibunAddress);
+      if (item.englishAddress) htmlAddresses.push('[영문명 주소] ' + item.englishAddress);
+
+      const geoCoderInfowindow = new naver.maps.InfoWindow({
+        content: `
+          <div style="padding: 10px; box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px 0px;">
+            <h4 style="margin-top:5px;">검색 주소: ${address}</h4><br/>
+            ${htmlAddresses.join('<br/>')}
+          </div>
+        `,
+        anchorSize: {
+          width: 12,
+          height: 14,
+        },
+        borderColor: '#cecdc7',
+      });
+
+      // 지도 중심 이동 및 InfoWindow 오픈
+      mapRef.current.setCenter(point);
+      geoCoderInfowindow.open(mapRef.current, point);
+    });
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') searchAddressToCoordinate(addressInputRef.current?.value || '');
+  };
+
+  const handleSearchClick = () => searchAddressToCoordinate(addressInputRef.current?.value || '');
+
   return (
     <>
       {(isCoordinatesLoading || isToiletsLoading) && <Spinner isLoading={isCoordinatesLoading} />}
+
       <div id='map' className='relative h-screen w-screen focus:outline-none'>
+        <div className='absolute left-2 top-14 z-10 rounded bg-white p-2 shadow-md'>
+          <input
+            ref={addressInputRef}
+            type='text'
+            placeholder='검색할 주소'
+            className='border border-gray-300 p-1'
+            onKeyDown={handleKeyDown}
+          />
+          <button onClick={handleSearchClick} className='ml-2 rounded bg-blue-500 p-1 text-white'>
+            검색
+          </button>
+        </div>
+
         <Link href='/'>
           <div className='absolute left-[10px] top-[10px] z-10 flex h-[35px] w-[100px] cursor-pointer items-center justify-center rounded-l rounded-t bg-[#2e87ec] shadow-md outline-none'>
             <div className='text-lg text-white'>
