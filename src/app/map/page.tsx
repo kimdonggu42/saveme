@@ -2,7 +2,7 @@
 
 import { IoMdLocate } from 'react-icons/io';
 import Link from 'next/link';
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Spinner from '@/components/Spinner';
 import { useGetToilets } from '@/hooks/useGetToilets';
 import { useGeolocation } from '@/hooks/useGeolocation';
@@ -10,7 +10,30 @@ import { distanceCalculation } from '@/util/helpers/distanceCalculation';
 
 declare const MarkerClustering: any;
 
+type MapType = 'NORMAL' | 'TERRAIN' | 'SATELLITE' | 'HYBRID';
+
+const mapTypeButtonList = [
+  {
+    type: 'NORMAL',
+    label: '일반지도',
+  },
+  {
+    type: 'TERRAIN',
+    label: '지형도',
+  },
+  {
+    type: 'SATELLITE',
+    label: '위성지도',
+  },
+  {
+    type: 'HYBRID',
+    label: '겹쳐보기',
+  },
+] as const;
+
 export default function MainMap() {
+  const [selectedMapType, setSelectedMapType] = useState<MapType>('NORMAL');
+
   const mapRef = useRef<naver.maps.Map | null>(null);
   const addressInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -34,13 +57,6 @@ export default function MainMap() {
         center: new naver.maps.LatLng(lat, lng),
         zoom: 18,
         minZoom: 12,
-        zoomControl: true,
-        mapTypeControl: true,
-        zoomControlOptions: {
-          position: naver.maps.Position.TOP_RIGHT,
-        },
-        logoControl: false,
-        mapDataControl: false,
       });
 
       // 현재 내 위치를 표시하는 마커
@@ -206,6 +222,13 @@ export default function MainMap() {
 
   const handleSearchClick = () => searchAddressToCoordinate(addressInputRef.current?.value || '');
 
+  const handleMapTypeChange = (mapType: MapType) => {
+    if (mapRef.current && selectedMapType !== mapType) {
+      mapRef.current.setMapTypeId(window.naver.maps.MapTypeId[mapType]);
+      setSelectedMapType(mapType);
+    }
+  };
+
   return (
     <>
       {(isCoordinatesLoading || isToiletsLoading) && <Spinner isLoading={isCoordinatesLoading} />}
@@ -224,16 +247,32 @@ export default function MainMap() {
           </button>
         </div>
 
+        <div className='absolute right-3 top-3 z-10 flex gap-x-2 text-sm'>
+          {mapTypeButtonList.map((mapTypeButton) => (
+            <button
+              key={mapTypeButton.type}
+              className={`rounded border-[1.5px] border-solid bg-white px-2 py-1 shadow-md ${selectedMapType === mapTypeButton.type ? 'border-[#2e87ec]' : 'border-gray-400'}`}
+              onClick={() => handleMapTypeChange(mapTypeButton.type)}
+            >
+              <span
+                className={`font-semibold ${selectedMapType === mapTypeButton.type ? 'text-[#2e87ec]' : 'text-gray-700'}`}
+              >
+                {mapTypeButton.label}
+              </span>
+            </button>
+          ))}
+        </div>
+
         <Link href='/'>
-          <div className='absolute left-[10px] top-[10px] z-10 flex h-[35px] w-[100px] cursor-pointer items-center justify-center rounded-l rounded-t bg-[#2e87ec] shadow-md outline-none'>
+          <div className='absolute left-3 top-3 z-10 flex h-[35px] w-[100px] cursor-pointer items-center justify-center rounded-l rounded-t bg-[#2e87ec] shadow-md outline-none'>
             <div className='text-lg text-white'>
-              save<span className='font-semibold'>me</span>
+              save <span className='font-semibold'>me</span>
             </div>
           </div>
         </Link>
         <button
           onClick={getCurPosition}
-          className='absolute left-[110px] top-[10px] z-10 flex h-[35px] w-[40px] items-center justify-center border-none bg-white shadow-md outline outline-[0.5px] outline-white [&>p]:hover:top-[45px] [&>p]:hover:block'
+          className='absolute left-[112px] top-3 z-10 flex h-[35px] w-[40px] items-center justify-center border-none bg-white shadow-md outline outline-[0.5px] outline-white [&>p]:hover:top-[45px] [&>p]:hover:block'
         >
           <IoMdLocate className='locateIcon' size={21} />
           <p className='color-white absolute hidden w-[60px] rounded bg-[#222222] p-1.5 text-center text-xs text-white shadow-md before:absolute before:left-[25px] before:top-[-10px] before:border-[5px] before:border-solid before:border-[#222222] before:border-transparent'>
