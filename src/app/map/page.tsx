@@ -1,6 +1,7 @@
 'use client';
 
 import { IoMdLocate } from 'react-icons/io';
+import { IoSearch } from 'react-icons/io5';
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 import Spinner from '@/components/Spinner';
@@ -234,24 +235,39 @@ export default function MainMap() {
       {(isCoordinatesLoading || isToiletsLoading) && <Spinner isLoading={isCoordinatesLoading} />}
 
       <div id='map' className='relative h-screen w-screen focus:outline-none'>
-        <div className='absolute left-2 top-14 z-10 rounded bg-white p-2 shadow-md'>
-          <input
-            ref={addressInputRef}
-            type='text'
-            placeholder='검색할 주소'
-            className='border border-gray-300 p-1'
-            onKeyDown={handleKeyDown}
-          />
-          <button onClick={handleSearchClick} className='ml-2 rounded bg-blue-500 p-1 text-white'>
-            검색
-          </button>
+        <div className='absolute left-3 top-3 z-10 flex h-11 items-center'>
+          <div className='z-10 flex h-11 w-[100px] items-center justify-center rounded-bl-md rounded-tl-md bg-[#2e87ec] text-xl text-white shadow-md outline-none'>
+            save <span className='font-semibold'>me</span>
+          </div>
+          {/* <button
+          onClick={getCurPosition}
+          className='absolute left-[112px] top-3 z-10 flex h-9 w-10 items-center justify-center rounded-l rounded-t border-none bg-white shadow-md outline outline-[0.5px] outline-white [&>p]:hover:top-[45px] [&>p]:hover:block'
+        >
+          <IoMdLocate className='locateIcon' size={21} />
+          <p className='color-white absolute hidden w-[60px] rounded-md bg-[#222222] p-1.5 text-center text-xs text-white shadow-md before:absolute before:left-[25px] before:top-[-10px] before:border-[5px] before:border-solid before:border-[#222222] before:border-transparent'>
+            현재위치
+          </p>
+        </button> */}
+
+          <div className='relative'>
+            <button className='absolute left-2 top-1/2 -translate-y-1/2 transform'>
+              <IoSearch className='h-7 w-7 text-[#2e87ec]' onClick={handleSearchClick} />
+            </button>
+            <input
+              className='h-11 w-80 rounded-br-md rounded-tr-md border-2 border-[#2e87ec] pl-10 font-medium shadow-md focus:outline-none'
+              ref={addressInputRef}
+              type='text'
+              placeholder='주소 검색'
+              onKeyDown={handleKeyDown}
+            />
+          </div>
         </div>
 
         <div className='absolute right-3 top-3 z-10 flex gap-x-2 text-sm'>
           {mapTypeButtonList.map((mapTypeButton) => (
             <button
               key={mapTypeButton.type}
-              className={`rounded border-[1.5px] border-solid bg-white px-2 py-1 shadow-md ${selectedMapType === mapTypeButton.type ? 'border-[#2e87ec]' : 'border-gray-400'}`}
+              className={`rounded-md border-[1.5px] border-solid bg-white px-2 py-1 shadow-md ${selectedMapType === mapTypeButton.type ? 'border-[#2e87ec]' : 'border-gray-400'}`}
               onClick={() => handleMapTypeChange(mapTypeButton.type)}
             >
               <span
@@ -262,23 +278,6 @@ export default function MainMap() {
             </button>
           ))}
         </div>
-
-        <Link href='/'>
-          <div className='absolute left-3 top-3 z-10 flex h-[35px] w-[100px] cursor-pointer items-center justify-center rounded-l rounded-t bg-[#2e87ec] shadow-md outline-none'>
-            <div className='text-lg text-white'>
-              save <span className='font-semibold'>me</span>
-            </div>
-          </div>
-        </Link>
-        <button
-          onClick={getCurPosition}
-          className='absolute left-[112px] top-3 z-10 flex h-[35px] w-[40px] items-center justify-center border-none bg-white shadow-md outline outline-[0.5px] outline-white [&>p]:hover:top-[45px] [&>p]:hover:block'
-        >
-          <IoMdLocate className='locateIcon' size={21} />
-          <p className='color-white absolute hidden w-[60px] rounded bg-[#222222] p-1.5 text-center text-xs text-white shadow-md before:absolute before:left-[25px] before:top-[-10px] before:border-[5px] before:border-solid before:border-[#222222] before:border-transparent'>
-            현재위치
-          </p>
-        </button>
       </div>
     </>
   );
