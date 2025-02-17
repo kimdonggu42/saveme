@@ -239,16 +239,6 @@ export default function MainMap() {
           <div className='z-10 flex h-11 w-[100px] items-center justify-center rounded-bl-md rounded-tl-md bg-[#2e87ec] text-xl text-white shadow-md outline-none'>
             save <span className='font-semibold'>me</span>
           </div>
-          {/* <button
-          onClick={getCurPosition}
-          className='absolute left-[112px] top-3 z-10 flex h-9 w-10 items-center justify-center rounded-l rounded-t border-none bg-white shadow-md outline outline-[0.5px] outline-white [&>p]:hover:top-[45px] [&>p]:hover:block'
-        >
-          <IoMdLocate className='locateIcon' size={21} />
-          <p className='color-white absolute hidden w-[60px] rounded-md bg-[#222222] p-1.5 text-center text-xs text-white shadow-md before:absolute before:left-[25px] before:top-[-10px] before:border-[5px] before:border-solid before:border-[#222222] before:border-transparent'>
-            현재위치
-          </p>
-        </button> */}
-
           <div className='relative'>
             <button className='absolute left-2 top-1/2 -translate-y-1/2 transform'>
               <IoSearch className='h-7 w-7 text-[#2e87ec]' onClick={handleSearchClick} />
@@ -278,6 +268,16 @@ export default function MainMap() {
             </button>
           ))}
         </div>
+
+        <button
+          onClick={getCurPosition}
+          className='group absolute right-3 top-14 z-10 flex h-9 w-10 items-center justify-center rounded-md border-[1.5px] border-gray-400 bg-white shadow-md outline-white'
+        >
+          <IoMdLocate className='locateIcon' size={21} />
+          <span className='absolute left-[-70px] top-1/2 hidden w-[60px] -translate-y-1/2 rounded-md bg-[#222222] p-1.5 text-center text-xs text-white shadow-md group-hover:block'>
+            현재위치
+          </span>
+        </button>
       </div>
     </>
   );
