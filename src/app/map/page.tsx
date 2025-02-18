@@ -60,6 +60,7 @@ export default function MainMap() {
         center: new naver.maps.LatLng(lat, lng),
         zoom: 18,
         minZoom: 12,
+        mapDataControl: false,
       });
 
       // 현재 내 위치를 표시하는 마커
@@ -237,16 +238,16 @@ export default function MainMap() {
       {(isCoordinatesLoading || isToiletsLoading) && <Spinner isLoading={isCoordinatesLoading} />}
 
       <div id='map' className='relative h-screen w-screen focus:outline-none'>
-        <div className='absolute left-3 top-3 z-10 flex h-11 items-center'>
-          <div className='z-10 flex h-11 w-[100px] items-center justify-center rounded-bl-md rounded-tl-md bg-[#2e87ec] text-xl text-white shadow-md outline-none'>
+        <div className='absolute top-3 z-10 flex h-11 w-full items-center px-3 sm:left-3 sm:p-0'>
+          <div className='z-10 hidden h-11 min-w-[100px] items-center justify-center rounded-bl-md rounded-tl-md bg-[#2e87ec] text-xl text-white shadow-md outline-none sm:flex'>
             save <span className='font-semibold'>me</span>
           </div>
-          <div className='relative'>
+          <div className='relative w-full'>
             <button className='absolute left-2 top-1/2 -translate-y-1/2 transform'>
               <IoSearch className='h-7 w-7 text-[#2e87ec]' onClick={handleSearchClick} />
             </button>
             <input
-              className='h-11 w-80 rounded-br-md rounded-tr-md border-2 border-[#2e87ec] pl-10 font-medium shadow-md focus:outline-none'
+              className='h-11 w-full rounded-md border-2 border-[#2e87ec] pl-10 font-medium shadow-md focus:outline-none sm:w-[370px] sm:rounded-l-none sm:rounded-br-md sm:rounded-tr-md'
               ref={addressInputRef}
               type='text'
               placeholder='주소 검색'
@@ -255,11 +256,13 @@ export default function MainMap() {
           </div>
         </div>
 
-        <div className='absolute right-3 top-3 z-10 flex gap-x-2'>
+        <div className='absolute right-3 top-20 z-10 flex flex-col gap-y-2 md:top-3 md:flex-row md:gap-x-2'>
           {mapTypeButtonList.map((mapTypeButton) => (
             <button
               key={mapTypeButton.type}
-              className={`w-20 rounded-md border-[1.5px] border-solid bg-white shadow-md ${selectedMapType === mapTypeButton.type ? 'border-[#2e87ec]' : 'border-gray-400'}`}
+              className={`w-16 rounded-md border-[1.5px] border-solid bg-white shadow-md sm:w-20 ${
+                selectedMapType === mapTypeButton.type ? 'border-[#2e87ec]' : 'border-gray-400'
+              }`}
               onClick={() => handleMapTypeChange(mapTypeButton.type)}
             >
               <Image
@@ -268,7 +271,9 @@ export default function MainMap() {
                 alt='map img'
               />
               <div
-                className={`py-1 text-xs font-semibold ${selectedMapType === mapTypeButton.type ? 'text-[#2e87ec]' : 'text-gray-700'}`}
+                className={`py-1 text-[10px] font-semibold sm:text-xs ${
+                  selectedMapType === mapTypeButton.type ? 'text-[#2e87ec]' : 'text-gray-700'
+                }`}
               >
                 {mapTypeButton.label}
               </div>
@@ -278,7 +283,7 @@ export default function MainMap() {
 
         <button
           onClick={getCurPosition}
-          className='group absolute right-3 top-24 z-10 flex h-9 w-10 items-center justify-center rounded-md border-[1.5px] border-gray-400 bg-white shadow-md outline-white'
+          className='group absolute right-3 top-72 z-10 flex h-9 w-10 items-center justify-center rounded-md border-[1.5px] border-gray-400 bg-white shadow-md outline-white sm:top-80 md:top-24'
         >
           <IoMdLocate className='locateIcon text-gray-700' size={21} />
           <span className='absolute left-[-70px] top-1/2 hidden w-[60px] -translate-y-1/2 rounded-md bg-[#222222] p-1.5 text-center text-xs text-white shadow-md group-hover:block'>
