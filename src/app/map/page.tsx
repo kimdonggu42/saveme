@@ -2,12 +2,15 @@
 
 import { IoMdLocate } from 'react-icons/io';
 import { IoSearch } from 'react-icons/io5';
-import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import Spinner from '@/components/Spinner';
 import { useGetToilets } from '@/hooks/useGetToilets';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { distanceCalculation } from '@/util/helpers/distanceCalculation';
+import normalMap from '../../../public/normal-map.png';
+import terrainMap from '../../../public/terrain-map.png';
+import satelliteMap from '../../../public/satellite-map.png';
 
 declare const MarkerClustering: any;
 
@@ -16,19 +19,18 @@ type MapType = 'NORMAL' | 'TERRAIN' | 'SATELLITE' | 'HYBRID';
 const mapTypeButtonList = [
   {
     type: 'NORMAL',
+    img: normalMap,
     label: '일반지도',
   },
   {
     type: 'TERRAIN',
+    img: terrainMap,
     label: '지형도',
   },
   {
-    type: 'SATELLITE',
-    label: '위성지도',
-  },
-  {
     type: 'HYBRID',
-    label: '겹쳐보기',
+    img: satelliteMap,
+    label: '위성지도',
   },
 ] as const;
 
@@ -253,27 +255,32 @@ export default function MainMap() {
           </div>
         </div>
 
-        <div className='absolute right-3 top-3 z-10 flex gap-x-2 text-sm'>
+        <div className='absolute right-3 top-3 z-10 flex gap-x-2'>
           {mapTypeButtonList.map((mapTypeButton) => (
             <button
               key={mapTypeButton.type}
-              className={`rounded-md border-[1.5px] border-solid bg-white px-2 py-1 shadow-md ${selectedMapType === mapTypeButton.type ? 'border-[#2e87ec]' : 'border-gray-400'}`}
+              className={`w-20 rounded-md border-[1.5px] border-solid bg-white shadow-md ${selectedMapType === mapTypeButton.type ? 'border-[#2e87ec]' : 'border-gray-400'}`}
               onClick={() => handleMapTypeChange(mapTypeButton.type)}
             >
-              <span
-                className={`font-semibold ${selectedMapType === mapTypeButton.type ? 'text-[#2e87ec]' : 'text-gray-700'}`}
+              <Image
+                className='rounded-tl-md rounded-tr-md'
+                src={mapTypeButton.img}
+                alt='map img'
+              />
+              <div
+                className={`py-1 text-xs font-semibold ${selectedMapType === mapTypeButton.type ? 'text-[#2e87ec]' : 'text-gray-700'}`}
               >
                 {mapTypeButton.label}
-              </span>
+              </div>
             </button>
           ))}
         </div>
 
         <button
           onClick={getCurPosition}
-          className='group absolute right-3 top-14 z-10 flex h-9 w-10 items-center justify-center rounded-md border-[1.5px] border-gray-400 bg-white shadow-md outline-white'
+          className='group absolute right-3 top-24 z-10 flex h-9 w-10 items-center justify-center rounded-md border-[1.5px] border-gray-400 bg-white shadow-md outline-white'
         >
-          <IoMdLocate className='locateIcon' size={21} />
+          <IoMdLocate className='locateIcon text-gray-700' size={21} />
           <span className='absolute left-[-70px] top-1/2 hidden w-[60px] -translate-y-1/2 rounded-md bg-[#222222] p-1.5 text-center text-xs text-white shadow-md group-hover:block'>
             현재위치
           </span>
