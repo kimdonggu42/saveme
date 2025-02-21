@@ -5,9 +5,9 @@ interface MarkerInfoWindowProps {
 
 export function MarkerInfoWindow({ FNAME, ANAME }: MarkerInfoWindowProps) {
   return (
-    <div className='p-2.5 shadow-[0_4px_16px_0_rgba(0,0,0,0.1)]'>
-      <div className='mb-1.5 font-bold'>{FNAME}</div>
-      <div className='text-[13px]'>{ANAME}</div>
+    <div className='flex flex-col gap-y-1 rounded-md border border-gray-100 bg-white p-2.5 shadow-[0_4px_16px_0_rgba(0,0,0,0.1)]'>
+      <div className='font-bold'>{FNAME}</div>
+      <div className='text-sm'>{ANAME}</div>
     </div>
   );
 }
@@ -19,8 +19,8 @@ export function GeoCoderInfowindow({
   englishAddress,
 }: any) {
   return (
-    <div className='flex flex-col gap-x-2 p-2.5 shadow-[0_4px_16px_0_rgba(0,0,0,0.1)]'>
-      <h4 className='mb-1'>검색 주소: {searchAddress}</h4>
+    <div className='flex flex-col gap-y-1 rounded-md border border-gray-100 bg-white p-2.5 shadow-[0_4px_16px_0_rgba(0,0,0,0.1)]'>
+      <h4 className='mb-1 font-bold'>검색 주소: {searchAddress}</h4>
       <p>[도로명 주소] {roadAddress}</p>
       <p>[지번 주소] {jibunAddress}</p>
       <p>[영문명 주소] {englishAddress}</p>

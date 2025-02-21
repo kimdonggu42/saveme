@@ -139,7 +139,8 @@ export default function MainMap() {
             width: 12,
             height: 14,
           },
-          borderColor: '#cecdc7',
+          backgroundColor: 'transparent',
+          borderColor: 'transparent',
         });
 
         markers.push(marker);
@@ -211,7 +212,8 @@ export default function MainMap() {
           width: 12,
           height: 14,
         },
-        borderColor: '#cecdc7',
+        backgroundColor: 'transparent',
+        borderColor: 'transparent',
       });
 
       // 지도 중심 이동 및 InfoWindow 오픈
