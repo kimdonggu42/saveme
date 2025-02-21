@@ -21,7 +21,7 @@ export default function RootLayout({
         {children}
         <Script
           type='text/javascript'
-          src={`https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${process.env.NEXT_PUBLIC_NAVER_MAP_API_KEY}`}
+          src={`https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${process.env.NEXT_PUBLIC_NAVER_MAP_API_KEY}&submodules=geocoder`}
           strategy='beforeInteractive'
         />
         <Script src='/MarkerClustering.js' />
