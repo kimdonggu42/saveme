@@ -4,6 +4,7 @@ import { IoMdLocate } from 'react-icons/io';
 import { IoSearch } from 'react-icons/io5';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import Spinner from '@/components/Spinner';
 import { useGetToilets } from '@/hooks/useGetToilets';
 import { useGeolocation } from '@/hooks/useGeolocation';
@@ -11,6 +12,15 @@ import { distanceCalculation } from '@/util/helpers/distanceCalculation';
 import normalMap from '../../../public/normal-map.png';
 import terrainMap from '../../../public/terrain-map.png';
 import satelliteMap from '../../../public/satellite-map.png';
+import {
+  MarkerInfoWindow,
+  GeoCoderInfowindow,
+  ClusterMarker10,
+  ClusterMarker100,
+  ClusterMarker200,
+  ClusterMarker500,
+  ClusterMarker1000,
+} from '@/components/Markers';
 
 declare const MarkerClustering: any;
 
@@ -68,7 +78,7 @@ export default function MainMap() {
         position: new naver.maps.LatLng(lat, lng),
         map: mapRef.current,
         icon: {
-          url: '/myMarker.png',
+          url: '/current-location-marker.png',
           size: new naver.maps.Size(43, 43),
           scaledSize: new naver.maps.Size(43, 43),
         },
@@ -81,32 +91,27 @@ export default function MainMap() {
     if (lat !== 0 && lng !== 0 && toilets.length !== 0 && mapRef.current) {
       // 마커 클러스터링에 사용할 아이콘(HTML 마커)들을 정의
       const htmlMarker1 = {
-        content:
-          '<div style="cursor:pointer;width:40px;height:40px;line-height:42px;font-size:10px;color:white;text-align:center;font-weight:bold;background:url(/cluster-marker-1.png);background-size:contain;"></div>',
+        content: renderToStaticMarkup(<ClusterMarker10 />),
         size: new naver.maps.Size(40, 40),
         anchor: new naver.maps.Point(20, 20),
       };
       const htmlMarker2 = {
-        content:
-          '<div style="cursor:pointer;width:40px;height:40px;line-height:42px;font-size:10px;color:white;text-align:center;font-weight:bold;background:url(/cluster-marker-2.png);background-size:contain;"></div>',
+        content: renderToStaticMarkup(<ClusterMarker100 />),
         size: new naver.maps.Size(40, 40),
         anchor: new naver.maps.Point(20, 20),
       };
       const htmlMarker3 = {
-        content:
-          '<div style="cursor:pointer;width:40px;height:40px;line-height:42px;font-size:10px;color:white;text-align:center;font-weight:bold;background:url(/cluster-marker-3.png);background-size:contain;"></div>',
+        content: renderToStaticMarkup(<ClusterMarker200 />),
         size: new naver.maps.Size(40, 40),
         anchor: new naver.maps.Point(20, 20),
       };
       const htmlMarker4 = {
-        content:
-          '<div style="cursor:pointer;width:40px;height:40px;line-height:42px;font-size:10px;color:white;text-align:center;font-weight:bold;background:url(/cluster-marker-4.png);background-size:contain;"></div>',
+        content: renderToStaticMarkup(<ClusterMarker500 />),
         size: new naver.maps.Size(40, 40),
         anchor: new naver.maps.Point(20, 20),
       };
       const htmlMarker5 = {
-        content:
-          '<div style="cursor:pointer;width:40px;height:40px;line-height:42px;font-size:10px;color:white;text-align:center;font-weight:bold;background:url(/cluster-marker-5.png);background-size:contain;"></div>',
+        content: renderToStaticMarkup(<ClusterMarker1000 />),
         size: new naver.maps.Size(40, 40),
         anchor: new naver.maps.Point(20, 20),
       };
@@ -127,12 +132,9 @@ export default function MainMap() {
 
         // 정보창
         const infoWindow = new naver.maps.InfoWindow({
-          content: `
-            <div style="padding: 10px; box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px 0px;">
-              <div style="font-weight: bold; margin-bottom: 5px;">${toilet.FNAME}</div>
-              <div style="font-size: 13px;">${toilet.ANAME}</div>
-            </div>
-          `,
+          content: renderToStaticMarkup(
+            <MarkerInfoWindow FNAME={toilet.FNAME} ANAME={toilet.ANAME} />,
+          ),
           anchorSize: {
             width: 12,
             height: 14,
@@ -175,11 +177,11 @@ export default function MainMap() {
   }, [toilets, currentMyCoordinates]);
 
   // 주소 -> 좌표 검색 기능
-  const searchAddressToCoordinate = (address: string) => {
-    if (!address) return;
+  const searchAddressToCoordinate = (searchAddress: string) => {
+    if (!searchAddress) return;
     const naverMaps = window.naver.maps;
 
-    naverMaps.Service.geocode({ query: address }, (status, response) => {
+    naverMaps.Service.geocode({ query: searchAddress }, (status, response) => {
       if (!mapRef.current) return;
 
       if (status === naverMaps.Service.Status.ERROR) {
@@ -193,20 +195,18 @@ export default function MainMap() {
       }
 
       const item = response.v2.addresses[0];
-      const point = new naverMaps.Point(Number(item.x), Number(item.y));
-      const htmlAddresses = [];
-
-      if (item.roadAddress) htmlAddresses.push('[도로명 주소] ' + item.roadAddress);
-      if (item.jibunAddress) htmlAddresses.push('[지번 주소] ' + item.jibunAddress);
-      if (item.englishAddress) htmlAddresses.push('[영문명 주소] ' + item.englishAddress);
+      const { roadAddress, jibunAddress, englishAddress } = item;
+      const searchAddressCoordinate = new naverMaps.Point(Number(item.x), Number(item.y));
 
       const geoCoderInfowindow = new naver.maps.InfoWindow({
-        content: `
-          <div style="padding: 10px; box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px 0px;">
-            <h4 style="margin-top:5px;">검색 주소: ${address}</h4><br/>
-            ${htmlAddresses.join('<br/>')}
-          </div>
-        `,
+        content: renderToStaticMarkup(
+          <GeoCoderInfowindow
+            searchAddress={searchAddress}
+            roadAddress={roadAddress}
+            jibunAddress={jibunAddress}
+            englishAddress={englishAddress}
+          />,
+        ),
         anchorSize: {
           width: 12,
           height: 14,
@@ -215,8 +215,8 @@ export default function MainMap() {
       });
 
       // 지도 중심 이동 및 InfoWindow 오픈
-      mapRef.current.setCenter(point);
-      geoCoderInfowindow.open(mapRef.current, point);
+      mapRef.current.setCenter(searchAddressCoordinate);
+      geoCoderInfowindow.open(mapRef.current, searchAddressCoordinate);
     });
   };
 
