@@ -118,22 +118,22 @@ export default function MainMap() {
 
       // 1) 화장실 마커 생성
       const markers: naver.maps.Marker[] = [];
-      const infoWindows: naver.maps.InfoWindow[] = [];
 
       toilets.forEach((toilet) => {
+        const { Y_WGS84, X_WGS84, POI_ID, FNAME, ANAME } = toilet;
+
         const marker = new naver.maps.Marker({
-          position: new naver.maps.LatLng(toilet.Y_WGS84, toilet.X_WGS84),
+          position: new naver.maps.LatLng(Y_WGS84, X_WGS84),
           icon: {
-            url: toilet.POI_ID === closestToilet.POI_ID ? '/closetToilet.png' : '/aroundToilet.png',
+            url: POI_ID === closestToilet.POI_ID ? '/closetToilet.png' : '/aroundToilet.png',
             size: new naver.maps.Size(35, 35),
             scaledSize: new naver.maps.Size(35, 35),
           },
         });
 
-        // 정보창
         const infoWindow = new naver.maps.InfoWindow({
           content: renderToStaticMarkup(
-            <MarkerInfoWindow FNAME={toilet.FNAME} ANAME={toilet.ANAME} />,
+            <MarkerInfoWindow FNAME={FNAME} ANAME={ANAME} jibunAddress='' roadAddress='' />,
           ),
           anchorSize: {
             width: 12,
@@ -143,22 +143,38 @@ export default function MainMap() {
           borderColor: 'transparent',
         });
 
-        markers.push(marker);
-        infoWindows.push(infoWindow);
-      });
-
-      // 2) 마커 클릭 시 정보창 열기/닫기
-      markers.forEach((marker, i) => {
         naver.maps.Event.addListener(marker, 'click', () => {
-          if (infoWindows[i].getMap()) {
-            infoWindows[i].close();
+          if (infoWindow.getMap()) {
+            infoWindow.close();
           } else if (mapRef.current !== null) {
-            infoWindows[i].open(mapRef.current, marker);
+            infoWindow.open(mapRef.current, marker);
+
+            naver.maps.Service.reverseGeocode(
+              {
+                coords: new naver.maps.LatLng(Y_WGS84, X_WGS84),
+              },
+              (status, response) => {
+                if (status === naver.maps.Service.Status.OK) {
+                  const { jibunAddress, roadAddress } = response.v2.address;
+                  const updatedContent = renderToStaticMarkup(
+                    <MarkerInfoWindow
+                      FNAME={FNAME}
+                      ANAME={ANAME}
+                      jibunAddress={jibunAddress}
+                      roadAddress={roadAddress}
+                    />,
+                  );
+                  infoWindow.setContent(updatedContent);
+                }
+              },
+            );
           }
         });
+
+        markers.push(marker);
       });
 
-      // 3) MarkerClustering 생성
+      // 2) MarkerClustering 생성
       const markerClustering = new MarkerClustering({
         map: mapRef.current,
         markers,

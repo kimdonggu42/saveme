@@ -1,13 +1,22 @@
 interface MarkerInfoWindowProps {
   FNAME: string;
   ANAME: string;
+  jibunAddress: string;
+  roadAddress: string;
 }
 
-export function MarkerInfoWindow({ FNAME, ANAME }: MarkerInfoWindowProps) {
+export function MarkerInfoWindow({
+  FNAME,
+  ANAME,
+  jibunAddress,
+  roadAddress,
+}: MarkerInfoWindowProps) {
   return (
     <div className='flex flex-col gap-y-1 rounded-md border border-gray-100 bg-white p-2.5 shadow-[0_4px_16px_0_rgba(0,0,0,0.1)]'>
       <div className='font-bold'>{FNAME}</div>
       <div className='text-sm'>{ANAME}</div>
+      {jibunAddress && <div>지번 주소: {jibunAddress}</div>}
+      {roadAddress && <div>도로명 주소: {roadAddress}</div>}
     </div>
   );
 }
