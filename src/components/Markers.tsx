@@ -12,11 +12,20 @@ export function MarkerInfoWindow({
   roadAddress,
 }: MarkerInfoWindowProps) {
   return (
-    <div className='flex flex-col gap-y-1 rounded-md border border-gray-100 bg-white p-2.5 shadow-[0_4px_16px_0_rgba(0,0,0,0.1)]'>
-      <div className='font-bold'>{FNAME}</div>
-      <div className='text-sm'>{ANAME}</div>
-      {jibunAddress && <div>지번 주소: {jibunAddress}</div>}
-      {roadAddress && <div>도로명 주소: {roadAddress}</div>}
+    <div className='flex flex-col gap-y-1.5 rounded-md border border-gray-200 bg-white px-5 py-4 shadow-[0_4px_16px_0_rgba(0,0,0,0.1)]'>
+      <div className='flex items-center gap-x-2'>
+        <p className='text-lg font-bold'>{FNAME}</p>
+        <p className='text-sm font-medium text-gray-500'>{ANAME}</p>
+      </div>
+      {jibunAddress && (
+        <div className='text-sm font-medium'>
+          <span className='mr-1 rounded border border-gray-400 px-1 py-0.5 text-xs font-semibold text-gray-700'>
+            지번
+          </span>
+          {jibunAddress}
+        </div>
+      )}
+      {roadAddress && <div>(도로명) {roadAddress}</div>}
     </div>
   );
 }
