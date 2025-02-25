@@ -5,6 +5,11 @@ interface MarkerInfoWindowProps {
   roadAddress: string;
 }
 
+interface InfoWindowPortalProps {
+  container: Element;
+  children: React.ReactNode;
+}
+
 export function MarkerInfoWindow({
   FNAME,
   ANAME,
@@ -12,7 +17,7 @@ export function MarkerInfoWindow({
   roadAddress,
 }: MarkerInfoWindowProps) {
   return (
-    <div className='flex flex-col gap-y-1.5 rounded-md border border-gray-200 bg-white px-5 py-4 shadow-[0_4px_16px_0_rgba(0,0,0,0.1)]'>
+    <div className='flex flex-col gap-y-1.5 whitespace-nowrap rounded-md border border-gray-200 bg-white px-5 py-4 shadow-[0_4px_16px_0_rgba(0,0,0,0.1)]'>
       <div className='flex items-center gap-x-2'>
         <p className='text-lg font-bold'>{FNAME}</p>
         <p className='text-sm font-medium text-gray-500'>{ANAME}</p>
@@ -26,6 +31,12 @@ export function MarkerInfoWindow({
         </div>
       )}
       {roadAddress && <div>(도로명) {roadAddress}</div>}
+      <button
+        onClick={() => console.log('click')}
+        className='mt-2 rounded bg-blue-500 px-2 py-1 text-white'
+      >
+        클릭
+      </button>
     </div>
   );
 }

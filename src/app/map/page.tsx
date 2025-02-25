@@ -22,6 +22,9 @@ import {
   ClusterMarker1000,
 } from '@/components/Markers';
 
+import ReactDOM from 'react-dom/client';
+import { flushSync } from 'react-dom';
+
 declare const MarkerClustering: any;
 
 type MapType = 'NORMAL' | 'TERRAIN' | 'SATELLITE' | 'HYBRID';
@@ -116,9 +119,9 @@ export default function MainMap() {
         anchor: new naver.maps.Point(20, 20),
       };
 
-      // 1) 화장실 마커 생성
       const markers: naver.maps.Marker[] = [];
 
+      // 마커와 정보창 생성
       toilets.forEach((toilet) => {
         const { Y_WGS84, X_WGS84, POI_ID, FNAME, ANAME } = toilet;
 
@@ -130,11 +133,13 @@ export default function MainMap() {
             scaledSize: new naver.maps.Size(35, 35),
           },
         });
+        markers.push(marker);
+
+        const container = document.createElement('div');
+        const root = ReactDOM.createRoot(container);
 
         const infoWindow = new naver.maps.InfoWindow({
-          content: renderToStaticMarkup(
-            <MarkerInfoWindow FNAME={FNAME} ANAME={ANAME} jibunAddress='' roadAddress='' />,
-          ),
+          content: container,
           anchorSize: {
             width: 12,
             height: 14,
@@ -146,35 +151,35 @@ export default function MainMap() {
         naver.maps.Event.addListener(marker, 'click', () => {
           if (infoWindow.getMap()) {
             infoWindow.close();
-          } else if (mapRef.current !== null) {
-            infoWindow.open(mapRef.current, marker);
-
+          } else {
             naver.maps.Service.reverseGeocode(
               {
                 coords: new naver.maps.LatLng(Y_WGS84, X_WGS84),
               },
               (status, response) => {
-                if (status === naver.maps.Service.Status.OK) {
+                if (status === naver.maps.Service.Status.OK && mapRef.current) {
                   const { jibunAddress, roadAddress } = response.v2.address;
-                  const updatedContent = renderToStaticMarkup(
-                    <MarkerInfoWindow
-                      FNAME={FNAME}
-                      ANAME={ANAME}
-                      jibunAddress={jibunAddress}
-                      roadAddress={roadAddress}
-                    />,
-                  );
-                  infoWindow.setContent(updatedContent);
+
+                  flushSync(() => {
+                    root.render(
+                      <MarkerInfoWindow
+                        FNAME={FNAME}
+                        ANAME={ANAME}
+                        jibunAddress={jibunAddress}
+                        roadAddress={roadAddress}
+                      />,
+                    );
+                  });
+
+                  infoWindow.open(mapRef.current, marker);
                 }
               },
             );
           }
         });
-
-        markers.push(marker);
       });
 
-      // 2) MarkerClustering 생성
+      // 마커 클러스터링
       const markerClustering = new MarkerClustering({
         map: mapRef.current,
         markers,
@@ -193,7 +198,7 @@ export default function MainMap() {
     }
   }, [toilets, currentMyCoordinates]);
 
-  // 주소 -> 좌표 검색 기능
+  // 주소 -> 좌표 검색
   const searchAddressToCoordinate = (searchAddress: string) => {
     if (!searchAddress) return;
     const naverMaps = window.naver.maps;
@@ -273,7 +278,6 @@ export default function MainMap() {
             />
           </div>
         </div>
-
         <div className='absolute right-3 top-20 z-10 flex flex-col gap-y-2 md:top-3 md:flex-row md:gap-x-2'>
           {mapTypeButtonList.map((mapTypeButton) => (
             <button
@@ -298,7 +302,6 @@ export default function MainMap() {
             </button>
           ))}
         </div>
-
         <button
           onClick={getCurPosition}
           className='group absolute right-3 top-72 z-10 flex h-9 w-9 items-center justify-center rounded-md border-[1.5px] border-gray-400 bg-white shadow-md outline-white sm:top-80 md:top-24'
