@@ -1,7 +1,7 @@
 'use client';
 
 import { IoMdLocate } from 'react-icons/io';
-import { IoSearch } from 'react-icons/io5';
+import { IoSearch, IoCloseCircleSharp } from 'react-icons/io5';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { flushSync } from 'react-dom';
@@ -217,7 +217,7 @@ export default function MainMap() {
           tilt: 29,
           fov: 100,
         },
-        flightSpot: true,
+        flightSpot: false,
       });
   }, [selectedPanoCoord]);
 
@@ -277,24 +277,31 @@ export default function MainMap() {
       setSelectedMapType(mapType);
     }
   };
+
+  const handleZoomIn = () => {
+    if (mapRef.current) {
+      const currentZoom = mapRef.current.getZoom();
+      mapRef.current.setZoom(currentZoom + 1);
+    }
+  };
+
+  const handleZoomOut = () => {
+    if (mapRef.current) {
+      const currentZoom = mapRef.current.getZoom();
+      mapRef.current.setZoom(currentZoom - 1);
+    }
+  };
+
   return (
     <>
       {(isCoordinatesLoading || isToiletsLoading) && <Spinner isLoading={isCoordinatesLoading} />}
 
-      {selectedPanoCoord && (
-        <div ref={panoramaRef} className='relative z-10 mt-2 h-40 w-full'>
-          <button className='absolute right-3 top-3 z-10' onClick={handleClosePanorama}>
-            닫기
-          </button>
-        </div>
-      )}
-
-      <div id='map' className='relative h-screen w-screen focus:outline-none'>
-        <div className='absolute top-3 z-10 flex h-11 w-full items-center px-3 sm:left-3 sm:p-0'>
+      <div id='map' className='relative h-screen w-full p-3 focus:outline-none'>
+        <div className='absolute z-10 flex h-11 w-full items-center'>
           <div className='z-10 hidden h-11 min-w-[100px] items-center justify-center rounded-bl-md rounded-tl-md bg-[#2e87ec] text-xl text-white shadow-md outline-none sm:flex'>
             save <span className='font-semibold'>me</span>
           </div>
-          <div className='relative w-full'>
+          <div className='relative w-[calc(100%-24px)]'>
             <button className='absolute left-2 top-1/2 -translate-y-1/2 transform'>
               <IoSearch className='h-7 w-7 text-[#2e87ec]' onClick={handleSearchClick} />
             </button>
@@ -307,6 +314,7 @@ export default function MainMap() {
             />
           </div>
         </div>
+
         <div className='absolute right-3 top-20 z-10 flex flex-col gap-y-2 md:top-3 md:flex-row md:gap-x-2'>
           {mapTypeButtonList.map((mapTypeButton) => (
             <button
@@ -331,15 +339,27 @@ export default function MainMap() {
             </button>
           ))}
         </div>
+
         <button
           onClick={getCurPosition}
-          className='group absolute right-3 top-72 z-10 flex h-9 w-9 items-center justify-center rounded-md border-[1.5px] border-gray-400 bg-white shadow-md outline-white sm:top-80 md:top-24'
+          className='group absolute bottom-1/3 right-3 z-10 flex h-9 w-9 items-center justify-center rounded-md border-[1.5px] border-gray-400 bg-white shadow-md outline-white'
         >
           <IoMdLocate className='locateIcon text-gray-700' size={21} />
           <span className='absolute left-[-70px] top-1/2 hidden w-[60px] -translate-y-1/2 rounded-md bg-[#222222] p-1.5 text-center text-xs text-white shadow-md group-hover:block'>
             현재위치
           </span>
         </button>
+
+        {selectedPanoCoord && (
+          <div
+            ref={panoramaRef}
+            className='absolute top-20 z-10 ml-auto aspect-video w-full max-w-full rounded-md md:max-w-[550px]'
+          >
+            <button className='absolute right-2 top-2 z-10' onClick={handleClosePanorama}>
+              <IoCloseCircleSharp className='h-8 w-8 text-[#1b1c15]' />
+            </button>
+          </div>
+        )}
       </div>
     </>
   );
