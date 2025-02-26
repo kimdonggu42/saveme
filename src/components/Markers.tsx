@@ -3,11 +3,7 @@ interface MarkerInfoWindowProps {
   ANAME: string;
   jibunAddress: string;
   roadAddress: string;
-}
-
-interface InfoWindowPortalProps {
-  container: Element;
-  children: React.ReactNode;
+  onClickPanorama: () => void;
 }
 
 export function MarkerInfoWindow({
@@ -15,6 +11,7 @@ export function MarkerInfoWindow({
   ANAME,
   jibunAddress,
   roadAddress,
+  onClickPanorama,
 }: MarkerInfoWindowProps) {
   return (
     <div className='flex flex-col gap-y-1.5 whitespace-nowrap rounded-md border border-gray-200 bg-white px-5 py-4 shadow-[0_4px_16px_0_rgba(0,0,0,0.1)]'>
@@ -31,11 +28,8 @@ export function MarkerInfoWindow({
         </div>
       )}
       {roadAddress && <div>(도로명) {roadAddress}</div>}
-      <button
-        onClick={() => console.log('click')}
-        className='mt-2 rounded bg-blue-500 px-2 py-1 text-white'
-      >
-        클릭
+      <button className='mt-2 rounded bg-blue-500 px-2 py-1 text-white' onClick={onClickPanorama}>
+        파노라마
       </button>
     </div>
   );

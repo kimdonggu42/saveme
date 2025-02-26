@@ -4,7 +4,9 @@ import { IoMdLocate } from 'react-icons/io';
 import { IoSearch } from 'react-icons/io5';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
+import { flushSync } from 'react-dom';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { createRoot } from 'react-dom/client';
 import Spinner from '@/components/Spinner';
 import { useGetToilets } from '@/hooks/useGetToilets';
 import { useGeolocation } from '@/hooks/useGeolocation';
@@ -21,9 +23,6 @@ import {
   ClusterMarker500,
   ClusterMarker1000,
 } from '@/components/Markers';
-
-import ReactDOM from 'react-dom/client';
-import { flushSync } from 'react-dom';
 
 declare const MarkerClustering: any;
 
@@ -49,8 +48,13 @@ const mapTypeButtonList = [
 
 export default function MainMap() {
   const [selectedMapType, setSelectedMapType] = useState<MapType>('NORMAL');
+  const [selectedPanoCoord, setSelectedPanoCoord] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
 
   const mapRef = useRef<naver.maps.Map | null>(null);
+  const panoramaRef = useRef<HTMLDivElement | null>(null);
   const addressInputRef = useRef<HTMLInputElement | null>(null);
 
   const { currentMyCoordinates, isCoordinatesLoading, getCurPosition } = useGeolocation();
@@ -65,6 +69,10 @@ export default function MainMap() {
       DISTANCE: distanceCalculation(lat, lng, item.Y_WGS84, item.X_WGS84, 'K'),
     }))
     .sort((a, b) => a.DISTANCE - b.DISTANCE);
+
+  const handleOpenPanorama = (lat: number, lng: number) => setSelectedPanoCoord({ lat, lng });
+
+  const handleClosePanorama = () => setSelectedPanoCoord(null);
 
   // 지도 초기화
   useEffect(() => {
@@ -89,7 +97,7 @@ export default function MainMap() {
     }
   }, [currentMyCoordinates]);
 
-  // 화장실 마커 + 클러스터링 적용
+  // 화장실 마커 + 클러스터링
   useEffect(() => {
     if (lat !== 0 && lng !== 0 && toilets.length !== 0 && mapRef.current) {
       // 마커 클러스터링에 사용할 아이콘(HTML 마커)들을 정의
@@ -135,11 +143,11 @@ export default function MainMap() {
         });
         markers.push(marker);
 
-        const container = document.createElement('div');
-        const root = ReactDOM.createRoot(container);
+        const infowindowNode = document.createElement('div');
+        const root = createRoot(infowindowNode);
 
         const infoWindow = new naver.maps.InfoWindow({
-          content: container,
+          content: infowindowNode,
           anchorSize: {
             width: 12,
             height: 14,
@@ -167,6 +175,7 @@ export default function MainMap() {
                         ANAME={ANAME}
                         jibunAddress={jibunAddress}
                         roadAddress={roadAddress}
+                        onClickPanorama={() => handleOpenPanorama(Y_WGS84, X_WGS84)}
                       />,
                     );
                   });
@@ -198,15 +207,28 @@ export default function MainMap() {
     }
   }, [toilets, currentMyCoordinates]);
 
+  // 파노라마
+  useEffect(() => {
+    if (panoramaRef.current && selectedPanoCoord)
+      new naver.maps.Panorama(panoramaRef.current, {
+        position: new naver.maps.LatLng(selectedPanoCoord.lat, selectedPanoCoord.lng),
+        pov: {
+          pan: -135,
+          tilt: 29,
+          fov: 100,
+        },
+        flightSpot: true,
+      });
+  }, [selectedPanoCoord]);
+
   // 주소 -> 좌표 검색
   const searchAddressToCoordinate = (searchAddress: string) => {
     if (!searchAddress) return;
-    const naverMaps = window.naver.maps;
 
-    naverMaps.Service.geocode({ query: searchAddress }, (status, response) => {
+    naver.maps.Service.geocode({ query: searchAddress }, (status, response) => {
       if (!mapRef.current) return;
 
-      if (status === naverMaps.Service.Status.ERROR) {
+      if (status === naver.maps.Service.Status.ERROR) {
         alert('주소 검색 중 문제가 발생했습니다.');
         return;
       }
@@ -216,9 +238,9 @@ export default function MainMap() {
         return;
       }
 
-      const item = response.v2.addresses[0];
-      const { roadAddress, jibunAddress, englishAddress } = item;
-      const searchAddressCoordinate = new naverMaps.Point(Number(item.x), Number(item.y));
+      const [addresses] = response.v2.addresses;
+      const { roadAddress, jibunAddress, englishAddress, x, y } = addresses;
+      const searchAddressCoordinate = new naver.maps.Point(Number(x), Number(y));
 
       const geoCoderInfowindow = new naver.maps.InfoWindow({
         content: renderToStaticMarkup(
@@ -251,14 +273,21 @@ export default function MainMap() {
 
   const handleMapTypeChange = (mapType: MapType) => {
     if (mapRef.current && selectedMapType !== mapType) {
-      mapRef.current.setMapTypeId(window.naver.maps.MapTypeId[mapType]);
+      mapRef.current.setMapTypeId(naver.maps.MapTypeId[mapType]);
       setSelectedMapType(mapType);
     }
   };
-
   return (
     <>
       {(isCoordinatesLoading || isToiletsLoading) && <Spinner isLoading={isCoordinatesLoading} />}
+
+      {selectedPanoCoord && (
+        <div ref={panoramaRef} className='relative z-10 mt-2 h-40 w-full'>
+          <button className='absolute right-3 top-3 z-10' onClick={handleClosePanorama}>
+            닫기
+          </button>
+        </div>
+      )}
 
       <div id='map' className='relative h-screen w-screen focus:outline-none'>
         <div className='absolute top-3 z-10 flex h-11 w-full items-center px-3 sm:left-3 sm:p-0'>
