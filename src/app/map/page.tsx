@@ -2,6 +2,7 @@
 
 import { IoMdLocate } from 'react-icons/io';
 import { IoSearch, IoCloseCircleSharp } from 'react-icons/io5';
+import { FiPlus, FiMinus } from 'react-icons/fi';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { flushSync } from 'react-dom';
@@ -281,14 +282,14 @@ export default function MainMap() {
   const handleZoomIn = () => {
     if (mapRef.current) {
       const currentZoom = mapRef.current.getZoom();
-      mapRef.current.setZoom(currentZoom + 1);
+      mapRef.current.setZoom(currentZoom + 1, true);
     }
   };
 
   const handleZoomOut = () => {
     if (mapRef.current) {
       const currentZoom = mapRef.current.getZoom();
-      mapRef.current.setZoom(currentZoom - 1);
+      mapRef.current.setZoom(currentZoom - 1, true);
     }
   };
 
@@ -340,20 +341,36 @@ export default function MainMap() {
           ))}
         </div>
 
-        <button
-          onClick={getCurPosition}
-          className='group absolute bottom-1/3 right-3 z-10 flex h-9 w-9 items-center justify-center rounded-md border-[1.5px] border-gray-400 bg-white shadow-md outline-white'
-        >
-          <IoMdLocate className='locateIcon text-gray-700' size={21} />
-          <span className='absolute left-[-70px] top-1/2 hidden w-[60px] -translate-y-1/2 rounded-md bg-[#222222] p-1.5 text-center text-xs text-white shadow-md group-hover:block'>
-            현재위치
-          </span>
-        </button>
+        <div className='absolute right-3 top-80 z-10 sm:top-[350px] md:top-32'>
+          <button
+            className='group mb-3 flex h-9 w-9 items-center justify-center rounded-md border-[1.5px] border-gray-400 bg-white shadow-md outline-white'
+            onClick={getCurPosition}
+          >
+            <IoMdLocate className='locateIcon text-gray-700' size={21} />
+            <span className='absolute left-[-65px] top-[18px] hidden w-[60px] -translate-y-1/2 rounded-md bg-[#222222] p-1.5 text-center text-xs text-white shadow-md group-hover:block'>
+              현재위치
+            </span>
+          </button>
+          <div className='flex flex-col'>
+            <button
+              className='flex h-9 w-9 items-center justify-center rounded-tl-md rounded-tr-md border-b-[1px] border-l-[1.5px] border-r-[1.5px] border-t-[1.5px] border-gray-400 bg-white shadow-md outline-white'
+              onClick={handleZoomIn}
+            >
+              <FiPlus className='locateIcon text-gray-700' size={21} />
+            </button>
+            <button
+              className='flex h-9 w-9 items-center justify-center rounded-bl-md rounded-br-md border-b-[1.5px] border-l-[1.5px] border-r-[1.5px] border-t-[1px] border-gray-400 bg-white shadow-md outline-white'
+              onClick={handleZoomOut}
+            >
+              <FiMinus className='locateIcon text-gray-700' size={21} />
+            </button>
+          </div>
+        </div>
 
         {selectedPanoCoord && (
           <div
+            className='absolute top-20 z-10 ml-auto aspect-video w-full max-w-full rounded-md shadow-md md:right-12 md:max-w-[550px]'
             ref={panoramaRef}
-            className='absolute top-20 z-10 ml-auto aspect-video w-full max-w-full rounded-md md:max-w-[550px]'
           >
             <button className='absolute right-2 top-2 z-10' onClick={handleClosePanorama}>
               <IoCloseCircleSharp className='h-8 w-8 text-[#1b1c15]' />
