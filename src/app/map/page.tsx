@@ -1,8 +1,9 @@
 'use client';
 
 import { IoMdLocate } from 'react-icons/io';
-import { IoSearch, IoCloseCircleSharp } from 'react-icons/io5';
+import { IoSearch } from 'react-icons/io5';
 import { FiPlus, FiMinus } from 'react-icons/fi';
+import { IoIosClose } from 'react-icons/io';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { flushSync } from 'react-dom';
@@ -375,8 +376,11 @@ export default function MainMap() {
             className='absolute top-20 z-10 ml-auto aspect-video w-full max-w-full rounded-md shadow-md md:right-12 md:max-w-[550px]'
             ref={panoramaRef}
           >
-            <button className='absolute right-2 top-2 z-10' onClick={handleClosePanorama}>
-              <IoCloseCircleSharp className='h-8 w-8 text-[#1b1c15]' />
+            <button
+              className='absolute right-2 top-2 z-10 rounded-full bg-[#000000B8]'
+              onClick={handleClosePanorama}
+            >
+              <IoIosClose className='h-7 w-7 text-white' />
             </button>
           </div>
         )}
