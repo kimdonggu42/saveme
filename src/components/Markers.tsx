@@ -1,13 +1,43 @@
+import { FiMapPin } from 'react-icons/fi';
+
 interface MarkerInfoWindowProps {
   FNAME: string;
   ANAME: string;
+  jibunAddress: string;
+  roadAddress: string;
+  onClickPanorama: () => void;
 }
 
-export function MarkerInfoWindow({ FNAME, ANAME }: MarkerInfoWindowProps) {
+export function MarkerInfoWindow({
+  FNAME,
+  ANAME,
+  jibunAddress,
+  roadAddress,
+  onClickPanorama,
+}: MarkerInfoWindowProps) {
   return (
-    <div className='flex flex-col gap-y-1 rounded-md border border-gray-100 bg-white p-2.5 shadow-[0_4px_16px_0_rgba(0,0,0,0.1)]'>
-      <div className='font-bold'>{FNAME}</div>
-      <div className='text-sm'>{ANAME}</div>
+    <div className='flex flex-col gap-y-1.5 whitespace-nowrap rounded-md border border-gray-200 bg-white px-5 py-4 shadow-[0_4px_16px_0_rgba(0,0,0,0.1)]'>
+      <div className='flex items-center gap-x-2'>
+        <p className='text-lg font-bold'>{FNAME}</p>
+        <p className='text-sm font-medium text-gray-500'>{ANAME}</p>
+      </div>
+      {roadAddress && <div>(도로명) {roadAddress}</div>}
+      {jibunAddress && (
+        <div className='text-sm font-medium'>
+          <span className='mr-1.5 rounded border border-gray-400 px-1 py-0.5 text-xs font-semibold text-gray-700'>
+            지번
+          </span>
+          {jibunAddress}
+        </div>
+      )}
+      <div className='flex justify-end'>
+        <button
+          className='mt-1 flex rounded-full border border-gray-300 p-1.5 text-gray-600 hover:border-[#2e87ec] hover:text-[#2e87ec]'
+          onClick={onClickPanorama}
+        >
+          <FiMapPin className='h-5 w-5' />
+        </button>
+      </div>
     </div>
   );
 }
@@ -19,11 +49,24 @@ export function GeoCoderInfowindow({
   englishAddress,
 }: any) {
   return (
-    <div className='flex flex-col gap-y-1 rounded-md border border-gray-100 bg-white p-2.5 shadow-[0_4px_16px_0_rgba(0,0,0,0.1)]'>
-      <h4 className='mb-1 font-bold'>검색 주소: {searchAddress}</h4>
-      <p>[도로명 주소] {roadAddress}</p>
-      <p>[지번 주소] {jibunAddress}</p>
-      <p>[영문명 주소] {englishAddress}</p>
+    <div className='flex flex-col gap-y-1.5 whitespace-nowrap rounded-md border border-gray-200 bg-white px-5 py-4 shadow-[0_4px_16px_0_rgba(0,0,0,0.1)]'>
+      <p className='text-lg font-bold'>{roadAddress}</p>
+      {jibunAddress && roadAddress !== jibunAddress && (
+        <div className='text-sm font-medium'>
+          <span className='mr-1.5 rounded border border-gray-400 px-1 py-0.5 text-xs font-semibold text-gray-700'>
+            지번
+          </span>
+          {jibunAddress}
+        </div>
+      )}
+      {jibunAddress && (
+        <div className='text-sm font-medium'>
+          <span className='mr-1.5 rounded border border-gray-400 px-1 py-0.5 text-xs font-semibold text-gray-700'>
+            영문
+          </span>
+          {englishAddress}
+        </div>
+      )}
     </div>
   );
 }
