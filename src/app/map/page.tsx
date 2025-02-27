@@ -311,7 +311,7 @@ export default function MainMap() {
               <IoSearch className='h-7 w-7 text-[#2e87ec]' onClick={handleSearchClick} />
             </button>
             <input
-              className='h-11 w-full rounded-md border-2 border-[#2e87ec] pl-10 font-medium shadow-md focus:outline-none sm:w-[370px] sm:rounded-l-none sm:rounded-br-md sm:rounded-tr-md'
+              className='h-11 w-full rounded-md pl-10 font-medium shadow-md focus:outline-none sm:w-[370px] sm:rounded-l-none sm:rounded-br-md sm:rounded-tr-md'
               ref={addressInputRef}
               type='text'
               placeholder='주소 검색'
@@ -324,8 +324,8 @@ export default function MainMap() {
           {mapTypeButtonList.map((mapTypeButton) => (
             <button
               key={mapTypeButton.type}
-              className={`w-16 rounded-md border-[1.5px] border-solid bg-white shadow-md sm:w-20 ${
-                selectedMapType === mapTypeButton.type ? 'border-[#2e87ec]' : 'border-gray-400'
+              className={`w-16 rounded-md border bg-white shadow-md sm:w-20 ${
+                selectedMapType === mapTypeButton.type ? 'border-[#2e87ec]' : 'border-gray-300'
               }`}
               onClick={() => handleMapTypeChange(mapTypeButton.type)}
             >
@@ -347,7 +347,7 @@ export default function MainMap() {
 
         <div className='absolute right-3 top-80 z-10 sm:top-[350px] md:top-32'>
           <button
-            className='group mb-3 flex h-9 w-9 items-center justify-center rounded-md border-[1.5px] border-gray-400 bg-white shadow-md outline-white'
+            className='group mb-3 flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white shadow-md outline-white'
             onClick={getCurPosition}
           >
             <IoMdLocate className='locateIcon text-gray-700' size={21} />
@@ -357,13 +357,13 @@ export default function MainMap() {
           </button>
           <div className='flex flex-col'>
             <button
-              className='flex h-9 w-9 items-center justify-center rounded-tl-md rounded-tr-md border-b-[1px] border-l-[1.5px] border-r-[1.5px] border-t-[1.5px] border-gray-400 bg-white shadow-md outline-white'
+              className='flex h-9 w-9 items-center justify-center rounded-tl-md rounded-tr-md border-x border-b-[0.5px] border-t border-gray-300 bg-white shadow-md outline-white'
               onClick={handleZoomIn}
             >
               <FiPlus className='locateIcon text-gray-700' size={21} />
             </button>
             <button
-              className='flex h-9 w-9 items-center justify-center rounded-bl-md rounded-br-md border-b-[1.5px] border-l-[1.5px] border-r-[1.5px] border-t-[1px] border-gray-400 bg-white shadow-md outline-white'
+              className='flex h-9 w-9 items-center justify-center rounded-bl-md rounded-br-md border-x border-b border-t-[0.5px] border-gray-300 bg-white shadow-md outline-white'
               onClick={handleZoomOut}
             >
               <FiMinus className='locateIcon text-gray-700' size={21} />

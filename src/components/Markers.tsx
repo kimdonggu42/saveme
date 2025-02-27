@@ -1,3 +1,5 @@
+import { FiMapPin } from 'react-icons/fi';
+
 interface MarkerInfoWindowProps {
   FNAME: string;
   ANAME: string;
@@ -21,16 +23,21 @@ export function MarkerInfoWindow({
       </div>
       {jibunAddress && (
         <div className='text-sm font-medium'>
-          <span className='mr-1 rounded border border-gray-400 px-1 py-0.5 text-xs font-semibold text-gray-700'>
+          <span className='mr-1.5 rounded border border-gray-400 px-1 py-0.5 text-xs font-semibold text-gray-700'>
             지번
           </span>
           {jibunAddress}
         </div>
       )}
       {roadAddress && <div>(도로명) {roadAddress}</div>}
-      <button className='mt-2 rounded bg-blue-500 px-2 py-1 text-white' onClick={onClickPanorama}>
-        파노라마
-      </button>
+      <div className='flex justify-end'>
+        <button
+          className='mt-1 flex rounded-full border border-gray-300 p-1.5 text-gray-600 hover:border-[#2e87ec] hover:text-[#2e87ec]'
+          onClick={onClickPanorama}
+        >
+          <FiMapPin className='h-5 w-5' />
+        </button>
+      </div>
     </div>
   );
 }
