@@ -161,14 +161,14 @@ export default function MainMap() {
           if (infoWindow.getMap()) {
             infoWindow.close();
           } else {
+            const coords = new naver.maps.LatLng(Y_WGS84, X_WGS84);
             naver.maps.Service.reverseGeocode(
               {
-                coords: new naver.maps.LatLng(Y_WGS84, X_WGS84),
+                coords,
               },
               (status, response) => {
                 if (status === naver.maps.Service.Status.OK && mapRef.current) {
                   const { jibunAddress, roadAddress } = response.v2.address;
-
                   flushSync(() => {
                     root.render(
                       <MarkerInfoWindow
@@ -176,7 +176,10 @@ export default function MainMap() {
                         ANAME={ANAME}
                         jibunAddress={jibunAddress}
                         roadAddress={roadAddress}
-                        onClickPanorama={() => handleOpenPanorama(Y_WGS84, X_WGS84)}
+                        onClickPanorama={() => {
+                          handleOpenPanorama(Y_WGS84, X_WGS84);
+                          if (mapRef.current) mapRef.current.panTo(coords);
+                        }}
                       />,
                     );
                   });
