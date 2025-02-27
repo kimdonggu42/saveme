@@ -2,9 +2,13 @@
 
 import { IoMdLocate } from 'react-icons/io';
 import { IoSearch } from 'react-icons/io5';
+import { FiPlus, FiMinus } from 'react-icons/fi';
+import { IoIosClose } from 'react-icons/io';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
+import { flushSync } from 'react-dom';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { createRoot } from 'react-dom/client';
 import Spinner from '@/components/Spinner';
 import { useGetToilets } from '@/hooks/useGetToilets';
 import { useGeolocation } from '@/hooks/useGeolocation';
@@ -46,8 +50,13 @@ const mapTypeButtonList = [
 
 export default function MainMap() {
   const [selectedMapType, setSelectedMapType] = useState<MapType>('NORMAL');
+  const [selectedPanoCoord, setSelectedPanoCoord] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
 
   const mapRef = useRef<naver.maps.Map | null>(null);
+  const panoramaRef = useRef<HTMLDivElement | null>(null);
   const addressInputRef = useRef<HTMLInputElement | null>(null);
 
   const { currentMyCoordinates, isCoordinatesLoading, getCurPosition } = useGeolocation();
@@ -62,6 +71,10 @@ export default function MainMap() {
       DISTANCE: distanceCalculation(lat, lng, item.Y_WGS84, item.X_WGS84, 'K'),
     }))
     .sort((a, b) => a.DISTANCE - b.DISTANCE);
+
+  const handleOpenPanorama = (lat: number, lng: number) => setSelectedPanoCoord({ lat, lng });
+
+  const handleClosePanorama = () => setSelectedPanoCoord(null);
 
   // 지도 초기화
   useEffect(() => {
@@ -86,7 +99,7 @@ export default function MainMap() {
     }
   }, [currentMyCoordinates]);
 
-  // 화장실 마커 + 클러스터링 적용
+  // 화장실 마커 + 클러스터링
   useEffect(() => {
     if (lat !== 0 && lng !== 0 && toilets.length !== 0 && mapRef.current) {
       // 마커 클러스터링에 사용할 아이콘(HTML 마커)들을 정의
@@ -116,25 +129,27 @@ export default function MainMap() {
         anchor: new naver.maps.Point(20, 20),
       };
 
-      // 1) 화장실 마커 생성
       const markers: naver.maps.Marker[] = [];
-      const infoWindows: naver.maps.InfoWindow[] = [];
 
+      // 마커와 정보창 생성
       toilets.forEach((toilet) => {
+        const { Y_WGS84, X_WGS84, POI_ID, FNAME, ANAME } = toilet;
+
         const marker = new naver.maps.Marker({
-          position: new naver.maps.LatLng(toilet.Y_WGS84, toilet.X_WGS84),
+          position: new naver.maps.LatLng(Y_WGS84, X_WGS84),
           icon: {
-            url: toilet.POI_ID === closestToilet.POI_ID ? '/closetToilet.png' : '/aroundToilet.png',
+            url: POI_ID === closestToilet.POI_ID ? '/closetToilet.png' : '/aroundToilet.png',
             size: new naver.maps.Size(35, 35),
             scaledSize: new naver.maps.Size(35, 35),
           },
         });
+        markers.push(marker);
 
-        // 정보창
+        const infowindowNode = document.createElement('div');
+        const root = createRoot(infowindowNode);
+
         const infoWindow = new naver.maps.InfoWindow({
-          content: renderToStaticMarkup(
-            <MarkerInfoWindow FNAME={toilet.FNAME} ANAME={toilet.ANAME} />,
-          ),
+          content: infowindowNode,
           anchorSize: {
             width: 12,
             height: 14,
@@ -143,22 +158,42 @@ export default function MainMap() {
           borderColor: 'transparent',
         });
 
-        markers.push(marker);
-        infoWindows.push(infoWindow);
-      });
-
-      // 2) 마커 클릭 시 정보창 열기/닫기
-      markers.forEach((marker, i) => {
         naver.maps.Event.addListener(marker, 'click', () => {
-          if (infoWindows[i].getMap()) {
-            infoWindows[i].close();
-          } else if (mapRef.current !== null) {
-            infoWindows[i].open(mapRef.current, marker);
+          if (infoWindow.getMap()) {
+            infoWindow.close();
+          } else {
+            const coords = new naver.maps.LatLng(Y_WGS84, X_WGS84);
+            naver.maps.Service.reverseGeocode(
+              {
+                coords,
+              },
+              (status, response) => {
+                if (status === naver.maps.Service.Status.OK && mapRef.current) {
+                  const { jibunAddress, roadAddress } = response.v2.address;
+                  flushSync(() => {
+                    root.render(
+                      <MarkerInfoWindow
+                        FNAME={FNAME}
+                        ANAME={ANAME}
+                        jibunAddress={jibunAddress}
+                        roadAddress={roadAddress}
+                        onClickPanorama={() => {
+                          handleOpenPanorama(Y_WGS84, X_WGS84);
+                          if (mapRef.current) mapRef.current.panTo(coords);
+                        }}
+                      />,
+                    );
+                  });
+
+                  infoWindow.open(mapRef.current, marker);
+                }
+              },
+            );
           }
         });
       });
 
-      // 3) MarkerClustering 생성
+      // 마커 클러스터링
       const markerClustering = new MarkerClustering({
         map: mapRef.current,
         markers,
@@ -177,15 +212,28 @@ export default function MainMap() {
     }
   }, [toilets, currentMyCoordinates]);
 
-  // 주소 -> 좌표 검색 기능
+  // 파노라마
+  useEffect(() => {
+    if (panoramaRef.current && selectedPanoCoord)
+      new naver.maps.Panorama(panoramaRef.current, {
+        position: new naver.maps.LatLng(selectedPanoCoord.lat, selectedPanoCoord.lng),
+        pov: {
+          pan: -135,
+          tilt: 29,
+          fov: 100,
+        },
+        flightSpot: false,
+      });
+  }, [selectedPanoCoord]);
+
+  // 주소 -> 좌표 검색
   const searchAddressToCoordinate = (searchAddress: string) => {
     if (!searchAddress) return;
-    const naverMaps = window.naver.maps;
 
-    naverMaps.Service.geocode({ query: searchAddress }, (status, response) => {
+    naver.maps.Service.geocode({ query: searchAddress }, (status, response) => {
       if (!mapRef.current) return;
 
-      if (status === naverMaps.Service.Status.ERROR) {
+      if (status === naver.maps.Service.Status.ERROR) {
         alert('주소 검색 중 문제가 발생했습니다.');
         return;
       }
@@ -195,9 +243,9 @@ export default function MainMap() {
         return;
       }
 
-      const item = response.v2.addresses[0];
-      const { roadAddress, jibunAddress, englishAddress } = item;
-      const searchAddressCoordinate = new naverMaps.Point(Number(item.x), Number(item.y));
+      const [addresses] = response.v2.addresses;
+      const { roadAddress, jibunAddress, englishAddress, x, y } = addresses;
+      const searchAddressCoordinate = new naver.maps.Point(Number(x), Number(y));
 
       const geoCoderInfowindow = new naver.maps.InfoWindow({
         content: renderToStaticMarkup(
@@ -230,8 +278,22 @@ export default function MainMap() {
 
   const handleMapTypeChange = (mapType: MapType) => {
     if (mapRef.current && selectedMapType !== mapType) {
-      mapRef.current.setMapTypeId(window.naver.maps.MapTypeId[mapType]);
+      mapRef.current.setMapTypeId(naver.maps.MapTypeId[mapType]);
       setSelectedMapType(mapType);
+    }
+  };
+
+  const handleZoomIn = () => {
+    if (mapRef.current) {
+      const currentZoom = mapRef.current.getZoom();
+      mapRef.current.setZoom(currentZoom + 1, true);
+    }
+  };
+
+  const handleZoomOut = () => {
+    if (mapRef.current) {
+      const currentZoom = mapRef.current.getZoom();
+      mapRef.current.setZoom(currentZoom - 1, true);
     }
   };
 
@@ -239,17 +301,17 @@ export default function MainMap() {
     <>
       {(isCoordinatesLoading || isToiletsLoading) && <Spinner isLoading={isCoordinatesLoading} />}
 
-      <div id='map' className='relative h-screen w-screen focus:outline-none'>
-        <div className='absolute top-3 z-10 flex h-11 w-full items-center px-3 sm:left-3 sm:p-0'>
+      <div id='map' className='relative h-screen w-full p-3 focus:outline-none'>
+        <div className='absolute z-10 flex h-11 w-full items-center'>
           <div className='z-10 hidden h-11 min-w-[100px] items-center justify-center rounded-bl-md rounded-tl-md bg-[#2e87ec] text-xl text-white shadow-md outline-none sm:flex'>
             save <span className='font-semibold'>me</span>
           </div>
-          <div className='relative w-full'>
+          <div className='relative w-[calc(100%-24px)]'>
             <button className='absolute left-2 top-1/2 -translate-y-1/2 transform'>
               <IoSearch className='h-7 w-7 text-[#2e87ec]' onClick={handleSearchClick} />
             </button>
             <input
-              className='h-11 w-full rounded-md border-2 border-[#2e87ec] pl-10 font-medium shadow-md focus:outline-none sm:w-[370px] sm:rounded-l-none sm:rounded-br-md sm:rounded-tr-md'
+              className='h-11 w-full rounded-md pl-10 font-medium shadow-md focus:outline-none sm:w-[370px] sm:rounded-l-none sm:rounded-br-md sm:rounded-tr-md'
               ref={addressInputRef}
               type='text'
               placeholder='주소 검색'
@@ -262,8 +324,8 @@ export default function MainMap() {
           {mapTypeButtonList.map((mapTypeButton) => (
             <button
               key={mapTypeButton.type}
-              className={`w-16 rounded-md border-[1.5px] border-solid bg-white shadow-md sm:w-20 ${
-                selectedMapType === mapTypeButton.type ? 'border-[#2e87ec]' : 'border-gray-400'
+              className={`w-16 rounded-md border bg-white shadow-md sm:w-20 ${
+                selectedMapType === mapTypeButton.type ? 'border-[#2e87ec]' : 'border-gray-300'
               }`}
               onClick={() => handleMapTypeChange(mapTypeButton.type)}
             >
@@ -283,15 +345,45 @@ export default function MainMap() {
           ))}
         </div>
 
-        <button
-          onClick={getCurPosition}
-          className='group absolute right-3 top-72 z-10 flex h-9 w-10 items-center justify-center rounded-md border-[1.5px] border-gray-400 bg-white shadow-md outline-white sm:top-80 md:top-24'
-        >
-          <IoMdLocate className='locateIcon text-gray-700' size={21} />
-          <span className='absolute left-[-70px] top-1/2 hidden w-[60px] -translate-y-1/2 rounded-md bg-[#222222] p-1.5 text-center text-xs text-white shadow-md group-hover:block'>
-            현재위치
-          </span>
-        </button>
+        <div className='absolute right-3 top-80 z-10 sm:top-[350px] md:top-32'>
+          <button
+            className='group mb-3 flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white shadow-md outline-white'
+            onClick={getCurPosition}
+          >
+            <IoMdLocate className='locateIcon text-gray-700' size={21} />
+            <span className='absolute left-[-65px] top-[18px] hidden w-[60px] -translate-y-1/2 rounded-md bg-[#222222] p-1.5 text-center text-xs text-white shadow-md group-hover:block'>
+              현재위치
+            </span>
+          </button>
+          <div className='flex flex-col'>
+            <button
+              className='flex h-9 w-9 items-center justify-center rounded-tl-md rounded-tr-md border-x border-b-[0.5px] border-t border-gray-300 bg-white shadow-md outline-white'
+              onClick={handleZoomIn}
+            >
+              <FiPlus className='locateIcon text-gray-700' size={21} />
+            </button>
+            <button
+              className='flex h-9 w-9 items-center justify-center rounded-bl-md rounded-br-md border-x border-b border-t-[0.5px] border-gray-300 bg-white shadow-md outline-white'
+              onClick={handleZoomOut}
+            >
+              <FiMinus className='locateIcon text-gray-700' size={21} />
+            </button>
+          </div>
+        </div>
+
+        {selectedPanoCoord && (
+          <div
+            className='absolute top-20 z-10 ml-auto aspect-video w-full max-w-full rounded-md shadow-md md:right-12 md:max-w-[550px]'
+            ref={panoramaRef}
+          >
+            <button
+              className='absolute right-2 top-2 z-10 rounded-full bg-[#000000B8]'
+              onClick={handleClosePanorama}
+            >
+              <IoIosClose className='h-7 w-7 text-white' />
+            </button>
+          </div>
+        )}
       </div>
     </>
   );
