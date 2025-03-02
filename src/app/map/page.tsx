@@ -5,7 +5,7 @@ const MAX_ROW_DATA_PER_CALL = 1000;
 const fetchToilets = async () => {
   try {
     const totalCountRes = await fetch(
-      `https://saveme-git-feat-data-fetching-caching-kimdonggu42s-projects.vercel.app/api/seoul-toilets/1/1`,
+      `http://openAPI.seoul.go.kr:8088/${process.env.NEXT_PUBLIC_SEOUL_OPEN_API_KEY}/json/SearchPublicToiletPOIService/1/1`,
     );
     const parsedTotalCountRes = await totalCountRes.json();
     console.log(parsedTotalCountRes);
@@ -16,7 +16,7 @@ const fetchToilets = async () => {
     for (let startRowNum = 1; startRowNum <= totalCount; startRowNum += MAX_ROW_DATA_PER_CALL) {
       const endRowNum = Math.min(startRowNum + MAX_ROW_DATA_PER_CALL - 1, totalCount);
       const res = await fetch(
-        `https://saveme-git-feat-data-fetching-caching-kimdonggu42s-projects.vercel.app/api/seoul-toilets/${startRowNum}/${endRowNum}`,
+        `http://openAPI.seoul.go.kr:8088/${process.env.NEXT_PUBLIC_SEOUL_OPEN_API_KEY}/json/SearchPublicToiletPOIService/${startRowNum}/${endRowNum}`,
       );
       const parsedRes = await res.json();
       promises.push(parsedRes);
