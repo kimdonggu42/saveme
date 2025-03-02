@@ -4,7 +4,7 @@ const nextConfig = {
     return [
       {
         source: '/api/seoul-toilets/:path*',
-        destination: `http://openAPI.seoul.go.kr:8088/${process.env.NEXT_PUBLIC_SEOUL_SEOUL_OPEN_API_KEY}/json/SearchPublicToiletPOIService/:path*`, // HTTP API 엔드포인트
+        destination: `http://openAPI.seoul.go.kr:8088/${process.env.SEOUL_SEOUL_OPEN_API_KEY}/json/SearchPublicToiletPOIService/:path*`, // HTTP API 엔드포인트
       },
     ];
   },
