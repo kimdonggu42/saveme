@@ -24,7 +24,6 @@ import {
   ClusterMarker500,
   ClusterMarker1000,
 } from '@/components/Markers';
-import { Toilet } from '@/util/types/map';
 
 declare const MarkerClustering: any;
 
@@ -32,6 +31,20 @@ type MapType = 'NORMAL' | 'TERRAIN' | 'SATELLITE' | 'HYBRID';
 
 interface MapProps {
   toilets: Toilet[];
+}
+
+interface Toilet {
+  POI_ID: string;
+  ANAME: string;
+  CENTER_X1: number;
+  CENTER_Y1: number;
+  CNAME: string;
+  FNAME: string;
+  INSERTDATE: string;
+  UPDATEDATE: string;
+  X_WGS84: number;
+  Y_WGS84: number;
+  DISTANCE: number;
 }
 
 const mapTypeButtonList = [
