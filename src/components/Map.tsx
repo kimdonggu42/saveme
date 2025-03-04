@@ -10,7 +10,6 @@ import { flushSync } from 'react-dom';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { createRoot } from 'react-dom/client';
 import Spinner from '@/components/Spinner';
-import { useGetToilets } from '@/hooks/useGetToilets';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { distanceCalculation } from '@/util/helpers/distanceCalculation';
 import normalMap from '../../public/normal-map.png';
@@ -65,8 +64,6 @@ export default function Map({ toilets }: MapProps) {
   const addressInputRef = useRef<HTMLInputElement | null>(null);
 
   const { currentMyCoordinates, isCoordinatesLoading, getCurPosition } = useGeolocation();
-  // const { toilets, isToiletsLoading } = useGetToilets();
-
   const { lat, lng } = currentMyCoordinates;
 
   // 가장 가까운 화장실 찾기
