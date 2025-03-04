@@ -2,14 +2,9 @@
 
 import { useState, useEffect } from 'react';
 
-interface CurrentUserLocation {
-  lat: number;
-  lng: number;
-}
-
 const DEFAULT_COORDINATES = { lat: 33.450701, lng: 126.570667 } as const;
 
-export const useGeolocation = () => {
+export const useGeolocation = (onSuccess?: () => void) => {
   const [currentMyCoordinates, setCurrentMyCoordinates] = useState<{
     lat: number;
     lng: number;
@@ -23,6 +18,7 @@ export const useGeolocation = () => {
         lat: location.coords.latitude,
         lng: location.coords.longitude,
       });
+      if (onSuccess) onSuccess();
       setIsCoordinatesLoading(false);
     };
 

@@ -63,11 +63,12 @@ export default function Map({ toilets }: MapProps) {
   const panoramaRef = useRef<HTMLDivElement | null>(null);
   const addressInputRef = useRef<HTMLInputElement | null>(null);
 
-  const { currentMyCoordinates, isCoordinatesLoading, getCurPosition } = useGeolocation();
-
-  const handleOpenPanorama = (lat: number, lng: number) => setSelectedPanoCoord({ lat, lng });
-
-  const handleClosePanorama = () => setSelectedPanoCoord(null);
+  const { currentMyCoordinates, isCoordinatesLoading, getCurPosition } = useGeolocation(() => {
+    if (mapRef.current && currentMyCoordinates)
+      mapRef.current.panTo(
+        new naver.maps.LatLng(currentMyCoordinates.lat, currentMyCoordinates.lng),
+      );
+  });
 
   // 지도 초기화 + 마커 렌더링 + 클러스터링
   useEffect(() => {
@@ -226,6 +227,10 @@ export default function Map({ toilets }: MapProps) {
         flightSpot: false,
       });
   }, [selectedPanoCoord]);
+
+  const handleOpenPanorama = (lat: number, lng: number) => setSelectedPanoCoord({ lat, lng });
+
+  const handleClosePanorama = () => setSelectedPanoCoord(null);
 
   // 주소 -> 좌표 검색
   const searchAddressToCoordinate = (searchAddress: string) => {
