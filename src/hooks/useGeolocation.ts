@@ -10,10 +10,10 @@ interface CurrentUserLocation {
 const DEFAULT_COORDINATES = { lat: 33.450701, lng: 126.570667 } as const;
 
 export const useGeolocation = () => {
-  const [currentMyCoordinates, setCurrentMyCoordinates] = useState<CurrentUserLocation>({
-    lat: 0,
-    lng: 0,
-  });
+  const [currentMyCoordinates, setCurrentMyCoordinates] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
   const [isCoordinatesLoading, setIsCoordinatesLoading] = useState<boolean>(false);
 
   const getCurPosition = () => {
