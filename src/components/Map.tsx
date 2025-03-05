@@ -11,7 +11,6 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { createRoot } from 'react-dom/client';
 import Spinner from '@/components/Spinner';
 import { useGeolocation } from '@/hooks/useGeolocation';
-import { distanceCalculation } from '@/util/helpers/distanceCalculation';
 import normalMap from '../../public/normal-map.png';
 import terrainMap from '../../public/terrain-map.png';
 import satelliteMap from '../../public/satellite-map.png';
@@ -24,6 +23,7 @@ import {
   ClusterMarker500,
   ClusterMarker1000,
 } from '@/components/Markers';
+import { Coords } from '@/util/types';
 
 declare const MarkerClustering: any;
 
@@ -67,10 +67,7 @@ const mapTypeButtonList = [
 
 export default function Map({ toilets }: MapProps) {
   const [selectedMapType, setSelectedMapType] = useState<MapType>('NORMAL');
-  const [selectedPanoCoord, setSelectedPanoCoord] = useState<{
-    lat: number;
-    lng: number;
-  } | null>(null);
+  const [selectedPanoCoord, setSelectedPanoCoord] = useState<Coords | null>(null);
 
   const mapRef = useRef<naver.maps.Map | null>(null);
   const currentLocationMarkerRef = useRef<naver.maps.Marker | null>(null);
@@ -78,12 +75,12 @@ export default function Map({ toilets }: MapProps) {
   const addressInputRef = useRef<HTMLInputElement | null>(null);
   const hasInitialized = useRef<boolean>(false);
 
-  const { currentMyCoordinates, isCoordinatesLoading, getCurPosition } = useGeolocation(() => {
-    if (mapRef.current && currentMyCoordinates)
-      mapRef.current.panTo(
-        new naver.maps.LatLng(currentMyCoordinates.lat, currentMyCoordinates.lng),
-      );
-  });
+  const { currentMyCoordinates, isCoordinatesLoading, getCurPosition } = useGeolocation(
+    (coords: Coords) => {
+      if (mapRef.current && currentMyCoordinates)
+        mapRef.current.panTo(new naver.maps.LatLng(coords.lat, coords.lng));
+    },
+  );
 
   // 지도 초기화 + 마커 렌더링 + 클러스터링
   useEffect(() => {
