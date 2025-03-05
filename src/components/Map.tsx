@@ -73,8 +73,10 @@ export default function Map({ toilets }: MapProps) {
   } | null>(null);
 
   const mapRef = useRef<naver.maps.Map | null>(null);
+  const currentLocationMarkerRef = useRef<naver.maps.Marker | null>(null);
   const panoramaRef = useRef<HTMLDivElement | null>(null);
   const addressInputRef = useRef<HTMLInputElement | null>(null);
+  const hasInitialized = useRef<boolean>(false);
 
   const { currentMyCoordinates, isCoordinatesLoading, getCurPosition } = useGeolocation(() => {
     if (mapRef.current && currentMyCoordinates)
@@ -85,49 +87,25 @@ export default function Map({ toilets }: MapProps) {
 
   // 지도 초기화 + 마커 렌더링 + 클러스터링
   useEffect(() => {
-    if (!currentMyCoordinates) return;
+    if (!currentMyCoordinates || hasInitialized.current) return;
 
-    if (!mapRef.current)
-      mapRef.current = new naver.maps.Map('map', {
-        center: new naver.maps.LatLng(currentMyCoordinates.lat, currentMyCoordinates.lng),
-        zoom: 18,
-        minZoom: 12,
-        mapDataControl: false,
-      });
-
-    new naver.maps.Marker({
-      position: new naver.maps.LatLng(currentMyCoordinates.lat, currentMyCoordinates.lng),
-      map: mapRef.current,
-      icon: {
-        url: '/current-location-marker.png',
-        size: new naver.maps.Size(43, 43),
-        scaledSize: new naver.maps.Size(43, 43),
-      },
+    // 지도
+    mapRef.current = new naver.maps.Map('map', {
+      center: new naver.maps.LatLng(currentMyCoordinates.lat, currentMyCoordinates.lng),
+      zoom: 18,
+      minZoom: 12,
+      mapDataControl: false,
     });
 
+    // 마커와 정보창
     const toiletMarkers: naver.maps.Marker[] = [];
-    // 가장 가까운 화장실 찾기
-    const [closestToilet] = toilets
-      .map((item) => ({
-        ...item,
-        DISTANCE: distanceCalculation(
-          currentMyCoordinates.lat,
-          currentMyCoordinates.lng,
-          item.Y_WGS84,
-          item.X_WGS84,
-          'K',
-        ),
-      }))
-      .sort((a, b) => a.DISTANCE - b.DISTANCE);
-
-    // 마커와 정보창 생성
     toilets.forEach((toilet) => {
-      const { Y_WGS84, X_WGS84, POI_ID, FNAME, ANAME } = toilet;
+      const { Y_WGS84, X_WGS84, FNAME, ANAME } = toilet;
 
       const marker = new naver.maps.Marker({
         position: new naver.maps.LatLng(Y_WGS84, X_WGS84),
         icon: {
-          url: POI_ID === closestToilet.POI_ID ? '/closetToilet.png' : '/aroundToilet.png',
+          url: '/aroundToilet.png',
           size: new naver.maps.Size(35, 35),
           scaledSize: new naver.maps.Size(35, 35),
         },
@@ -159,7 +137,7 @@ export default function Map({ toilets }: MapProps) {
             (status, response) => {
               if (status === naver.maps.Service.Status.OK && mapRef.current) {
                 const { jibunAddress, roadAddress } = response.v2.address;
-                flushSync(() => {
+                flushSync(() =>
                   root.render(
                     <MarkerInfoWindow
                       FNAME={FNAME}
@@ -171,8 +149,8 @@ export default function Map({ toilets }: MapProps) {
                         if (mapRef.current) mapRef.current.panTo(coords);
                       }}
                     />,
-                  );
-                });
+                  ),
+                );
 
                 infoWindow.open(mapRef.current, marker);
               }
@@ -182,7 +160,7 @@ export default function Map({ toilets }: MapProps) {
       });
     });
 
-    // 마커 클러스터링에 사용할 아이콘(HTML 마커)들을 정의
+    // 마커 클러스터링
     const htmlMarker1 = {
       content: renderToStaticMarkup(<ClusterMarker10 />),
       size: new naver.maps.Size(40, 40),
@@ -209,7 +187,6 @@ export default function Map({ toilets }: MapProps) {
       anchor: new naver.maps.Point(20, 20),
     };
 
-    // 마커 클러스터링
     new MarkerClustering({
       map: mapRef.current,
       markers: toiletMarkers,
@@ -225,7 +202,24 @@ export default function Map({ toilets }: MapProps) {
         if (el) el.textContent = String(count);
       },
     });
+
+    hasInitialized.current = true;
   }, [currentMyCoordinates, toilets]);
+
+  useEffect(() => {
+    if (!currentMyCoordinates || !mapRef.current) return;
+    if (currentLocationMarkerRef.current) currentLocationMarkerRef.current.setMap(null);
+
+    currentLocationMarkerRef.current = new naver.maps.Marker({
+      position: new naver.maps.LatLng(currentMyCoordinates.lat, currentMyCoordinates.lng),
+      map: mapRef.current,
+      icon: {
+        url: '/current-location-marker.png',
+        size: new naver.maps.Size(43, 43),
+        scaledSize: new naver.maps.Size(43, 43),
+      },
+    });
+  }, [currentMyCoordinates]);
 
   // 파노라마
   useEffect(() => {
@@ -283,7 +277,7 @@ export default function Map({ toilets }: MapProps) {
         borderColor: 'transparent',
       });
 
-      // 지도 중심 이동 및 InfoWindow 오픈
+      // 검색한 주소의 위치로 지도 중심 이동 및 InfoWindow 오픈
       mapRef.current.panTo(searchAddressCoordinate);
       geoCoderInfowindow.open(mapRef.current, searchAddressCoordinate);
     });
@@ -318,7 +312,7 @@ export default function Map({ toilets }: MapProps) {
 
   return (
     <>
-      {isCoordinatesLoading && <Spinner isLoading={isCoordinatesLoading} />}
+      {!currentMyCoordinates && <Spinner isLoading={isCoordinatesLoading} />}
 
       <div id='map' className='relative h-screen w-full p-3 focus:outline-none'>
         <div className='absolute z-10 flex h-11 w-full items-center'>

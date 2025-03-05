@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-const DEFAULT_COORDINATES = { lat: 33.450701, lng: 126.570667 } as const;
+const DEFAULT_COORDINATES = { lat: 37.5665, lng: 126.978 } as const;
 
 export const useGeolocation = (onSuccess?: () => void) => {
   const [currentMyCoordinates, setCurrentMyCoordinates] = useState<{
