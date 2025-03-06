@@ -15,6 +15,7 @@ import normalMap from '../../public/normal-map.png';
 import terrainMap from '../../public/terrain-map.png';
 import satelliteMap from '../../public/satellite-map.png';
 import {
+  CurrentMyLocationMarker,
   MarkerInfoWindow,
   GeoCoderInfowindow,
   ClusterMarker10,
@@ -211,9 +212,7 @@ export default function Map({ toilets }: MapProps) {
       position: new naver.maps.LatLng(currentMyCoordinates.lat, currentMyCoordinates.lng),
       map: mapRef.current,
       icon: {
-        url: '/current-location-marker.png',
-        size: new naver.maps.Size(43, 43),
-        scaledSize: new naver.maps.Size(43, 43),
+        content: renderToStaticMarkup(<CurrentMyLocationMarker />),
       },
     });
   }, [currentMyCoordinates]);
@@ -260,7 +259,6 @@ export default function Map({ toilets }: MapProps) {
       const geoCoderInfowindow = new naver.maps.InfoWindow({
         content: renderToStaticMarkup(
           <GeoCoderInfowindow
-            searchAddress={searchAddress}
             roadAddress={roadAddress}
             jibunAddress={jibunAddress}
             englishAddress={englishAddress}

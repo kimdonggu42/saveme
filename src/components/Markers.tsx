@@ -8,6 +8,21 @@ interface MarkerInfoWindowProps {
   onClickPanorama: () => void;
 }
 
+interface GeoCoderInfowindowProps {
+  roadAddress: string;
+  jibunAddress: string;
+  englishAddress: string;
+}
+
+export function CurrentMyLocationMarker() {
+  return (
+    <div className='relative flex h-6 w-6 items-center justify-center'>
+      <div className='absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75' />
+      <div className='relative inline-flex h-3.5 w-3.5 rounded-full border-2 border-white bg-[#2e87ec] shadow-[0_0_10px_rgba(59,130,246,0.5)]' />
+    </div>
+  );
+}
+
 export function MarkerInfoWindow({
   FNAME,
   ANAME,
@@ -43,11 +58,10 @@ export function MarkerInfoWindow({
 }
 
 export function GeoCoderInfowindow({
-  searchAddress,
   roadAddress,
   jibunAddress,
   englishAddress,
-}: any) {
+}: GeoCoderInfowindowProps) {
   return (
     <div className='flex flex-col gap-y-1.5 whitespace-nowrap rounded-md border border-gray-200 bg-white px-5 py-4 shadow-[0_4px_16px_0_rgba(0,0,0,0.1)]'>
       <p className='text-lg font-bold'>{roadAddress}</p>
