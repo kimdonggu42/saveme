@@ -104,8 +104,8 @@ export default function Map({ toilets }: MapProps) {
         position: new naver.maps.LatLng(Y_WGS84, X_WGS84),
         icon: {
           url: '/aroundToilet.png',
-          size: new naver.maps.Size(35, 35),
-          scaledSize: new naver.maps.Size(35, 35),
+          size: new naver.maps.Size(32, 32),
+          scaledSize: new naver.maps.Size(32, 32),
         },
       });
       toiletMarkers.push(marker);
@@ -191,7 +191,7 @@ export default function Map({ toilets }: MapProps) {
       disableClickZoom: false,
       minClusterSize: 5,
       maxZoom: 20,
-      gridSize: 150,
+      gridSize: 200,
       icons: [htmlMarker1, htmlMarker2, htmlMarker3, htmlMarker4, htmlMarker5],
       indexGenerator: [10, 100, 200, 500, 1000],
       averageCenter: false,
@@ -311,12 +311,12 @@ export default function Map({ toilets }: MapProps) {
 
       <div id='map' className='relative h-screen w-full p-3 focus:outline-none'>
         <div className='absolute z-10 flex h-11 w-full items-center'>
-          <div className='z-10 hidden h-11 min-w-[100px] items-center justify-center rounded-bl-md rounded-tl-md bg-[#2e87ec] text-xl text-white shadow-md outline-none sm:flex'>
+          <div className='z-10 hidden h-11 min-w-[100px] items-center justify-center rounded-bl-md rounded-tl-md bg-blue-500 text-xl text-white shadow-md outline-none sm:flex'>
             save <span className='font-semibold'>me</span>
           </div>
           <div className='relative w-[calc(100%-24px)]'>
             <button className='absolute left-2 top-1/2 -translate-y-1/2 transform'>
-              <IoSearch className='h-7 w-7 text-[#2e87ec]' onClick={handleSearchClick} />
+              <IoSearch className='h-7 w-7 text-blue-500' onClick={handleSearchClick} />
             </button>
             <input
               className='h-11 w-full rounded-md pl-10 font-medium shadow-md focus:outline-none sm:w-[370px] sm:rounded-l-none sm:rounded-br-md sm:rounded-tr-md'
@@ -333,7 +333,7 @@ export default function Map({ toilets }: MapProps) {
             <button
               key={mapTypeButton.type}
               className={`w-16 rounded-md border bg-white shadow-md sm:w-20 ${
-                selectedMapType === mapTypeButton.type ? 'border-[#2e87ec]' : 'border-gray-300'
+                selectedMapType === mapTypeButton.type ? 'border-blue-500' : 'border-gray-300'
               }`}
               onClick={() => handleMapTypeChange(mapTypeButton.type)}
             >
@@ -344,7 +344,7 @@ export default function Map({ toilets }: MapProps) {
               />
               <div
                 className={`py-1 text-[10px] font-semibold sm:text-xs ${
-                  selectedMapType === mapTypeButton.type ? 'text-[#2e87ec]' : 'text-gray-700'
+                  selectedMapType === mapTypeButton.type ? 'text-blue-500' : 'text-gray-700'
                 }`}
               >
                 {mapTypeButton.label}

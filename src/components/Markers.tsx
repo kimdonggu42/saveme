@@ -18,7 +18,7 @@ export function CurrentMyLocationMarker() {
   return (
     <div className='relative flex h-6 w-6 items-center justify-center'>
       <div className='absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75' />
-      <div className='relative inline-flex h-3.5 w-3.5 rounded-full border-2 border-white bg-[#2e87ec] shadow-[0_0_10px_rgba(59,130,246,0.5)]' />
+      <div className='relative inline-flex h-3.5 w-3.5 rounded-full border-2 border-white bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]' />
     </div>
   );
 }
@@ -47,7 +47,7 @@ export function MarkerInfoWindow({
       )}
       <div className='flex justify-end'>
         <button
-          className='mt-1 flex rounded-full border border-gray-300 p-1.5 text-gray-600 hover:border-[#2e87ec] hover:text-[#2e87ec]'
+          className='mt-1 flex rounded-full border border-gray-300 p-1.5 text-gray-600 hover:border-blue-500 hover:text-blue-500'
           onClick={onClickPanorama}
         >
           <FiMapPin className='h-5 w-5' />
@@ -87,30 +87,30 @@ export function GeoCoderInfowindow({
 
 export function ClusterMarker10() {
   return (
-    <div className="h-10 w-10 cursor-pointer bg-[url('/cluster-marker-10.png')] bg-contain text-center text-[10px] font-bold leading-[42px] text-white" />
+    <div className='flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-emerald-500 text-xs font-semibold text-white' />
   );
 }
 
 export function ClusterMarker100() {
   return (
-    <div className="h-10 w-10 cursor-pointer bg-[url('/cluster-marker-100.png')] bg-contain text-center text-[10px] font-bold leading-[42px] text-white" />
+    <div className='flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-emerald-600 text-xs font-semibold text-white' />
   );
 }
 
 export function ClusterMarker200() {
   return (
-    <div className="h-10 w-10 cursor-pointer bg-[url('/cluster-marker-200.png')] bg-contain text-center text-[10px] font-bold leading-[42px] text-white" />
+    <div className='flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-emerald-700 text-xs font-semibold text-white' />
   );
 }
 
 export function ClusterMarker500() {
   return (
-    <div className="h-10 w-10 cursor-pointer bg-[url('/cluster-marker-500.png')] bg-contain text-center text-[10px] font-bold leading-[42px] text-white" />
+    <div className='flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-emerald-800 text-xs font-semibold text-white' />
   );
 }
 
 export function ClusterMarker1000() {
   return (
-    <div className="h-10 w-10 cursor-pointer bg-[url('/cluster-marker-100.png')] bg-contain text-center text-[10px] font-bold leading-[42px] text-white" />
+    <div className='flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-emerald-900 text-xs font-semibold text-white' />
   );
 }
