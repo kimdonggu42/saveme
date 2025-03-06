@@ -15,6 +15,7 @@ import normalMap from '../../public/normal-map.png';
 import terrainMap from '../../public/terrain-map.png';
 import satelliteMap from '../../public/satellite-map.png';
 import {
+  CurrentMyLocationMarker,
   MarkerInfoWindow,
   GeoCoderInfowindow,
   ClusterMarker10,
@@ -103,8 +104,9 @@ export default function Map({ toilets }: MapProps) {
         position: new naver.maps.LatLng(Y_WGS84, X_WGS84),
         icon: {
           url: '/aroundToilet.png',
-          size: new naver.maps.Size(35, 35),
-          scaledSize: new naver.maps.Size(35, 35),
+          size: new naver.maps.Size(32, 32),
+          scaledSize: new naver.maps.Size(32, 32),
+          anchor: new naver.maps.Point(16, 16),
         },
       });
       toiletMarkers.push(marker);
@@ -158,30 +160,25 @@ export default function Map({ toilets }: MapProps) {
     });
 
     // 마커 클러스터링
-    const htmlMarker1 = {
+    const clusterMarker10Icon = {
       content: renderToStaticMarkup(<ClusterMarker10 />),
-      size: new naver.maps.Size(40, 40),
-      anchor: new naver.maps.Point(20, 20),
+      anchor: new naver.maps.Point(12, 12),
     };
-    const htmlMarker2 = {
+    const clusterMarker100Icon = {
       content: renderToStaticMarkup(<ClusterMarker100 />),
-      size: new naver.maps.Size(40, 40),
-      anchor: new naver.maps.Point(20, 20),
+      anchor: new naver.maps.Point(12, 12),
     };
-    const htmlMarker3 = {
+    const clusterMarker200Icon = {
       content: renderToStaticMarkup(<ClusterMarker200 />),
-      size: new naver.maps.Size(40, 40),
-      anchor: new naver.maps.Point(20, 20),
+      anchor: new naver.maps.Point(12, 12),
     };
-    const htmlMarker4 = {
+    const clusterMarker500Icon = {
       content: renderToStaticMarkup(<ClusterMarker500 />),
-      size: new naver.maps.Size(40, 40),
-      anchor: new naver.maps.Point(20, 20),
+      anchor: new naver.maps.Point(12, 12),
     };
-    const htmlMarker5 = {
+    const clusterMarker1000Icon = {
       content: renderToStaticMarkup(<ClusterMarker1000 />),
-      size: new naver.maps.Size(40, 40),
-      anchor: new naver.maps.Point(20, 20),
+      anchor: new naver.maps.Point(12, 12),
     };
 
     new MarkerClustering({
@@ -190,8 +187,14 @@ export default function Map({ toilets }: MapProps) {
       disableClickZoom: false,
       minClusterSize: 5,
       maxZoom: 20,
-      gridSize: 150,
-      icons: [htmlMarker1, htmlMarker2, htmlMarker3, htmlMarker4, htmlMarker5],
+      gridSize: 200,
+      icons: [
+        clusterMarker10Icon,
+        clusterMarker100Icon,
+        clusterMarker200Icon,
+        clusterMarker500Icon,
+        clusterMarker1000Icon,
+      ],
       indexGenerator: [10, 100, 200, 500, 1000],
       averageCenter: false,
       stylingFunction: (clusterMarker: any, count: any) => {
@@ -211,9 +214,8 @@ export default function Map({ toilets }: MapProps) {
       position: new naver.maps.LatLng(currentMyCoordinates.lat, currentMyCoordinates.lng),
       map: mapRef.current,
       icon: {
-        url: '/current-location-marker.png',
-        size: new naver.maps.Size(43, 43),
-        scaledSize: new naver.maps.Size(43, 43),
+        content: renderToStaticMarkup(<CurrentMyLocationMarker />),
+        anchor: new naver.maps.Point(12, 12),
       },
     });
   }, [currentMyCoordinates]);
@@ -260,7 +262,6 @@ export default function Map({ toilets }: MapProps) {
       const geoCoderInfowindow = new naver.maps.InfoWindow({
         content: renderToStaticMarkup(
           <GeoCoderInfowindow
-            searchAddress={searchAddress}
             roadAddress={roadAddress}
             jibunAddress={jibunAddress}
             englishAddress={englishAddress}
@@ -313,12 +314,12 @@ export default function Map({ toilets }: MapProps) {
 
       <div id='map' className='relative h-screen w-full p-3 focus:outline-none'>
         <div className='absolute z-10 flex h-11 w-full items-center'>
-          <div className='z-10 hidden h-11 min-w-[100px] items-center justify-center rounded-bl-md rounded-tl-md bg-[#2e87ec] text-xl text-white shadow-md outline-none sm:flex'>
+          <div className='z-10 hidden h-11 min-w-[100px] items-center justify-center rounded-bl-md rounded-tl-md bg-blue-500 text-xl text-white shadow-md outline-none sm:flex'>
             save <span className='font-semibold'>me</span>
           </div>
           <div className='relative w-[calc(100%-24px)]'>
             <button className='absolute left-2 top-1/2 -translate-y-1/2 transform'>
-              <IoSearch className='h-7 w-7 text-[#2e87ec]' onClick={handleSearchClick} />
+              <IoSearch className='h-7 w-7 text-blue-500' onClick={handleSearchClick} />
             </button>
             <input
               className='h-11 w-full rounded-md pl-10 font-medium shadow-md focus:outline-none sm:w-[370px] sm:rounded-l-none sm:rounded-br-md sm:rounded-tr-md'
@@ -335,7 +336,9 @@ export default function Map({ toilets }: MapProps) {
             <button
               key={mapTypeButton.type}
               className={`w-16 rounded-md border bg-white shadow-md sm:w-20 ${
-                selectedMapType === mapTypeButton.type ? 'border-[#2e87ec]' : 'border-gray-300'
+                selectedMapType === mapTypeButton.type
+                  ? 'border-[1.5px] border-blue-500'
+                  : 'border-gray-300'
               }`}
               onClick={() => handleMapTypeChange(mapTypeButton.type)}
             >
@@ -346,7 +349,7 @@ export default function Map({ toilets }: MapProps) {
               />
               <div
                 className={`py-1 text-[10px] font-semibold sm:text-xs ${
-                  selectedMapType === mapTypeButton.type ? 'text-[#2e87ec]' : 'text-gray-700'
+                  selectedMapType === mapTypeButton.type ? 'text-blue-500' : 'text-gray-700'
                 }`}
               >
                 {mapTypeButton.label}
@@ -355,7 +358,7 @@ export default function Map({ toilets }: MapProps) {
           ))}
         </div>
 
-        <div className='absolute right-3 top-80 z-10 sm:top-[350px] md:top-32'>
+        <div className='absolute bottom-20 right-3 z-10'>
           <button
             className='group mb-3 flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white shadow-md outline-white'
             onClick={getCurPosition}
@@ -383,7 +386,7 @@ export default function Map({ toilets }: MapProps) {
 
         {selectedPanoCoord && (
           <div
-            className='absolute top-20 z-10 ml-auto aspect-video w-full max-w-full rounded-md shadow-md md:right-12 md:max-w-[550px]'
+            className='absolute top-20 z-10 ml-auto aspect-video w-full max-w-full rounded-md shadow-md md:max-w-[550px]'
             ref={panoramaRef}
           >
             <button
