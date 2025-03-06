@@ -87,30 +87,30 @@ export function GeoCoderInfowindow({
 
 export function ClusterMarker10() {
   return (
-    <div className='flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-emerald-500 text-xs font-semibold text-white' />
+    <div className='flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-emerald-500 text-xs font-semibold text-white' />
   );
 }
 
 export function ClusterMarker100() {
   return (
-    <div className='flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-emerald-600 text-xs font-semibold text-white' />
+    <div className='flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-emerald-600 text-xs font-semibold text-white' />
   );
 }
 
 export function ClusterMarker200() {
   return (
-    <div className='flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-emerald-700 text-xs font-semibold text-white' />
+    <div className='flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-emerald-700 text-xs font-semibold text-white' />
   );
 }
 
 export function ClusterMarker500() {
   return (
-    <div className='flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-emerald-800 text-xs font-semibold text-white' />
+    <div className='flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-emerald-800 text-xs font-semibold text-white' />
   );
 }
 
 export function ClusterMarker1000() {
   return (
-    <div className='flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-emerald-900 text-xs font-semibold text-white' />
+    <div className='flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-emerald-900 text-xs font-semibold text-white' />
   );
 }

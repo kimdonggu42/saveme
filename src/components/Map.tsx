@@ -106,6 +106,7 @@ export default function Map({ toilets }: MapProps) {
           url: '/aroundToilet.png',
           size: new naver.maps.Size(32, 32),
           scaledSize: new naver.maps.Size(32, 32),
+          anchor: new naver.maps.Point(16, 16),
         },
       });
       toiletMarkers.push(marker);
@@ -159,30 +160,25 @@ export default function Map({ toilets }: MapProps) {
     });
 
     // 마커 클러스터링
-    const htmlMarker1 = {
+    const clusterMarker10Icon = {
       content: renderToStaticMarkup(<ClusterMarker10 />),
-      size: new naver.maps.Size(40, 40),
-      anchor: new naver.maps.Point(20, 20),
+      anchor: new naver.maps.Point(12, 12),
     };
-    const htmlMarker2 = {
+    const clusterMarker100Icon = {
       content: renderToStaticMarkup(<ClusterMarker100 />),
-      size: new naver.maps.Size(40, 40),
-      anchor: new naver.maps.Point(20, 20),
+      anchor: new naver.maps.Point(12, 12),
     };
-    const htmlMarker3 = {
+    const clusterMarker200Icon = {
       content: renderToStaticMarkup(<ClusterMarker200 />),
-      size: new naver.maps.Size(40, 40),
-      anchor: new naver.maps.Point(20, 20),
+      anchor: new naver.maps.Point(12, 12),
     };
-    const htmlMarker4 = {
+    const clusterMarker500Icon = {
       content: renderToStaticMarkup(<ClusterMarker500 />),
-      size: new naver.maps.Size(40, 40),
-      anchor: new naver.maps.Point(20, 20),
+      anchor: new naver.maps.Point(12, 12),
     };
-    const htmlMarker5 = {
+    const clusterMarker1000Icon = {
       content: renderToStaticMarkup(<ClusterMarker1000 />),
-      size: new naver.maps.Size(40, 40),
-      anchor: new naver.maps.Point(20, 20),
+      anchor: new naver.maps.Point(12, 12),
     };
 
     new MarkerClustering({
@@ -192,7 +188,13 @@ export default function Map({ toilets }: MapProps) {
       minClusterSize: 5,
       maxZoom: 20,
       gridSize: 200,
-      icons: [htmlMarker1, htmlMarker2, htmlMarker3, htmlMarker4, htmlMarker5],
+      icons: [
+        clusterMarker10Icon,
+        clusterMarker100Icon,
+        clusterMarker200Icon,
+        clusterMarker500Icon,
+        clusterMarker1000Icon,
+      ],
       indexGenerator: [10, 100, 200, 500, 1000],
       averageCenter: false,
       stylingFunction: (clusterMarker: any, count: any) => {
@@ -213,6 +215,7 @@ export default function Map({ toilets }: MapProps) {
       map: mapRef.current,
       icon: {
         content: renderToStaticMarkup(<CurrentMyLocationMarker />),
+        anchor: new naver.maps.Point(12, 12),
       },
     });
   }, [currentMyCoordinates]);
@@ -333,7 +336,9 @@ export default function Map({ toilets }: MapProps) {
             <button
               key={mapTypeButton.type}
               className={`w-16 rounded-md border bg-white shadow-md sm:w-20 ${
-                selectedMapType === mapTypeButton.type ? 'border-blue-500' : 'border-gray-300'
+                selectedMapType === mapTypeButton.type
+                  ? 'border-[1.5px] border-blue-500'
+                  : 'border-gray-300'
               }`}
               onClick={() => handleMapTypeChange(mapTypeButton.type)}
             >
@@ -353,7 +358,7 @@ export default function Map({ toilets }: MapProps) {
           ))}
         </div>
 
-        <div className='absolute right-3 top-80 z-10 sm:top-[350px] md:top-32'>
+        <div className='absolute bottom-20 right-3 z-10'>
           <button
             className='group mb-3 flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white shadow-md outline-white'
             onClick={getCurPosition}
@@ -381,7 +386,7 @@ export default function Map({ toilets }: MapProps) {
 
         {selectedPanoCoord && (
           <div
-            className='absolute top-20 z-10 ml-auto aspect-video w-full max-w-full rounded-md shadow-md md:right-12 md:max-w-[550px]'
+            className='absolute top-20 z-10 ml-auto aspect-video w-full max-w-full rounded-md shadow-md md:max-w-[550px]'
             ref={panoramaRef}
           >
             <button
