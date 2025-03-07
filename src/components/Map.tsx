@@ -76,12 +76,10 @@ export default function Map({ toilets }: MapProps) {
   const addressInputRef = useRef<HTMLInputElement | null>(null);
   const hasInitialized = useRef<boolean>(false);
 
-  const { currentMyCoordinates, isCoordinatesLoading, getCurPosition } = useGeolocation(
-    (coords: Coords) => {
-      if (mapRef.current && currentMyCoordinates)
-        mapRef.current.panTo(new naver.maps.LatLng(coords.lat, coords.lng));
-    },
-  );
+  const { currentMyCoordinates, geoStatus, getCurPosition } = useGeolocation((coords: Coords) => {
+    if (mapRef.current && currentMyCoordinates)
+      mapRef.current.panTo(new naver.maps.LatLng(coords.lat, coords.lng));
+  });
 
   // 지도 초기화 + 마커 렌더링 + 클러스터링
   useEffect(() => {
@@ -207,7 +205,8 @@ export default function Map({ toilets }: MapProps) {
   }, [currentMyCoordinates, toilets]);
 
   useEffect(() => {
-    if (!currentMyCoordinates || !mapRef.current) return;
+    if (geoStatus !== 'success' || !currentMyCoordinates || !mapRef.current) return;
+
     if (currentLocationMarkerRef.current) currentLocationMarkerRef.current.setMap(null);
 
     currentLocationMarkerRef.current = new naver.maps.Marker({
@@ -310,7 +309,7 @@ export default function Map({ toilets }: MapProps) {
 
   return (
     <>
-      {!currentMyCoordinates && <Spinner isLoading={isCoordinatesLoading} />}
+      {!currentMyCoordinates && <Spinner />}
 
       <div id='map' className='relative h-screen w-full p-3 focus:outline-none'>
         <div className='absolute z-10 flex h-11 w-full items-center'>

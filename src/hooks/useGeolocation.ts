@@ -3,14 +3,17 @@
 import { useState, useEffect } from 'react';
 import { Coords } from '@/util/types';
 
+type GeolocationStatus = 'idle' | 'loading' | 'success' | 'error';
+
 const DEFAULT_COORDINATES = { lat: 37.5665, lng: 126.978 } as const;
 
 export const useGeolocation = (onSuccess?: (coords: Coords) => void) => {
   const [currentMyCoordinates, setCurrentMyCoordinates] = useState<Coords | null>(null);
-  const [isCoordinatesLoading, setIsCoordinatesLoading] = useState<boolean>(false);
+  const [geoStatus, setGeoStatus] = useState<GeolocationStatus>('idle');
 
   const getCurPosition = () => {
-    setIsCoordinatesLoading(true);
+    setGeoStatus('loading');
+
     const success = (location: { coords: { latitude: number; longitude: number } }) => {
       const newCoords = {
         lat: location.coords.latitude,
@@ -18,12 +21,12 @@ export const useGeolocation = (onSuccess?: (coords: Coords) => void) => {
       };
       setCurrentMyCoordinates(newCoords);
       if (onSuccess) onSuccess(newCoords);
-      setIsCoordinatesLoading(false);
+      setGeoStatus('success');
     };
 
     const error = () => {
       setCurrentMyCoordinates(DEFAULT_COORDINATES);
-      setIsCoordinatesLoading(false);
+      setGeoStatus('error');
     };
 
     if (navigator.geolocation) navigator.geolocation.getCurrentPosition(success, error);
@@ -35,7 +38,7 @@ export const useGeolocation = (onSuccess?: (coords: Coords) => void) => {
 
   return {
     currentMyCoordinates,
-    isCoordinatesLoading,
+    geoStatus,
     getCurPosition,
   };
 };
