@@ -219,6 +219,35 @@ export default function Map({ toilets }: MapProps) {
     });
   }, [currentMyCoordinates]);
 
+  const handleRequestLocationAccess = async () => {
+    try {
+      const result = await navigator.permissions.query({ name: 'geolocation' });
+
+      if (result.state === 'granted') {
+        getCurPosition();
+      } else {
+        alert('위치 서비스를 사용할 수 없습니다. 위치 접근 권한을 허용해 주세요.');
+      }
+    } catch (error) {
+      console.error('권한 상태 확인 중 오류 발생:', error);
+    }
+  };
+
+  useEffect(() => {
+    const test = async () => {
+      try {
+        const result = await navigator.permissions.query({ name: 'geolocation' });
+
+        if (result.state === 'prompt') console.log('prompt');
+        if (result.state === 'granted') console.log('granted');
+        if (result.state === 'denied') console.log('denied');
+      } catch (error) {
+        console.error('권한 상태 확인 중 오류 발생:', error);
+      }
+    };
+    test();
+  }, []);
+
   // 파노라마
   useEffect(() => {
     if (panoramaRef.current && selectedPanoCoord)
@@ -360,7 +389,7 @@ export default function Map({ toilets }: MapProps) {
         <div className='absolute bottom-20 right-3 z-10'>
           <button
             className='group mb-3 flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white shadow-md outline-white'
-            onClick={getCurPosition}
+            onClick={handleRequestLocationAccess}
           >
             <IoMdLocate className='locateIcon text-gray-700' size={21} />
             <span className='absolute left-[-65px] top-[18px] hidden w-[60px] -translate-y-1/2 rounded-md bg-[#222222] p-1.5 text-center text-xs text-white shadow-md group-hover:block'>
