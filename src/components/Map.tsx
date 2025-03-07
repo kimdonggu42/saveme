@@ -219,36 +219,30 @@ export default function Map({ toilets }: MapProps) {
     });
   }, [currentMyCoordinates]);
 
-  const handleRequestLocationAccess = async () => {
-    try {
-      const result = await navigator.permissions.query({ name: 'geolocation' });
-
-      if (result.state === 'granted') {
-        getCurPosition();
-      } else {
-        alert('위치 서비스를 사용할 수 없습니다. 위치 접근 권한을 허용해 주세요.');
-      }
-    } catch (error) {
-      console.error('권한 상태 확인 중 오류 발생:', error);
+  const handleRequestLocationAccess = () => {
+    if (geoStatus === 'success') {
+      getCurPosition();
+    } else {
+      alert('위치 서비스를 사용할 수 없습니다. 위치 접근 권한을 허용해 주세요.');
     }
   };
 
-  useEffect(() => {
-    const test = async () => {
-      try {
-        const result = await navigator.permissions.query({ name: 'geolocation' });
+  // useEffect(() => {
+  //   const test = async () => {
+  //     try {
+  //       const result = await navigator.permissions.query({ name: 'geolocation' });
 
-        if (result.state === 'prompt') console.log('prompt');
-        if (result.state === 'granted') console.log('granted');
-        if (result.state === 'denied') console.log('denied');
-      } catch (error) {
-        console.error('권한 상태 확인 중 오류 발생:', error);
-      }
-    };
-    test();
-  }, []);
+  //       if (result.state === 'prompt') console.log('prompt');
+  //       if (result.state === 'granted') console.log('granted');
+  //       if (result.state === 'denied') console.log('denied');
+  //     } catch (error) {
+  //       console.error('권한 상태 확인 중 오류 발생:', error);
+  //     }
+  //   };
+  //   test();
+  // }, []);
 
-  console.log(geoStatus);
+  // console.log(geoStatus);
 
   // 파노라마
   useEffect(() => {
