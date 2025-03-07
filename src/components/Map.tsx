@@ -248,6 +248,8 @@ export default function Map({ toilets }: MapProps) {
     test();
   }, []);
 
+  console.log(geoStatus);
+
   // 파노라마
   useEffect(() => {
     if (panoramaRef.current && selectedPanoCoord)
