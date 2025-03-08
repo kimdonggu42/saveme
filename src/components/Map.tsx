@@ -319,7 +319,7 @@ export default function Map({ toilets }: MapProps) {
     <>
       {!currentMyCoordinates && <Spinner />}
 
-      <div id='map' className='relative h-screen w-full p-3 focus:outline-none'>
+      <div id='map' className='relative h-dvh w-full p-3 focus:outline-none'>
         <div className='absolute z-10 flex h-11 w-full items-center'>
           <div className='z-10 hidden h-11 min-w-[100px] items-center justify-center rounded-bl-md rounded-tl-md bg-blue-500 text-xl text-white shadow-md outline-none sm:flex'>
             save <span className='font-semibold'>me</span>
@@ -365,7 +365,7 @@ export default function Map({ toilets }: MapProps) {
           ))}
         </div>
 
-        <div className='absolute bottom-20 right-3 z-10'>
+        <div className='absolute bottom-7 right-3 z-10'>
           <button
             className='group mb-3 flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white shadow-md outline-white'
             onClick={handleRequestLocationAccess}
