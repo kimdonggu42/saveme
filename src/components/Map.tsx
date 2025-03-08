@@ -222,6 +222,8 @@ export default function Map({ toilets }: MapProps) {
   const handleRequestLocationAccess = async () => {
     try {
       const permissionStatus = await navigator.permissions.query({ name: 'geolocation' });
+      console.log(permissionStatus.state);
+
       if (permissionStatus.state !== 'denied') {
         getCurPosition();
       } else {
