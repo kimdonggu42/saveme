@@ -222,7 +222,7 @@ export default function Map({ toilets }: MapProps) {
   const handleRequestLocationAccess = async () => {
     try {
       const permissionStatus = await navigator.permissions.query({ name: 'geolocation' });
-      if (permissionStatus.state === 'granted') {
+      if (permissionStatus.state !== 'denied') {
         getCurPosition();
       } else {
         alert('현재 위치 정보를 가져올 수 없습니다. 브라우저의 위치 접근 권한을 확인해 주세요.');
