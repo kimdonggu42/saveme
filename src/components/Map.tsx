@@ -219,21 +219,6 @@ export default function Map({ toilets }: MapProps) {
     });
   }, [currentMyCoordinates]);
 
-  const handleRequestLocationAccess = async () => {
-    try {
-      const permissionStatus = await navigator.permissions.query({ name: 'geolocation' });
-      alert(permissionStatus.state);
-
-      if (permissionStatus.state !== 'denied') {
-        getCurPosition();
-      } else {
-        alert('현재 위치 정보를 가져올 수 없습니다. 브라우저의 위치 접근 권한을 확인해 주세요.');
-      }
-    } catch {
-      alert('위치 권한 확인 중 문제가 발생했습니다. 브라우저 설정을 확인해 주세요.');
-    }
-  };
-
   // 파노라마
   useEffect(() => {
     if (panoramaRef.current && selectedPanoCoord)
@@ -375,7 +360,7 @@ export default function Map({ toilets }: MapProps) {
         <div className='absolute bottom-11 right-3 z-10'>
           <button
             className='group mb-3 flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white shadow-md outline-white'
-            onClick={handleRequestLocationAccess}
+            onClick={getCurPosition}
             disabled={geoStatus === 'loading'}
           >
             <IoMdLocate className='locateIcon text-gray-700' size={21} />
