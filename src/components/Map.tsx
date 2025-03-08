@@ -365,7 +365,7 @@ export default function Map({ toilets }: MapProps) {
           ))}
         </div>
 
-        <div className='absolute bottom-7 right-3 z-10'>
+        <div className='absolute bottom-11 right-3 z-10'>
           <button
             className='group mb-3 flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white shadow-md outline-white'
             onClick={handleRequestLocationAccess}
