@@ -76,10 +76,7 @@ export default function Map({ toilets }: MapProps) {
   const addressInputRef = useRef<HTMLInputElement | null>(null);
   const hasInitialized = useRef<boolean>(false);
 
-  const { currentMyCoordinates, geoStatus, getCurPosition } = useGeolocation((coords: Coords) => {
-    if (mapRef.current && currentMyCoordinates)
-      mapRef.current.panTo(new naver.maps.LatLng(coords.lat, coords.lng));
-  });
+  const { currentMyCoordinates, geoStatus, getCurPosition } = useGeolocation();
 
   // 지도 초기화 + 마커 렌더링 + 클러스터링
   useEffect(() => {
@@ -208,7 +205,6 @@ export default function Map({ toilets }: MapProps) {
     if (geoStatus !== 'success' || !currentMyCoordinates || !mapRef.current) return;
 
     if (currentLocationMarkerRef.current) currentLocationMarkerRef.current.setMap(null);
-
     currentLocationMarkerRef.current = new naver.maps.Marker({
       position: new naver.maps.LatLng(currentMyCoordinates.lat, currentMyCoordinates.lng),
       map: mapRef.current,
@@ -217,7 +213,8 @@ export default function Map({ toilets }: MapProps) {
         anchor: new naver.maps.Point(12, 12),
       },
     });
-  }, [currentMyCoordinates]);
+    mapRef.current.panTo(new naver.maps.LatLng(currentMyCoordinates.lat, currentMyCoordinates.lng));
+  }, [currentMyCoordinates, geoStatus]);
 
   // 파노라마
   useEffect(() => {
