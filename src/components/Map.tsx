@@ -219,11 +219,16 @@ export default function Map({ toilets }: MapProps) {
     });
   }, [currentMyCoordinates]);
 
-  const handleRequestLocationAccess = () => {
-    if (geoStatus === 'success') {
-      getCurPosition();
-    } else {
-      alert('위치 서비스를 사용할 수 없습니다. 위치 접근 권한을 허용해 주세요.');
+  const handleRequestLocationAccess = async () => {
+    try {
+      const permissionStatus = await navigator.permissions.query({ name: 'geolocation' });
+      if (permissionStatus.state === 'granted') {
+        getCurPosition();
+      } else {
+        alert('현재 위치 정보를 가져올 수 없습니다. 브라우저의 위치 접근 권한을 확인해 주세요.');
+      }
+    } catch {
+      alert('위치 권한 확인 중 문제가 발생했습니다. 브라우저 설정을 확인해 주세요.');
     }
   };
 
