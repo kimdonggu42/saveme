@@ -48,6 +48,10 @@ interface Toilet {
   DISTANCE: number;
 }
 
+interface ClusterMarker {
+  getElement(): HTMLElement;
+}
+
 const mapTypeButtonList = [
   {
     type: 'NORMAL',
@@ -192,7 +196,7 @@ export default function Map({ toilets }: MapProps) {
       ],
       indexGenerator: [10, 100, 200, 500, 1000],
       averageCenter: false,
-      stylingFunction: (clusterMarker: any, count: any) => {
+      stylingFunction: (clusterMarker: ClusterMarker, count: number) => {
         const el = clusterMarker.getElement().firstChild as HTMLElement | null;
         if (el) el.textContent = String(count);
       },
