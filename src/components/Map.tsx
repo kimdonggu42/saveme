@@ -48,6 +48,10 @@ interface Toilet {
   DISTANCE: number;
 }
 
+interface ClusterMarker {
+  getElement(): HTMLElement;
+}
+
 const mapTypeButtonList = [
   {
     type: 'NORMAL',
@@ -76,12 +80,7 @@ export default function Map({ toilets }: MapProps) {
   const addressInputRef = useRef<HTMLInputElement | null>(null);
   const hasInitialized = useRef<boolean>(false);
 
-  const { currentMyCoordinates, isCoordinatesLoading, getCurPosition } = useGeolocation(
-    (coords: Coords) => {
-      if (mapRef.current && currentMyCoordinates)
-        mapRef.current.panTo(new naver.maps.LatLng(coords.lat, coords.lng));
-    },
-  );
+  const { currentMyCoordinates, geoStatus, getCurPosition } = useGeolocation();
 
   // 지도 초기화 + 마커 렌더링 + 클러스터링
   useEffect(() => {
@@ -93,6 +92,7 @@ export default function Map({ toilets }: MapProps) {
       zoom: 18,
       minZoom: 12,
       mapDataControl: false,
+      disableKineticPan: false,
     });
 
     // 마커와 정보창
@@ -187,7 +187,7 @@ export default function Map({ toilets }: MapProps) {
       disableClickZoom: false,
       minClusterSize: 5,
       maxZoom: 20,
-      gridSize: 200,
+      gridSize: 150,
       icons: [
         clusterMarker10Icon,
         clusterMarker100Icon,
@@ -197,7 +197,7 @@ export default function Map({ toilets }: MapProps) {
       ],
       indexGenerator: [10, 100, 200, 500, 1000],
       averageCenter: false,
-      stylingFunction: (clusterMarker: any, count: any) => {
+      stylingFunction: (clusterMarker: ClusterMarker, count: number) => {
         const el = clusterMarker.getElement().firstChild as HTMLElement | null;
         if (el) el.textContent = String(count);
       },
@@ -207,9 +207,9 @@ export default function Map({ toilets }: MapProps) {
   }, [currentMyCoordinates, toilets]);
 
   useEffect(() => {
-    if (!currentMyCoordinates || !mapRef.current) return;
-    if (currentLocationMarkerRef.current) currentLocationMarkerRef.current.setMap(null);
+    if (geoStatus !== 'success' || !currentMyCoordinates || !mapRef.current) return;
 
+    if (currentLocationMarkerRef.current) currentLocationMarkerRef.current.setMap(null);
     currentLocationMarkerRef.current = new naver.maps.Marker({
       position: new naver.maps.LatLng(currentMyCoordinates.lat, currentMyCoordinates.lng),
       map: mapRef.current,
@@ -218,7 +218,8 @@ export default function Map({ toilets }: MapProps) {
         anchor: new naver.maps.Point(12, 12),
       },
     });
-  }, [currentMyCoordinates]);
+    mapRef.current.panTo(new naver.maps.LatLng(currentMyCoordinates.lat, currentMyCoordinates.lng));
+  }, [currentMyCoordinates, geoStatus]);
 
   // 파노라마
   useEffect(() => {
@@ -310,9 +311,9 @@ export default function Map({ toilets }: MapProps) {
 
   return (
     <>
-      {!currentMyCoordinates && <Spinner isLoading={isCoordinatesLoading} />}
+      {!currentMyCoordinates && <Spinner />}
 
-      <div id='map' className='relative h-screen w-full p-3 focus:outline-none'>
+      <div id='map' className='relative h-dvh w-full p-3 focus:outline-none'>
         <div className='absolute z-10 flex h-11 w-full items-center'>
           <div className='z-10 hidden h-11 min-w-[100px] items-center justify-center rounded-bl-md rounded-tl-md bg-blue-500 text-xl text-white shadow-md outline-none sm:flex'>
             save <span className='font-semibold'>me</span>
@@ -358,10 +359,11 @@ export default function Map({ toilets }: MapProps) {
           ))}
         </div>
 
-        <div className='absolute bottom-20 right-3 z-10'>
+        <div className='absolute bottom-11 right-3 z-10'>
           <button
             className='group mb-3 flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white shadow-md outline-white'
             onClick={getCurPosition}
+            disabled={geoStatus === 'loading'}
           >
             <IoMdLocate className='locateIcon text-gray-700' size={21} />
             <span className='absolute left-[-65px] top-[18px] hidden w-[60px] -translate-y-1/2 rounded-md bg-[#222222] p-1.5 text-center text-xs text-white shadow-md group-hover:block'>

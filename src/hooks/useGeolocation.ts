@@ -3,30 +3,42 @@
 import { useState, useEffect } from 'react';
 import { Coords } from '@/util/types';
 
-const DEFAULT_COORDINATES = { lat: 37.5665, lng: 126.978 } as const;
+type GeolocationStatus = 'idle' | 'loading' | 'success' | 'error';
 
-export const useGeolocation = (onSuccess?: (coords: Coords) => void) => {
+const DEFAULT_COORDINATES = { lat: 37.5665, lng: 126.978 } as const;
+const options = {
+  enableHighAccuracy: false,
+  maximumAge: 30000,
+  timeout: 27000,
+} as const;
+
+export const useGeolocation = () => {
   const [currentMyCoordinates, setCurrentMyCoordinates] = useState<Coords | null>(null);
-  const [isCoordinatesLoading, setIsCoordinatesLoading] = useState<boolean>(false);
+  const [geoStatus, setGeoStatus] = useState<GeolocationStatus>('idle');
 
   const getCurPosition = () => {
-    setIsCoordinatesLoading(true);
     const success = (location: { coords: { latitude: number; longitude: number } }) => {
       const newCoords = {
         lat: location.coords.latitude,
         lng: location.coords.longitude,
       };
       setCurrentMyCoordinates(newCoords);
-      if (onSuccess) onSuccess(newCoords);
-      setIsCoordinatesLoading(false);
+      setGeoStatus('success');
     };
 
     const error = () => {
+      alert('현재 위치 정보를 가져올 수 없습니다. 브라우저의 위치 접근 권한을 확인해 주세요.');
       setCurrentMyCoordinates(DEFAULT_COORDINATES);
-      setIsCoordinatesLoading(false);
+      setGeoStatus('error');
     };
 
-    if (navigator.geolocation) navigator.geolocation.getCurrentPosition(success, error);
+    if (navigator.geolocation) {
+      setGeoStatus('loading');
+      navigator.geolocation.getCurrentPosition(success, error, options);
+    } else {
+      alert('브라우저가 위치 정보를 지원하지 않습니다.');
+      setGeoStatus('idle');
+    }
   };
 
   useEffect(() => {
@@ -35,7 +47,7 @@ export const useGeolocation = (onSuccess?: (coords: Coords) => void) => {
 
   return {
     currentMyCoordinates,
-    isCoordinatesLoading,
+    geoStatus,
     getCurPosition,
   };
 };
