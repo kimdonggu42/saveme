@@ -92,6 +92,7 @@ export default function Map({ toilets }: MapProps) {
       zoom: 18,
       minZoom: 12,
       mapDataControl: false,
+      disableKineticPan: false,
     });
 
     // 마커와 정보창
@@ -186,7 +187,7 @@ export default function Map({ toilets }: MapProps) {
       disableClickZoom: false,
       minClusterSize: 5,
       maxZoom: 20,
-      gridSize: 200,
+      gridSize: 150,
       icons: [
         clusterMarker10Icon,
         clusterMarker100Icon,
