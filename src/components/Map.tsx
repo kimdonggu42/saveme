@@ -311,95 +311,97 @@ export default function Map({ toilets }: MapProps) {
 
   return (
     <>
-      {!currentMyCoordinates && <Spinner />}
-
-      <div id='map' className='relative h-dvh w-full p-3 focus:outline-none'>
-        <div className='absolute z-10 flex h-11 w-full items-center'>
-          <div className='z-10 hidden h-11 min-w-[100px] items-center justify-center rounded-bl-md rounded-tl-md bg-blue-500 text-xl text-white shadow-md outline-none sm:flex'>
-            save <span className='font-semibold'>me</span>
-          </div>
-          <div className='relative w-[calc(100%-24px)]'>
-            <button className='absolute left-2 top-1/2 -translate-y-1/2 transform'>
-              <IoSearch className='h-7 w-7 text-blue-500' onClick={handleSearchClick} />
-            </button>
-            <input
-              className='h-11 w-full rounded-md pl-10 font-medium shadow-md focus:outline-none sm:w-[370px] sm:rounded-l-none sm:rounded-br-md sm:rounded-tr-md'
-              ref={addressInputRef}
-              type='text'
-              placeholder='주소 검색'
-              onKeyDown={handleKeyDown}
-            />
-          </div>
-        </div>
-
-        <div className='absolute right-3 top-20 z-10 flex flex-col gap-y-2 md:top-3 md:flex-row md:gap-x-2'>
-          {mapTypeButtonList.map((mapTypeButton) => (
-            <button
-              key={mapTypeButton.type}
-              className={`w-16 rounded-md border bg-white shadow-md sm:w-20 ${
-                selectedMapType === mapTypeButton.type
-                  ? 'border-[1.5px] border-blue-500'
-                  : 'border-gray-300'
-              }`}
-              onClick={() => handleMapTypeChange(mapTypeButton.type)}
-            >
-              <Image
-                className='rounded-tl-md rounded-tr-md'
-                src={mapTypeButton.img}
-                alt='map img'
+      {!currentMyCoordinates ? (
+        <Spinner />
+      ) : (
+        <div id='map' className='relative h-dvh w-full p-3 focus:outline-none'>
+          <div className='absolute z-10 flex h-11 w-full items-center'>
+            <div className='z-10 hidden h-11 min-w-[100px] items-center justify-center rounded-bl-md rounded-tl-md bg-blue-500 text-xl text-white shadow-md outline-none sm:flex'>
+              save <span className='font-semibold'>me</span>
+            </div>
+            <div className='relative w-[calc(100%-24px)]'>
+              <button className='absolute left-2 top-1/2 -translate-y-1/2 transform'>
+                <IoSearch className='h-7 w-7 text-blue-500' onClick={handleSearchClick} />
+              </button>
+              <input
+                className='h-11 w-full rounded-md pl-10 font-medium shadow-md focus:outline-none sm:w-[370px] sm:rounded-l-none sm:rounded-br-md sm:rounded-tr-md'
+                ref={addressInputRef}
+                type='text'
+                placeholder='주소 검색'
+                onKeyDown={handleKeyDown}
               />
-              <div
-                className={`py-1 text-[10px] font-semibold sm:text-xs ${
-                  selectedMapType === mapTypeButton.type ? 'text-blue-500' : 'text-gray-700'
+            </div>
+          </div>
+
+          <div className='absolute right-3 top-20 z-10 flex flex-col gap-y-2 md:top-3 md:flex-row md:gap-x-2'>
+            {mapTypeButtonList.map((mapTypeButton) => (
+              <button
+                key={mapTypeButton.type}
+                className={`w-16 rounded-md border bg-white shadow-md sm:w-20 ${
+                  selectedMapType === mapTypeButton.type
+                    ? 'border-[1.5px] border-blue-500'
+                    : 'border-gray-300'
                 }`}
+                onClick={() => handleMapTypeChange(mapTypeButton.type)}
               >
-                {mapTypeButton.label}
-              </div>
-            </button>
-          ))}
-        </div>
-
-        <div className='absolute bottom-11 right-3 z-10'>
-          <button
-            className='group mb-3 flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white shadow-md outline-white'
-            onClick={getCurPosition}
-            disabled={geoStatus === 'loading'}
-          >
-            <IoMdLocate className='locateIcon text-gray-700' size={21} />
-            <span className='absolute left-[-65px] top-[18px] hidden w-[60px] -translate-y-1/2 rounded-md bg-[#222222] p-1.5 text-center text-xs text-white shadow-md group-hover:block'>
-              현재위치
-            </span>
-          </button>
-          <div className='flex flex-col'>
-            <button
-              className='flex h-9 w-9 items-center justify-center rounded-tl-md rounded-tr-md border-x border-b-[0.5px] border-t border-gray-300 bg-white shadow-md outline-white'
-              onClick={handleZoomIn}
-            >
-              <FiPlus className='locateIcon text-gray-700' size={21} />
-            </button>
-            <button
-              className='flex h-9 w-9 items-center justify-center rounded-bl-md rounded-br-md border-x border-b border-t-[0.5px] border-gray-300 bg-white shadow-md outline-white'
-              onClick={handleZoomOut}
-            >
-              <FiMinus className='locateIcon text-gray-700' size={21} />
-            </button>
+                <Image
+                  className='rounded-tl-md rounded-tr-md'
+                  src={mapTypeButton.img}
+                  alt='map img'
+                />
+                <div
+                  className={`py-1 text-[10px] font-semibold sm:text-xs ${
+                    selectedMapType === mapTypeButton.type ? 'text-blue-500' : 'text-gray-700'
+                  }`}
+                >
+                  {mapTypeButton.label}
+                </div>
+              </button>
+            ))}
           </div>
-        </div>
 
-        {selectedPanoCoord && (
-          <div
-            className='absolute top-20 z-10 ml-auto aspect-video w-full max-w-full rounded-md shadow-md md:max-w-[550px]'
-            ref={panoramaRef}
-          >
+          <div className='absolute bottom-11 right-3 z-10'>
             <button
-              className='absolute right-2 top-2 z-10 rounded-full bg-[#000000B8]'
-              onClick={handleClosePanorama}
+              className='group mb-3 flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white shadow-md outline-white'
+              onClick={getCurPosition}
+              disabled={geoStatus === 'loading'}
             >
-              <IoIosClose className='h-7 w-7 text-white' />
+              <IoMdLocate className='locateIcon text-gray-700' size={21} />
+              <span className='absolute left-[-65px] top-[18px] hidden w-[60px] -translate-y-1/2 rounded-md bg-[#222222] p-1.5 text-center text-xs text-white shadow-md group-hover:block'>
+                현재위치
+              </span>
             </button>
+            <div className='flex flex-col'>
+              <button
+                className='flex h-9 w-9 items-center justify-center rounded-tl-md rounded-tr-md border-x border-b-[0.5px] border-t border-gray-300 bg-white shadow-md outline-white'
+                onClick={handleZoomIn}
+              >
+                <FiPlus className='locateIcon text-gray-700' size={21} />
+              </button>
+              <button
+                className='flex h-9 w-9 items-center justify-center rounded-bl-md rounded-br-md border-x border-b border-t-[0.5px] border-gray-300 bg-white shadow-md outline-white'
+                onClick={handleZoomOut}
+              >
+                <FiMinus className='locateIcon text-gray-700' size={21} />
+              </button>
+            </div>
           </div>
-        )}
-      </div>
+
+          {selectedPanoCoord && (
+            <div
+              className='absolute top-20 z-10 ml-auto aspect-video w-full max-w-full rounded-md shadow-md md:max-w-[550px]'
+              ref={panoramaRef}
+            >
+              <button
+                className='absolute right-2 top-2 z-10 rounded-full bg-[#000000B8]'
+                onClick={handleClosePanorama}
+              >
+                <IoIosClose className='h-7 w-7 text-white' />
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </>
   );
 }
