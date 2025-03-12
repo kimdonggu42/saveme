@@ -70,6 +70,13 @@ const mapTypeButtonList = [
   },
 ] as const;
 
+const seoulBoundaryCoordinates = {
+  north: 37.715133, // 최대 위도
+  south: 37.413294, // 최소 위도
+  east: 127.269311, // 최대 경도
+  west: 126.734086, // 최소 경도
+} as const;
+
 export default function Map({ toilets }: MapProps) {
   const [selectedMapType, setSelectedMapType] = useState<MapType>('NORMAL');
   const [selectedPanoCoord, setSelectedPanoCoord] = useState<Coords | null>(null);
@@ -90,7 +97,7 @@ export default function Map({ toilets }: MapProps) {
     mapRef.current = new naver.maps.Map('map', {
       center: new naver.maps.LatLng(currentMyCoordinates.lat, currentMyCoordinates.lng),
       zoom: 18,
-      minZoom: 12,
+      minZoom: 8,
       mapDataControl: false,
       disableKineticPan: false,
     });
@@ -202,6 +209,16 @@ export default function Map({ toilets }: MapProps) {
         if (el) el.textContent = String(count);
       },
     });
+
+    // 현재 사용자가 서울에 위치해 있는지 확인
+    if (
+      currentMyCoordinates.lat > seoulBoundaryCoordinates.north ||
+      currentMyCoordinates.lat < seoulBoundaryCoordinates.south ||
+      currentMyCoordinates.lng < seoulBoundaryCoordinates.west ||
+      currentMyCoordinates.lng > seoulBoundaryCoordinates.east
+    ) {
+      alert('현재 위치가 서울이 아닙니다.');
+    }
 
     hasInitialized.current = true;
   }, [currentMyCoordinates, toilets]);

@@ -5,7 +5,8 @@ import { Coords } from '@/util/types';
 
 type GeolocationStatus = 'idle' | 'loading' | 'success' | 'error';
 
-const DEFAULT_COORDINATES = { lat: 37.5665, lng: 126.978 } as const;
+const defalutCoordinates = { lat: 37.5665, lng: 126.978 } as const;
+
 const options = {
   enableHighAccuracy: false,
   maximumAge: 30000,
@@ -28,7 +29,7 @@ export const useGeolocation = () => {
 
     const error = () => {
       alert('현재 위치 정보를 가져올 수 없습니다. 브라우저의 위치 접근 권한을 확인해 주세요.');
-      setCurrentMyCoordinates(DEFAULT_COORDINATES);
+      setCurrentMyCoordinates(defalutCoordinates);
       setGeoStatus('error');
     };
 
