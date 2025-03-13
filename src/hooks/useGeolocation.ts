@@ -5,7 +5,7 @@ import { Coords } from '@/util/types';
 
 type GeolocationStatus = 'idle' | 'loading' | 'success' | 'error';
 
-const defalutCoordinates = { lat: 37.5665, lng: 126.978 } as const;
+export const defalutCoordinates = { lat: 37.5665, lng: 126.978 } as const;
 
 const options = {
   enableHighAccuracy: false,
