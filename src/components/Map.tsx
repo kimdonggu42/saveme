@@ -1,19 +1,18 @@
 'use client';
 
-import { IoMdLocate } from 'react-icons/io';
+import { toast } from 'sonner';
 import { IoSearch } from 'react-icons/io5';
 import { FiPlus, FiMinus } from 'react-icons/fi';
-import { IoIosClose } from 'react-icons/io';
+import { IoIosClose, IoIosAlert, IoMdLocate } from 'react-icons/io';
+
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { flushSync } from 'react-dom';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { createRoot } from 'react-dom/client';
+
 import Spinner from '@/components/Spinner';
-import { useGeolocation } from '@/hooks/useGeolocation';
-import normalMap from '../../public/normal-map.png';
-import terrainMap from '../../public/terrain-map.png';
-import satelliteMap from '../../public/satellite-map.png';
+import Modal from '@/components/Modal';
 import {
   CurrentMyLocationMarker,
   MarkerInfoWindow,
@@ -24,9 +23,12 @@ import {
   ClusterMarker500,
   ClusterMarker1000,
 } from '@/components/Markers';
-import { Coords } from '@/util/types';
-import Modal from '@/components/Modal';
+import { useGeolocation } from '@/hooks/useGeolocation';
 import { defalutCoordinates } from '@/hooks/useGeolocation';
+import { Coords } from '@/util/types';
+import normalMap from '../../public/normal-map.png';
+import terrainMap from '../../public/terrain-map.png';
+import satelliteMap from '../../public/satellite-map.png';
 
 declare const MarkerClustering: any;
 
@@ -261,18 +263,22 @@ export default function Map({ toilets }: MapProps) {
 
   // 주소 -> 좌표 검색
   const searchAddressToCoordinate = (searchAddress: string) => {
-    if (!searchAddress) return;
+    const trimmedSearchAddress = searchAddress.trim();
 
-    naver.maps.Service.geocode({ query: searchAddress }, (status, response) => {
+    if (!trimmedSearchAddress) return;
+
+    naver.maps.Service.geocode({ query: trimmedSearchAddress }, (status, response) => {
       if (!mapRef.current) return;
 
       if (status === naver.maps.Service.Status.ERROR) {
-        alert('주소 검색 중 문제가 발생했습니다.');
+        toast.error('주소 검색 중 문제가 발생했어요.');
         return;
       }
 
       if (response.v2.meta.totalCount === 0) {
-        alert('검색 결과가 없습니다.');
+        toast.error('주소 검색 결과가 없어요.', {
+          icon: <IoIosAlert className='text-blue-500' size={20} />,
+        });
         return;
       }
 
@@ -334,7 +340,7 @@ export default function Map({ toilets }: MapProps) {
       {!currentMyCoordinates ? (
         <Spinner />
       ) : (
-        <>
+        <main>
           <div id='map' className='relative h-dvh w-full p-3 focus:outline-none'>
             <div className='absolute z-10 flex h-11 w-full items-center'>
               <div className='z-10 hidden h-11 min-w-[100px] items-center justify-center rounded-bl-md rounded-tl-md bg-blue-500 text-xl text-white shadow-md outline-none sm:flex'>
@@ -435,7 +441,7 @@ export default function Map({ toilets }: MapProps) {
               }
             }}
           />
-        </>
+        </main>
       )}
     </>
   );
