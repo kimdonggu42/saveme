@@ -1,19 +1,18 @@
 'use client';
 
-import { IoMdLocate } from 'react-icons/io';
+import { toast } from 'sonner';
 import { IoSearch } from 'react-icons/io5';
 import { FiPlus, FiMinus } from 'react-icons/fi';
-import { IoIosClose } from 'react-icons/io';
+import { IoIosClose, IoIosAlert, IoMdLocate } from 'react-icons/io';
+
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { flushSync } from 'react-dom';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { createRoot } from 'react-dom/client';
+
 import Spinner from '@/components/Spinner';
-import { useGeolocation } from '@/hooks/useGeolocation';
-import normalMap from '../../public/normal-map.png';
-import terrainMap from '../../public/terrain-map.png';
-import satelliteMap from '../../public/satellite-map.png';
+import Modal from '@/components/Modal';
 import {
   CurrentMyLocationMarker,
   MarkerInfoWindow,
@@ -24,7 +23,12 @@ import {
   ClusterMarker500,
   ClusterMarker1000,
 } from '@/components/Markers';
+import { useGeolocation } from '@/hooks/useGeolocation';
+import { defalutCoordinates } from '@/hooks/useGeolocation';
 import { Coords } from '@/util/types';
+import normalMap from '../../public/normal-map.png';
+import terrainMap from '../../public/terrain-map.png';
+import satelliteMap from '../../public/satellite-map.png';
 
 declare const MarkerClustering: any;
 
@@ -70,9 +74,17 @@ const mapTypeButtonList = [
   },
 ] as const;
 
+const seoulBoundaryCoordinates = {
+  north: 37.715133, // 최대 위도
+  south: 37.413294, // 최소 위도
+  east: 127.269311, // 최대 경도
+  west: 126.734086, // 최소 경도
+} as const;
+
 export default function Map({ toilets }: MapProps) {
   const [selectedMapType, setSelectedMapType] = useState<MapType>('NORMAL');
   const [selectedPanoCoord, setSelectedPanoCoord] = useState<Coords | null>(null);
+  const [isOutsideSeoul, setIsOutsideSeoul] = useState<boolean>(false);
 
   const mapRef = useRef<naver.maps.Map | null>(null);
   const currentLocationMarkerRef = useRef<naver.maps.Marker | null>(null);
@@ -90,10 +102,17 @@ export default function Map({ toilets }: MapProps) {
     mapRef.current = new naver.maps.Map('map', {
       center: new naver.maps.LatLng(currentMyCoordinates.lat, currentMyCoordinates.lng),
       zoom: 18,
-      minZoom: 12,
+      minZoom: 8,
       mapDataControl: false,
       disableKineticPan: false,
     });
+
+    if (!toilets.length) {
+      toast.error('화장실 데이터를 불러오는데 실패했습니다. 잠시 후 다시 시도해 주세요.', {
+        icon: <IoIosAlert className='text-blue-500' size={20} />,
+      });
+      return;
+    }
 
     // 마커와 정보창
     const toiletMarkers: naver.maps.Marker[] = [];
@@ -203,11 +222,33 @@ export default function Map({ toilets }: MapProps) {
       },
     });
 
+    // 현재 사용자가 서울에 위치해 있는지 확인
+    if (
+      currentMyCoordinates.lat > seoulBoundaryCoordinates.north ||
+      currentMyCoordinates.lat < seoulBoundaryCoordinates.south ||
+      currentMyCoordinates.lng < seoulBoundaryCoordinates.west ||
+      currentMyCoordinates.lng > seoulBoundaryCoordinates.east
+    ) {
+      setIsOutsideSeoul(true);
+    }
+
     hasInitialized.current = true;
   }, [currentMyCoordinates, toilets]);
 
   useEffect(() => {
-    if (geoStatus !== 'success' || !currentMyCoordinates || !mapRef.current) return;
+    if (!mapRef.current) return;
+
+    if (geoStatus === 'error') {
+      toast.error(
+        '현재 위치 정보를 가져올 수 없습니다. 브라우저의 위치 접근 권한을 확인해 주세요.',
+        {
+          icon: <IoIosAlert className='text-blue-500' size={20} />,
+        },
+      );
+      return;
+    }
+
+    if (geoStatus !== 'success' || !currentMyCoordinates) return;
 
     if (currentLocationMarkerRef.current) currentLocationMarkerRef.current.setMap(null);
     currentLocationMarkerRef.current = new naver.maps.Marker({
@@ -241,18 +282,22 @@ export default function Map({ toilets }: MapProps) {
 
   // 주소 -> 좌표 검색
   const searchAddressToCoordinate = (searchAddress: string) => {
-    if (!searchAddress) return;
+    const trimmedSearchAddress = searchAddress.trim();
 
-    naver.maps.Service.geocode({ query: searchAddress }, (status, response) => {
+    if (!trimmedSearchAddress) return;
+
+    naver.maps.Service.geocode({ query: trimmedSearchAddress }, (status, response) => {
       if (!mapRef.current) return;
 
       if (status === naver.maps.Service.Status.ERROR) {
-        alert('주소 검색 중 문제가 발생했습니다.');
+        toast.error('주소 검색 중 문제가 발생했어요.');
         return;
       }
 
       if (response.v2.meta.totalCount === 0) {
-        alert('검색 결과가 없습니다.');
+        toast.error('주소 검색 결과가 없어요.', {
+          icon: <IoIosAlert className='text-blue-500' size={20} />,
+        });
         return;
       }
 
@@ -314,93 +359,108 @@ export default function Map({ toilets }: MapProps) {
       {!currentMyCoordinates ? (
         <Spinner />
       ) : (
-        <div id='map' className='relative h-dvh w-full p-3 focus:outline-none'>
-          <div className='absolute z-10 flex h-11 w-full items-center'>
-            <div className='z-10 hidden h-11 min-w-[100px] items-center justify-center rounded-bl-md rounded-tl-md bg-blue-500 text-xl text-white shadow-md outline-none sm:flex'>
-              save <span className='font-semibold'>me</span>
-            </div>
-            <div className='relative w-[calc(100%-24px)]'>
-              <button className='absolute left-2 top-1/2 -translate-y-1/2 transform'>
-                <IoSearch className='h-7 w-7 text-blue-500' onClick={handleSearchClick} />
-              </button>
-              <input
-                className='h-11 w-full rounded-md pl-10 font-medium shadow-md focus:outline-none sm:w-[370px] sm:rounded-l-none sm:rounded-br-md sm:rounded-tr-md'
-                ref={addressInputRef}
-                type='text'
-                placeholder='주소 검색'
-                onKeyDown={handleKeyDown}
-              />
-            </div>
-          </div>
-
-          <div className='absolute right-3 top-20 z-10 flex flex-col gap-y-2 md:top-3 md:flex-row md:gap-x-2'>
-            {mapTypeButtonList.map((mapTypeButton) => (
-              <button
-                key={mapTypeButton.type}
-                className={`w-16 rounded-md border bg-white shadow-md sm:w-20 ${
-                  selectedMapType === mapTypeButton.type
-                    ? 'border-[1.5px] border-blue-500'
-                    : 'border-gray-300'
-                }`}
-                onClick={() => handleMapTypeChange(mapTypeButton.type)}
-              >
-                <Image
-                  className='rounded-tl-md rounded-tr-md'
-                  src={mapTypeButton.img}
-                  alt='map img'
+        <main>
+          <div id='map' className='relative h-dvh w-full p-3 focus:outline-none'>
+            <div className='absolute z-10 flex h-11 w-full items-center'>
+              <div className='z-10 hidden h-11 min-w-[100px] items-center justify-center rounded-bl-md rounded-tl-md bg-blue-500 text-xl text-white shadow-md outline-none sm:flex'>
+                save <span className='font-semibold'>me</span>
+              </div>
+              <div className='relative w-[calc(100%-24px)]'>
+                <button className='absolute left-2 top-1/2 -translate-y-1/2 transform'>
+                  <IoSearch className='h-7 w-7 text-blue-500' onClick={handleSearchClick} />
+                </button>
+                <input
+                  className='h-11 w-full rounded-md pl-10 font-medium shadow-md focus:outline-none sm:w-[370px] sm:rounded-l-none sm:rounded-br-md sm:rounded-tr-md'
+                  ref={addressInputRef}
+                  type='text'
+                  placeholder='주소 검색'
+                  onKeyDown={handleKeyDown}
                 />
-                <div
-                  className={`py-1 text-[10px] font-semibold sm:text-xs ${
-                    selectedMapType === mapTypeButton.type ? 'text-blue-500' : 'text-gray-700'
+              </div>
+            </div>
+
+            <div className='absolute right-3 top-20 z-10 flex flex-col gap-y-2 md:top-3 md:flex-row md:gap-x-2'>
+              {mapTypeButtonList.map((mapTypeButton) => (
+                <button
+                  key={mapTypeButton.type}
+                  className={`w-16 rounded-md border bg-white shadow-md sm:w-20 ${
+                    selectedMapType === mapTypeButton.type
+                      ? 'border-[1.5px] border-blue-500'
+                      : 'border-gray-300'
                   }`}
+                  onClick={() => handleMapTypeChange(mapTypeButton.type)}
                 >
-                  {mapTypeButton.label}
-                </div>
-              </button>
-            ))}
-          </div>
-
-          <div className='absolute bottom-11 right-3 z-10'>
-            <button
-              className='group mb-3 flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white shadow-md outline-white'
-              onClick={getCurPosition}
-              disabled={geoStatus === 'loading'}
-            >
-              <IoMdLocate className='locateIcon text-gray-700' size={21} />
-              <span className='absolute left-[-65px] top-[18px] hidden w-[60px] -translate-y-1/2 rounded-md bg-[#222222] p-1.5 text-center text-xs text-white shadow-md group-hover:block'>
-                현재위치
-              </span>
-            </button>
-            <div className='flex flex-col'>
-              <button
-                className='flex h-9 w-9 items-center justify-center rounded-tl-md rounded-tr-md border-x border-b-[0.5px] border-t border-gray-300 bg-white shadow-md outline-white'
-                onClick={handleZoomIn}
-              >
-                <FiPlus className='locateIcon text-gray-700' size={21} />
-              </button>
-              <button
-                className='flex h-9 w-9 items-center justify-center rounded-bl-md rounded-br-md border-x border-b border-t-[0.5px] border-gray-300 bg-white shadow-md outline-white'
-                onClick={handleZoomOut}
-              >
-                <FiMinus className='locateIcon text-gray-700' size={21} />
-              </button>
+                  <Image
+                    className='rounded-tl-md rounded-tr-md'
+                    src={mapTypeButton.img}
+                    alt='map img'
+                  />
+                  <div
+                    className={`py-1 text-[10px] font-semibold sm:text-xs ${
+                      selectedMapType === mapTypeButton.type ? 'text-blue-500' : 'text-gray-700'
+                    }`}
+                  >
+                    {mapTypeButton.label}
+                  </div>
+                </button>
+              ))}
             </div>
-          </div>
 
-          {selectedPanoCoord && (
-            <div
-              className='absolute top-20 z-10 ml-auto aspect-video w-full max-w-full rounded-md shadow-md md:max-w-[550px]'
-              ref={panoramaRef}
-            >
+            <div className='absolute bottom-11 right-3 z-10'>
               <button
-                className='absolute right-2 top-2 z-10 rounded-full bg-[#000000B8]'
-                onClick={handleClosePanorama}
+                className='group mb-3 flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white shadow-md outline-white'
+                onClick={getCurPosition}
+                disabled={geoStatus === 'loading'}
               >
-                <IoIosClose className='h-7 w-7 text-white' />
+                <IoMdLocate className='locateIcon text-gray-700' size={21} />
+                <span className='absolute left-[-65px] top-[18px] hidden w-[60px] -translate-y-1/2 rounded-md bg-[#222222] p-1.5 text-center text-xs text-white shadow-md group-hover:block'>
+                  현재위치
+                </span>
               </button>
+              <div className='flex flex-col'>
+                <button
+                  className='flex h-9 w-9 items-center justify-center rounded-tl-md rounded-tr-md border-x border-b-[0.5px] border-t border-gray-300 bg-white shadow-md outline-white'
+                  onClick={handleZoomIn}
+                >
+                  <FiPlus className='locateIcon text-gray-700' size={21} />
+                </button>
+                <button
+                  className='flex h-9 w-9 items-center justify-center rounded-bl-md rounded-br-md border-x border-b border-t-[0.5px] border-gray-300 bg-white shadow-md outline-white'
+                  onClick={handleZoomOut}
+                >
+                  <FiMinus className='locateIcon text-gray-700' size={21} />
+                </button>
+              </div>
             </div>
-          )}
-        </div>
+
+            {selectedPanoCoord && (
+              <div
+                className='absolute top-20 z-10 ml-auto aspect-video w-full max-w-full rounded-md shadow-md md:max-w-[550px]'
+                ref={panoramaRef}
+              >
+                <button
+                  className='absolute right-2 top-2 z-10 rounded-full bg-[#000000B8]'
+                  onClick={handleClosePanorama}
+                >
+                  <IoIosClose className='h-7 w-7 text-white' />
+                </button>
+              </div>
+            )}
+          </div>
+          <Modal
+            isOpen={isOutsideSeoul}
+            setIsOpen={setIsOutsideSeoul}
+            title='현재 위치가 서울이 아닌 것 같아요.'
+            description='saveme는 현재 서울 지역 내 화장실 정보만 제공됩니다. 서울 지도 보기로 전환할까요?'
+            confirmText='전환하기'
+            onConfirm={() => {
+              if (mapRef.current) {
+                mapRef.current.panTo(defalutCoordinates);
+                setIsOutsideSeoul(false);
+              }
+            }}
+          />
+        </main>
       )}
     </>
   );
