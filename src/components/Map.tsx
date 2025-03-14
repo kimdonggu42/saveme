@@ -107,6 +107,13 @@ export default function Map({ toilets }: MapProps) {
       disableKineticPan: false,
     });
 
+    if (!toilets.length) {
+      toast.error('화장실 데이터를 불러오는데 실패했습니다. 잠시 후 다시 시도해 주세요.', {
+        icon: <IoIosAlert className='text-blue-500' size={20} />,
+      });
+      return;
+    }
+
     // 마커와 정보창
     const toiletMarkers: naver.maps.Marker[] = [];
     toilets.forEach((toilet) => {
@@ -229,7 +236,19 @@ export default function Map({ toilets }: MapProps) {
   }, [currentMyCoordinates, toilets]);
 
   useEffect(() => {
-    if (geoStatus !== 'success' || !currentMyCoordinates || !mapRef.current) return;
+    if (!mapRef.current) return;
+
+    if (geoStatus === 'error') {
+      toast.error(
+        '현재 위치 정보를 가져올 수 없습니다. 브라우저의 위치 접근 권한을 확인해 주세요.',
+        {
+          icon: <IoIosAlert className='text-blue-500' size={20} />,
+        },
+      );
+      return;
+    }
+
+    if (geoStatus !== 'success' || !currentMyCoordinates) return;
 
     if (currentLocationMarkerRef.current) currentLocationMarkerRef.current.setMap(null);
     currentLocationMarkerRef.current = new naver.maps.Marker({

@@ -28,7 +28,6 @@ export const useGeolocation = () => {
     };
 
     const error = () => {
-      alert('현재 위치 정보를 가져올 수 없습니다. 브라우저의 위치 접근 권한을 확인해 주세요.');
       setCurrentMyCoordinates(defalutCoordinates);
       setGeoStatus('error');
     };
@@ -36,9 +35,6 @@ export const useGeolocation = () => {
     if (navigator.geolocation) {
       setGeoStatus('loading');
       navigator.geolocation.getCurrentPosition(success, error, options);
-    } else {
-      alert('브라우저가 위치 정보를 지원하지 않습니다.');
-      setGeoStatus('idle');
     }
   };
 
