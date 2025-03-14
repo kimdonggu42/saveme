@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 export default function Spinner() {
   return (
-    <div className='flex h-screen w-screen flex-col items-center justify-center bg-white'>
+    <div className='flex h-dvh w-dvw flex-col items-center justify-center bg-white'>
       <Image
         src='/mainIcon.png'
         alt='spinner'
