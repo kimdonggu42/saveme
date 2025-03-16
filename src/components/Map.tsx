@@ -6,7 +6,7 @@ import { FiPlus, FiMinus } from 'react-icons/fi';
 import { IoIosClose, IoIosAlert, IoMdLocate } from 'react-icons/io';
 
 import Image from 'next/image';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { flushSync } from 'react-dom';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { createRoot } from 'react-dom/client';
@@ -25,6 +25,7 @@ import {
 } from '@/components/Markers';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { defalutCoordinates } from '@/hooks/useGeolocation';
+import { distanceCalculation } from '@/util/helpers/distanceCalculation';
 import { Coords } from '@/util/types';
 import normalMap from '../../public/normal-map.png';
 import terrainMap from '../../public/terrain-map.png';
@@ -94,6 +95,21 @@ export default function Map({ toilets }: MapProps) {
 
   const { currentMyCoordinates, geoStatus, getCurPosition } = useGeolocation();
 
+  const toiletsWithDistance = useMemo(() => {
+    if (!currentMyCoordinates) return toilets;
+
+    return toilets.map((toilet) => ({
+      ...toilet,
+      DISTANCE: distanceCalculation(
+        currentMyCoordinates.lat,
+        currentMyCoordinates.lng,
+        toilet.Y_WGS84,
+        toilet.X_WGS84,
+        'K',
+      ),
+    }));
+  }, [toilets, currentMyCoordinates]);
+
   // 지도 초기화 + 마커 렌더링 + 클러스터링
   useEffect(() => {
     if (!currentMyCoordinates || hasInitialized.current) return;
@@ -107,7 +123,7 @@ export default function Map({ toilets }: MapProps) {
       disableKineticPan: false,
     });
 
-    if (!toilets.length) {
+    if (!toiletsWithDistance.length) {
       toast.error('화장실 데이터를 불러오는데 실패했습니다. 잠시 후 다시 시도해 주세요.', {
         icon: <IoIosAlert className='text-blue-500' size={20} />,
       });
@@ -116,7 +132,7 @@ export default function Map({ toilets }: MapProps) {
 
     // 마커와 정보창
     const toiletMarkers: naver.maps.Marker[] = [];
-    toilets.forEach((toilet) => {
+    toiletsWithDistance.forEach((toilet) => {
       const { Y_WGS84, X_WGS84, FNAME, ANAME } = toilet;
 
       const marker = new naver.maps.Marker({
@@ -233,7 +249,7 @@ export default function Map({ toilets }: MapProps) {
     }
 
     hasInitialized.current = true;
-  }, [currentMyCoordinates, toilets]);
+  }, [currentMyCoordinates, toiletsWithDistance]);
 
   useEffect(() => {
     if (!mapRef.current) return;
