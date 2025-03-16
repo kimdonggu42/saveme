@@ -5,6 +5,7 @@ interface MarkerInfoWindowProps {
   ANAME: string;
   jibunAddress: string;
   roadAddress: string;
+  DISTANCE: number;
   onClickPanorama: () => void;
 }
 
@@ -28,6 +29,7 @@ export function MarkerInfoWindow({
   ANAME,
   jibunAddress,
   roadAddress,
+  DISTANCE,
   onClickPanorama,
 }: MarkerInfoWindowProps) {
   return (
@@ -36,22 +38,34 @@ export function MarkerInfoWindow({
         <p className='text-lg font-bold'>{FNAME}</p>
         <p className='text-sm font-medium text-gray-500'>{ANAME}</p>
       </div>
-      {roadAddress && <div>(도로명) {roadAddress}</div>}
-      {jibunAddress && (
+      <div className='flex flex-col gap-y-1'>
         <div className='text-sm font-medium'>
           <span className='mr-1.5 rounded border border-gray-400 px-1 py-0.5 text-xs font-semibold text-gray-700'>
-            지번
+            도로명
           </span>
-          {jibunAddress}
+          {roadAddress}서울특별시 중구 명동
         </div>
-      )}
-      <div className='flex justify-end'>
-        <button
-          className='mt-1 flex rounded-full border border-gray-300 p-1.5 text-gray-600 hover:border-blue-500 hover:text-blue-500'
-          onClick={onClickPanorama}
-        >
-          <FiMapPin className='h-5 w-5' />
-        </button>
+        {jibunAddress && (
+          <div className='text-sm font-medium'>
+            <span className='mr-1.5 rounded border border-gray-400 px-1 py-0.5 text-xs font-semibold text-gray-700'>
+              지번
+            </span>
+            {jibunAddress}
+          </div>
+        )}
+      </div>
+      <div className='flex items-center justify-between gap-x-4'>
+        <div className='text-sm font-medium'>
+          현재 위치로부터 약 <span className='font-bold'>{DISTANCE}m</span>
+        </div>
+        <div className='flex justify-end'>
+          <button
+            className='mt-1 flex rounded-full border border-gray-300 p-1.5 text-gray-600 hover:border-blue-500 hover:text-blue-500'
+            onClick={onClickPanorama}
+          >
+            <FiMapPin className='h-5 w-5' />
+          </button>
+        </div>
       </div>
     </div>
   );

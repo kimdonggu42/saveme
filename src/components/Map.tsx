@@ -133,7 +133,7 @@ export default function Map({ toilets }: MapProps) {
     // 마커와 정보창
     const toiletMarkers: naver.maps.Marker[] = [];
     toiletsWithDistance.forEach((toilet) => {
-      const { Y_WGS84, X_WGS84, FNAME, ANAME } = toilet;
+      const { Y_WGS84, X_WGS84, FNAME, ANAME, DISTANCE } = toilet;
 
       const marker = new naver.maps.Marker({
         position: new naver.maps.LatLng(Y_WGS84, X_WGS84),
@@ -171,6 +171,7 @@ export default function Map({ toilets }: MapProps) {
             (status, response) => {
               if (status === naver.maps.Service.Status.OK && mapRef.current) {
                 const { jibunAddress, roadAddress } = response.v2.address;
+
                 flushSync(() =>
                   root.render(
                     <MarkerInfoWindow
@@ -178,6 +179,7 @@ export default function Map({ toilets }: MapProps) {
                       ANAME={ANAME}
                       jibunAddress={jibunAddress}
                       roadAddress={roadAddress}
+                      DISTANCE={DISTANCE}
                       onClickPanorama={() => {
                         handleOpenPanorama(Y_WGS84, X_WGS84);
                         if (mapRef.current) mapRef.current.panTo(coords);
