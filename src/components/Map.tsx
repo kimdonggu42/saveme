@@ -91,30 +91,46 @@ export default function Map({ toilets }: MapProps) {
   const currentLocationMarkerRef = useRef<naver.maps.Marker | null>(null);
   const panoramaRef = useRef<HTMLDivElement | null>(null);
   const addressInputRef = useRef<HTMLInputElement | null>(null);
-  const hasInitialized = useRef<boolean>(false);
 
   const { currentMyCoordinates, geoStatus, getCurPosition } = useGeolocation();
+
+  // const toiletsWithDistance = useMemo(() => {
+  //   if (!currentMyCoordinates) return toilets;
+
+  //   return toilets.map((toilet) => ({
+  //     ...toilet,
+  //     DISTANCE: distanceCalculation(
+  //       currentMyCoordinates.lat,
+  //       currentMyCoordinates.lng,
+  //       toilet.Y_WGS84,
+  //       toilet.X_WGS84,
+  //       'K',
+  //     ),
+  //   }));
+  // }, [toilets, currentMyCoordinates]);
 
   const toiletsWithDistance = useMemo(() => {
     if (!currentMyCoordinates) return toilets;
 
-    return toilets.map((toilet) => ({
-      ...toilet,
-      DISTANCE: distanceCalculation(
-        currentMyCoordinates.lat,
-        currentMyCoordinates.lng,
-        toilet.Y_WGS84,
-        toilet.X_WGS84,
-        'K',
-      ),
-    }));
+    return toilets
+      .map((toilet) => ({
+        ...toilet,
+        DISTANCE: distanceCalculation(
+          currentMyCoordinates.lat,
+          currentMyCoordinates.lng,
+          toilet.Y_WGS84,
+          toilet.X_WGS84,
+          'K',
+        ),
+      }))
+      .sort((a, b) => a.DISTANCE - b.DISTANCE)
+      .slice(0, 100);
   }, [toilets, currentMyCoordinates]);
 
-  // 지도 초기화 + 마커 렌더링 + 클러스터링
+  // 지도 초기화
   useEffect(() => {
-    if (!currentMyCoordinates || hasInitialized.current) return;
+    if (!currentMyCoordinates || mapRef.current) return;
 
-    // 지도
     mapRef.current = new naver.maps.Map('map', {
       center: new naver.maps.LatLng(currentMyCoordinates.lat, currentMyCoordinates.lng),
       zoom: 18,
@@ -122,6 +138,11 @@ export default function Map({ toilets }: MapProps) {
       mapDataControl: false,
       disableKineticPan: false,
     });
+  }, [currentMyCoordinates]);
+
+  // 마커 렌더링 + 클러스터링
+  useEffect(() => {
+    if (!mapRef.current) return;
 
     if (!toiletsWithDistance.length) {
       toast.error('화장실 데이터를 불러오는데 실패했습니다. 잠시 후 다시 시도해 주세요.', {
@@ -239,8 +260,12 @@ export default function Map({ toilets }: MapProps) {
         if (el) el.textContent = String(count);
       },
     });
+  }, [toiletsWithDistance]);
 
-    // 현재 사용자가 서울에 위치해 있는지 확인
+  useEffect(() => {
+    if (!currentMyCoordinates) return;
+
+    // 현재 좌표가 서울 경계 밖에 있는지 체크
     if (
       currentMyCoordinates.lat > seoulBoundaryCoordinates.north ||
       currentMyCoordinates.lat < seoulBoundaryCoordinates.south ||
@@ -248,14 +273,12 @@ export default function Map({ toilets }: MapProps) {
       currentMyCoordinates.lng > seoulBoundaryCoordinates.east
     ) {
       setIsOutsideSeoul(true);
+    } else {
+      setIsOutsideSeoul(false);
     }
-
-    hasInitialized.current = true;
-  }, [currentMyCoordinates, toiletsWithDistance]);
+  }, [currentMyCoordinates]);
 
   useEffect(() => {
-    if (!mapRef.current) return;
-
     if (geoStatus === 'error') {
       toast.error(
         '현재 위치 정보를 가져올 수 없습니다. 브라우저의 위치 접근 권한을 확인해 주세요.',
@@ -266,9 +289,10 @@ export default function Map({ toilets }: MapProps) {
       return;
     }
 
-    if (geoStatus !== 'success' || !currentMyCoordinates) return;
+    if (!mapRef.current || geoStatus !== 'success' || !currentMyCoordinates) return;
 
     if (currentLocationMarkerRef.current) currentLocationMarkerRef.current.setMap(null);
+
     currentLocationMarkerRef.current = new naver.maps.Marker({
       position: new naver.maps.LatLng(currentMyCoordinates.lat, currentMyCoordinates.lng),
       map: mapRef.current,
@@ -277,6 +301,7 @@ export default function Map({ toilets }: MapProps) {
         anchor: new naver.maps.Point(12, 12),
       },
     });
+
     mapRef.current.panTo(new naver.maps.LatLng(currentMyCoordinates.lat, currentMyCoordinates.lng));
   }, [currentMyCoordinates, geoStatus]);
 
