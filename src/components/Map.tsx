@@ -91,6 +91,7 @@ export default function Map({ toilets }: MapProps) {
   const mapRef = useRef<naver.maps.Map | null>(null);
   const markerClusterRef = useRef<any>(null);
   const currentLocationMarkerRef = useRef<naver.maps.Marker | null>(null);
+  const geoCoderInfowindowRef = useRef<naver.maps.InfoWindow | null>(null);
   const panoramaRef = useRef<HTMLDivElement | null>(null);
   const addressInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -363,6 +364,7 @@ export default function Map({ toilets }: MapProps) {
       setMapCenterCoords({ lat: Number(y), lng: Number(x) });
       mapRef.current.panTo(searchAddressCoordinate);
       geoCoderInfowindow.open(mapRef.current, searchAddressCoordinate);
+      geoCoderInfowindowRef.current = geoCoderInfowindow;
     });
   };
 
@@ -408,6 +410,10 @@ export default function Map({ toilets }: MapProps) {
         );
       } else {
         // 주소 검색으로 이동한 좌표와 현재 내 위치 좌표가 동일하지 않을 경우 검색한 주소 주변의 마커를 지운 후 내 위치로 이동
+        if (geoCoderInfowindowRef.current) {
+          geoCoderInfowindowRef.current.close();
+          geoCoderInfowindowRef.current = null;
+        }
         clearMarkers();
         setMapCenterCoords(currentMyCoordinates);
         mapRef.current.panTo(
