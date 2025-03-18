@@ -89,9 +89,10 @@ export default function Map({ toilets }: MapProps) {
   const [mapCenterCoords, setMapCenterCoords] = useState<Coords | null>(null);
 
   const mapRef = useRef<naver.maps.Map | null>(null);
-  const markerClusterRef = useRef<any>(null);
   const currentLocationMarkerRef = useRef<naver.maps.Marker | null>(null);
+  const toiletInfoWindowsRef = useRef<naver.maps.InfoWindow[]>([]);
   const geoCoderInfowindowRef = useRef<naver.maps.InfoWindow | null>(null);
+  const markerClusterRef = useRef<any>(null);
   const panoramaRef = useRef<HTMLDivElement | null>(null);
   const addressInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -172,6 +173,7 @@ export default function Map({ toilets }: MapProps) {
         backgroundColor: 'transparent',
         borderColor: 'transparent',
       });
+      toiletInfoWindowsRef.current.push(infoWindow);
 
       naver.maps.Event.addListener(marker, 'click', () => {
         if (infoWindow.getMap()) {
@@ -310,7 +312,17 @@ export default function Map({ toilets }: MapProps) {
   const handleClosePanorama = () => setSelectedPanoCoord(null);
 
   // 기존 마커와 클러스터 제거 함수
-  const clearMarkers = () => {
+  const clearMapOverlays = () => {
+    if (toiletInfoWindowsRef) {
+      toiletInfoWindowsRef.current.forEach((toiletInfoWindow) => toiletInfoWindow.close());
+      toiletInfoWindowsRef.current = [];
+    }
+
+    if (geoCoderInfowindowRef.current) {
+      geoCoderInfowindowRef.current.close();
+      geoCoderInfowindowRef.current = null;
+    }
+
     if (markerClusterRef.current) {
       markerClusterRef.current.setMarkers([]);
       markerClusterRef.current.setMap(null);
@@ -360,7 +372,7 @@ export default function Map({ toilets }: MapProps) {
         borderColor: 'transparent',
       });
 
-      clearMarkers();
+      clearMapOverlays();
       setMapCenterCoords({ lat: Number(y), lng: Number(x) });
       mapRef.current.panTo(searchAddressCoordinate);
       geoCoderInfowindow.open(mapRef.current, searchAddressCoordinate);
@@ -410,11 +422,7 @@ export default function Map({ toilets }: MapProps) {
         );
       } else {
         // 주소 검색으로 이동한 좌표와 현재 내 위치 좌표가 동일하지 않을 경우 검색한 주소 주변의 마커를 지운 후 내 위치로 이동
-        if (geoCoderInfowindowRef.current) {
-          geoCoderInfowindowRef.current.close();
-          geoCoderInfowindowRef.current = null;
-        }
-        clearMarkers();
+        clearMapOverlays();
         setMapCenterCoords(currentMyCoordinates);
         mapRef.current.panTo(
           new naver.maps.LatLng(currentMyCoordinates.lat, currentMyCoordinates.lng),
@@ -527,7 +535,7 @@ export default function Map({ toilets }: MapProps) {
             confirmText='전환하기'
             onConfirm={() => {
               if (mapRef.current) {
-                clearMarkers();
+                clearMapOverlays();
                 setMapCenterCoords(currentMyCoordinates || defalutCoordinates);
                 mapRef.current.panTo(currentMyCoordinates || defalutCoordinates);
                 setIsOutsideSeoul(false);
