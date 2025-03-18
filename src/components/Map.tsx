@@ -6,7 +6,7 @@ import { FiPlus, FiMinus } from 'react-icons/fi';
 import { IoIosClose, IoIosAlert, IoMdLocate } from 'react-icons/io';
 
 import Image from 'next/image';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { flushSync } from 'react-dom';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { createRoot } from 'react-dom/client';
@@ -25,6 +25,7 @@ import {
 } from '@/components/Markers';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { defalutCoordinates } from '@/hooks/useGeolocation';
+import { distanceCalculation } from '@/util/helpers/distanceCalculation';
 import { Coords } from '@/util/types';
 import normalMap from '../../public/normal-map.png';
 import terrainMap from '../../public/terrain-map.png';
@@ -84,40 +85,71 @@ const seoulBoundaryCoordinates = {
 export default function Map({ toilets }: MapProps) {
   const [selectedMapType, setSelectedMapType] = useState<MapType>('NORMAL');
   const [selectedPanoCoord, setSelectedPanoCoord] = useState<Coords | null>(null);
+  const [mapCenterCoords, setMapCenterCoords] = useState<Coords | null>(null);
   const [isOutsideSeoul, setIsOutsideSeoul] = useState<boolean>(false);
+  const [isSearchAddress, setIsSearchAddress] = useState<boolean>(false);
 
   const mapRef = useRef<naver.maps.Map | null>(null);
   const currentLocationMarkerRef = useRef<naver.maps.Marker | null>(null);
+  const toiletInfoWindowsRef = useRef<naver.maps.InfoWindow[]>([]);
+  const geoCoderInfowindowRef = useRef<naver.maps.InfoWindow | null>(null);
+  const markerClusterRef = useRef<any>(null);
   const panoramaRef = useRef<HTMLDivElement | null>(null);
   const addressInputRef = useRef<HTMLInputElement | null>(null);
-  const hasInitialized = useRef<boolean>(false);
 
   const { currentMyCoordinates, geoStatus, getCurPosition } = useGeolocation();
 
-  // 지도 초기화 + 마커 렌더링 + 클러스터링
+  // 최초 내 위치(currentMyCoordinates)가 로드되면 mapCenterCoords를 currentMyCoordinates 값으로 변경
   useEffect(() => {
-    if (!currentMyCoordinates || hasInitialized.current) return;
+    if (currentMyCoordinates && !mapCenterCoords) setMapCenterCoords(currentMyCoordinates);
+  }, [currentMyCoordinates, mapCenterCoords]);
 
-    // 지도
+  const toiletsWithDistance = useMemo(() => {
+    if (!mapCenterCoords) return [];
+
+    return toilets
+      .map((toilet) => ({
+        ...toilet,
+        DISTANCE: distanceCalculation(
+          mapCenterCoords.lat,
+          mapCenterCoords.lng,
+          toilet.Y_WGS84,
+          toilet.X_WGS84,
+          'K',
+        ),
+      }))
+      .sort((a, b) => a.DISTANCE - b.DISTANCE)
+      .slice(0, 100);
+  }, [toilets, mapCenterCoords]);
+
+  // 지도 초기화
+  useEffect(() => {
+    if (!mapCenterCoords || mapRef.current) return;
+
     mapRef.current = new naver.maps.Map('map', {
-      center: new naver.maps.LatLng(currentMyCoordinates.lat, currentMyCoordinates.lng),
+      center: new naver.maps.LatLng(mapCenterCoords.lat, mapCenterCoords.lng),
       zoom: 18,
       minZoom: 8,
       mapDataControl: false,
       disableKineticPan: false,
     });
+  }, [mapCenterCoords]);
 
-    if (!toilets.length) {
+  // 마커 렌더링 및 클러스터링
+  useEffect(() => {
+    if (!mapRef.current || geoStatus === 'error') return;
+
+    if (!toiletsWithDistance.length) {
       toast.error('화장실 데이터를 불러오는데 실패했습니다. 잠시 후 다시 시도해 주세요.', {
         icon: <IoIosAlert className='text-blue-500' size={20} />,
       });
       return;
     }
 
-    // 마커와 정보창
     const toiletMarkers: naver.maps.Marker[] = [];
-    toilets.forEach((toilet) => {
-      const { Y_WGS84, X_WGS84, FNAME, ANAME } = toilet;
+
+    toiletsWithDistance.forEach((toilet) => {
+      const { Y_WGS84, X_WGS84, FNAME, ANAME, DISTANCE } = toilet;
 
       const marker = new naver.maps.Marker({
         position: new naver.maps.LatLng(Y_WGS84, X_WGS84),
@@ -142,38 +174,37 @@ export default function Map({ toilets }: MapProps) {
         backgroundColor: 'transparent',
         borderColor: 'transparent',
       });
+      toiletInfoWindowsRef.current.push(infoWindow);
 
       naver.maps.Event.addListener(marker, 'click', () => {
         if (infoWindow.getMap()) {
           infoWindow.close();
         } else {
           const coords = new naver.maps.LatLng(Y_WGS84, X_WGS84);
-          naver.maps.Service.reverseGeocode(
-            {
-              coords,
-            },
-            (status, response) => {
-              if (status === naver.maps.Service.Status.OK && mapRef.current) {
-                const { jibunAddress, roadAddress } = response.v2.address;
-                flushSync(() =>
-                  root.render(
-                    <MarkerInfoWindow
-                      FNAME={FNAME}
-                      ANAME={ANAME}
-                      jibunAddress={jibunAddress}
-                      roadAddress={roadAddress}
-                      onClickPanorama={() => {
-                        handleOpenPanorama(Y_WGS84, X_WGS84);
-                        if (mapRef.current) mapRef.current.panTo(coords);
-                      }}
-                    />,
-                  ),
-                );
+          naver.maps.Service.reverseGeocode({ coords }, (status, response) => {
+            if (status === naver.maps.Service.Status.OK && mapRef.current) {
+              const { jibunAddress, roadAddress } = response.v2.address;
 
-                infoWindow.open(mapRef.current, marker);
-              }
-            },
-          );
+              flushSync(() =>
+                root.render(
+                  <MarkerInfoWindow
+                    FNAME={FNAME}
+                    ANAME={ANAME}
+                    jibunAddress={jibunAddress}
+                    roadAddress={roadAddress}
+                    DISTANCE={DISTANCE}
+                    isSearchAddress={isSearchAddress}
+                    onClickPanorama={() => {
+                      handleOpenPanorama(Y_WGS84, X_WGS84);
+                      if (mapRef.current) mapRef.current.panTo(coords);
+                    }}
+                  />,
+                ),
+              );
+
+              infoWindow.open(mapRef.current, marker);
+            }
+          });
         }
       });
     });
@@ -200,7 +231,7 @@ export default function Map({ toilets }: MapProps) {
       anchor: new naver.maps.Point(12, 12),
     };
 
-    new MarkerClustering({
+    markerClusterRef.current = new MarkerClustering({
       map: mapRef.current,
       markers: toiletMarkers,
       disableClickZoom: false,
@@ -221,23 +252,26 @@ export default function Map({ toilets }: MapProps) {
         if (el) el.textContent = String(count);
       },
     });
+  }, [toiletsWithDistance]);
 
-    // 현재 사용자가 서울에 위치해 있는지 확인
+  // mapCenterCoords가 서울 밖에 있는지 체크
+  useEffect(() => {
+    if (!mapCenterCoords) return;
+
     if (
-      currentMyCoordinates.lat > seoulBoundaryCoordinates.north ||
-      currentMyCoordinates.lat < seoulBoundaryCoordinates.south ||
-      currentMyCoordinates.lng < seoulBoundaryCoordinates.west ||
-      currentMyCoordinates.lng > seoulBoundaryCoordinates.east
+      mapCenterCoords.lat > seoulBoundaryCoordinates.north ||
+      mapCenterCoords.lat < seoulBoundaryCoordinates.south ||
+      mapCenterCoords.lng < seoulBoundaryCoordinates.west ||
+      mapCenterCoords.lng > seoulBoundaryCoordinates.east
     ) {
       setIsOutsideSeoul(true);
+    } else {
+      setIsOutsideSeoul(false);
     }
+  }, [mapCenterCoords]);
 
-    hasInitialized.current = true;
-  }, [currentMyCoordinates, toilets]);
-
+  // 현재 위치 마커 업데이트
   useEffect(() => {
-    if (!mapRef.current) return;
-
     if (geoStatus === 'error') {
       toast.error(
         '현재 위치 정보를 가져올 수 없습니다. 브라우저의 위치 접근 권한을 확인해 주세요.',
@@ -248,9 +282,10 @@ export default function Map({ toilets }: MapProps) {
       return;
     }
 
-    if (geoStatus !== 'success' || !currentMyCoordinates) return;
+    if (!mapRef.current || geoStatus !== 'success' || !currentMyCoordinates) return;
 
     if (currentLocationMarkerRef.current) currentLocationMarkerRef.current.setMap(null);
+
     currentLocationMarkerRef.current = new naver.maps.Marker({
       position: new naver.maps.LatLng(currentMyCoordinates.lat, currentMyCoordinates.lng),
       map: mapRef.current,
@@ -259,8 +294,7 @@ export default function Map({ toilets }: MapProps) {
         anchor: new naver.maps.Point(12, 12),
       },
     });
-    mapRef.current.panTo(new naver.maps.LatLng(currentMyCoordinates.lat, currentMyCoordinates.lng));
-  }, [currentMyCoordinates, geoStatus]);
+  }, [currentMyCoordinates, geoStatus, mapCenterCoords]);
 
   // 파노라마
   useEffect(() => {
@@ -277,20 +311,39 @@ export default function Map({ toilets }: MapProps) {
   }, [selectedPanoCoord]);
 
   const handleOpenPanorama = (lat: number, lng: number) => setSelectedPanoCoord({ lat, lng });
-
   const handleClosePanorama = () => setSelectedPanoCoord(null);
 
-  // 주소 -> 좌표 검색
+  // 기존 마커와 클러스터 제거 함수
+  const clearMapOverlays = () => {
+    if (toiletInfoWindowsRef) {
+      toiletInfoWindowsRef.current.forEach((toiletInfoWindow) => toiletInfoWindow.close());
+      toiletInfoWindowsRef.current = [];
+    }
+
+    if (geoCoderInfowindowRef.current) {
+      geoCoderInfowindowRef.current.close();
+      geoCoderInfowindowRef.current = null;
+    }
+
+    if (markerClusterRef.current) {
+      markerClusterRef.current.setMarkers([]);
+      markerClusterRef.current.setMap(null);
+      markerClusterRef.current = null;
+    }
+  };
+
+  // 주소 검색
   const searchAddressToCoordinate = (searchAddress: string) => {
     const trimmedSearchAddress = searchAddress.trim();
-
     if (!trimmedSearchAddress) return;
 
     naver.maps.Service.geocode({ query: trimmedSearchAddress }, (status, response) => {
       if (!mapRef.current) return;
 
       if (status === naver.maps.Service.Status.ERROR) {
-        toast.error('주소 검색 중 문제가 발생했어요.');
+        toast.error('주소 검색 중 문제가 발생했어요.', {
+          icon: <IoIosAlert className='text-blue-500' size={20} />,
+        });
         return;
       }
 
@@ -321,9 +374,14 @@ export default function Map({ toilets }: MapProps) {
         borderColor: 'transparent',
       });
 
-      // 검색한 주소의 위치로 지도 중심 이동 및 InfoWindow 오픈
+      setIsSearchAddress(true);
+
+      clearMapOverlays();
+      setMapCenterCoords({ lat: Number(y), lng: Number(x) });
       mapRef.current.panTo(searchAddressCoordinate);
+
       geoCoderInfowindow.open(mapRef.current, searchAddressCoordinate);
+      geoCoderInfowindowRef.current = geoCoderInfowindow;
     });
   };
 
@@ -354,6 +412,31 @@ export default function Map({ toilets }: MapProps) {
     }
   };
 
+  const handleCurrentLocation = () => {
+    getCurPosition();
+    setIsSearchAddress(false);
+
+    if (currentMyCoordinates && mapRef.current) {
+      if (
+        mapCenterCoords &&
+        mapCenterCoords.lat === currentMyCoordinates.lat &&
+        mapCenterCoords.lng === currentMyCoordinates.lng
+      ) {
+        // 현재 지도 중심이 내 위치일 때 현재 위치 버튼을 클릭할 경우 지도 중심만 내 위치로 이동
+        mapRef.current.panTo(
+          new naver.maps.LatLng(currentMyCoordinates.lat, currentMyCoordinates.lng),
+        );
+      } else {
+        // 주소 검색으로 이동한 좌표와 현재 내 위치 좌표가 동일하지 않을 경우 검색한 주소 주변의 마커를 지운 후 내 위치로 이동
+        clearMapOverlays();
+        setMapCenterCoords(currentMyCoordinates);
+        mapRef.current.panTo(
+          new naver.maps.LatLng(currentMyCoordinates.lat, currentMyCoordinates.lng),
+        );
+      }
+    }
+  };
+
   return (
     <>
       {!currentMyCoordinates ? (
@@ -366,8 +449,11 @@ export default function Map({ toilets }: MapProps) {
                 save <span className='font-semibold'>me</span>
               </div>
               <div className='relative w-[calc(100%-24px)]'>
-                <button className='absolute left-2 top-1/2 -translate-y-1/2 transform'>
-                  <IoSearch className='h-7 w-7 text-blue-500' onClick={handleSearchClick} />
+                <button
+                  className='absolute left-2 top-1/2 -translate-y-1/2 transform'
+                  onClick={handleSearchClick}
+                >
+                  <IoSearch className='h-7 w-7 text-blue-500' />
                 </button>
                 <input
                   className='h-11 w-full rounded-md pl-10 font-medium shadow-md focus:outline-none sm:w-[370px] sm:rounded-l-none sm:rounded-br-md sm:rounded-tr-md'
@@ -409,7 +495,7 @@ export default function Map({ toilets }: MapProps) {
             <div className='absolute bottom-11 right-3 z-10'>
               <button
                 className='group mb-3 flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white shadow-md outline-white'
-                onClick={getCurPosition}
+                onClick={handleCurrentLocation}
                 disabled={geoStatus === 'loading'}
               >
                 <IoMdLocate className='locateIcon text-gray-700' size={21} />
@@ -455,7 +541,9 @@ export default function Map({ toilets }: MapProps) {
             confirmText='전환하기'
             onConfirm={() => {
               if (mapRef.current) {
-                mapRef.current.panTo(defalutCoordinates);
+                clearMapOverlays();
+                setMapCenterCoords(currentMyCoordinates || defalutCoordinates);
+                mapRef.current.panTo(currentMyCoordinates || defalutCoordinates);
                 setIsOutsideSeoul(false);
               }
             }}
