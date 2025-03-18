@@ -103,7 +103,7 @@ export default function Map({ toilets }: MapProps) {
   }, [currentMyCoordinates, mapCenterCoords]);
 
   const toiletsWithDistance = useMemo(() => {
-    if (!mapCenterCoords) return toilets;
+    if (!mapCenterCoords) return [];
 
     return toilets
       .map((toilet) => ({
@@ -135,7 +135,7 @@ export default function Map({ toilets }: MapProps) {
 
   // 마커 렌더링 및 클러스터링
   useEffect(() => {
-    if (!mapRef.current) return;
+    if (!mapRef.current || geoStatus === 'error') return;
 
     if (!toiletsWithDistance.length) {
       toast.error('화장실 데이터를 불러오는데 실패했습니다. 잠시 후 다시 시도해 주세요.', {
