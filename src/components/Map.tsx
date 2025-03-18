@@ -85,8 +85,9 @@ const seoulBoundaryCoordinates = {
 export default function Map({ toilets }: MapProps) {
   const [selectedMapType, setSelectedMapType] = useState<MapType>('NORMAL');
   const [selectedPanoCoord, setSelectedPanoCoord] = useState<Coords | null>(null);
-  const [isOutsideSeoul, setIsOutsideSeoul] = useState<boolean>(false);
   const [mapCenterCoords, setMapCenterCoords] = useState<Coords | null>(null);
+  const [isOutsideSeoul, setIsOutsideSeoul] = useState<boolean>(false);
+  const [isSearchAddress, setIsSearchAddress] = useState<boolean>(false);
 
   const mapRef = useRef<naver.maps.Map | null>(null);
   const currentLocationMarkerRef = useRef<naver.maps.Marker | null>(null);
@@ -192,6 +193,7 @@ export default function Map({ toilets }: MapProps) {
                     jibunAddress={jibunAddress}
                     roadAddress={roadAddress}
                     DISTANCE={DISTANCE}
+                    isSearchAddress={isSearchAddress}
                     onClickPanorama={() => {
                       handleOpenPanorama(Y_WGS84, X_WGS84);
                       if (mapRef.current) mapRef.current.panTo(coords);
@@ -372,9 +374,12 @@ export default function Map({ toilets }: MapProps) {
         borderColor: 'transparent',
       });
 
+      setIsSearchAddress(true);
+
       clearMapOverlays();
       setMapCenterCoords({ lat: Number(y), lng: Number(x) });
       mapRef.current.panTo(searchAddressCoordinate);
+
       geoCoderInfowindow.open(mapRef.current, searchAddressCoordinate);
       geoCoderInfowindowRef.current = geoCoderInfowindow;
     });
@@ -409,6 +414,7 @@ export default function Map({ toilets }: MapProps) {
 
   const handleCurrentLocation = () => {
     getCurPosition();
+    setIsSearchAddress(false);
 
     if (currentMyCoordinates && mapRef.current) {
       if (

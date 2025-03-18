@@ -6,6 +6,7 @@ interface MarkerInfoWindowProps {
   jibunAddress: string;
   roadAddress: string;
   DISTANCE: number;
+  isSearchAddress: boolean;
   onClickPanorama: () => void;
 }
 
@@ -30,6 +31,7 @@ export function MarkerInfoWindow({
   jibunAddress,
   roadAddress,
   DISTANCE,
+  isSearchAddress,
   onClickPanorama,
 }: MarkerInfoWindowProps) {
   return (
@@ -58,7 +60,7 @@ export function MarkerInfoWindow({
       </div>
       <div className='flex items-center justify-between gap-x-4'>
         <div className='text-sm font-medium'>
-          현재 위치로부터 약{' '}
+          {isSearchAddress ? '검색한 주소로부터 약 ' : '현재 위치로부터 약 '}
           <span className='font-bold'>
             {DISTANCE < 1 ? `${Math.round(DISTANCE * 1000)}m` : `${Number(DISTANCE.toFixed(1))}km`}
           </span>
