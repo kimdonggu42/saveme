@@ -23,10 +23,6 @@ export const useGeolocation = () => {
         lat: location.coords.latitude,
         lng: location.coords.longitude,
       };
-      // const newCoords = {
-      //   lat: defalutCoordinates.lat,
-      //   lng: defalutCoordinates.lng,
-      // };
       setCurrentMyCoordinates(newCoords);
       setGeoStatus('success');
     };
