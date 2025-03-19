@@ -5,10 +5,9 @@ import { FiMapPin, FiSearch, FiMap } from 'react-icons/fi';
 export default function MainPage() {
   return (
     <main className='min-h-screen w-full break-keep bg-white'>
-      {/* Hero 섹션 */}
-      <section className='relative flex flex-col items-center justify-center bg-blue-50 px-4 py-28 text-center sm:px-6 lg:px-8'>
+      <section className='relative flex flex-col items-center justify-center bg-blue-50 px-4 py-20 text-center sm:px-6 lg:px-8'>
         <h1 className='mb-4 text-4xl font-bold text-blue-500 sm:text-5xl'>saveme</h1>
-        <p className='mb-8 text-base text-gray-700 sm:text-lg'>
+        <p className='mb-7 text-base text-gray-700 sm:text-lg'>
           갑자기 화장실이 급할 때, 바로 내 주변의 화장실을 찾아보세요.
         </p>
         <Link
@@ -17,10 +16,29 @@ export default function MainPage() {
         >
           내 주변 화장실 찾기
         </Link>
+        <div className='mt-8 flex items-center justify-center'>
+          <div className='relative top-4 z-10'>
+            <Image
+              src='/main-mobile.png'
+              alt='Mobile Image'
+              width={160}
+              height={400}
+              className='rounded-lg'
+            />
+          </div>
+          <div className='relative z-0 -ml-12'>
+            <Image
+              src='/main-tablet.png'
+              alt='Tablet Image'
+              width={500}
+              height={300}
+              className='rounded-lg'
+            />
+          </div>
+        </div>
       </section>
 
-      {/* 주요 기능 섹션 */}
-      <section className='mx-auto max-w-5xl px-4 py-20 sm:px-6 lg:px-8'>
+      <section className='mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8'>
         <div className='grid gap-8 sm:grid-cols-3'>
           <div className='flex flex-col items-center'>
             <FiMapPin className='mb-4 h-10 w-10 text-blue-500' />
@@ -46,20 +64,6 @@ export default function MainPage() {
         </div>
       </section>
 
-      {/* 스크린샷/시연 섹션 */}
-      <section className='bg-gray-50 py-16'>
-        <div className='mx-auto max-w-5xl px-4 sm:px-6 lg:px-8'>
-          <h2 className='mb-6 text-2xl font-bold text-gray-800 sm:text-3xl'>실제 사용 화면</h2>
-          <p className='mb-8 text-sm text-gray-600'>
-            지도 화면 예시를 통해 saveme가 어떻게 동작하는지 확인해 보세요.
-          </p>
-          <div className='relative mx-auto aspect-video w-full max-w-2xl shadow-md'>
-            <Image className='object-cover' src='/test-img.png' alt='지도 화면 예시' fill />
-          </div>
-        </div>
-      </section>
-
-      {/* 푸터 */}
       <footer className='bg-blue-500 py-6 text-center text-white'>
         <p className='text-sm'>© {new Date().getFullYear()} saveme. All rights reserved.</p>
       </footer>
