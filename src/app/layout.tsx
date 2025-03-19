@@ -12,7 +12,18 @@ const pretendard = localFont({
 
 export const metadata: Metadata = {
   title: 'saveme',
-  description: '화장실이 급할 땐 saveme',
+  description: '급할 땐 saveme! 내 주변의 서울시 화장실을 빠르게 찾아드려요.',
+  openGraph: {
+    url: 'https://saveme-restroom.com',
+    siteName: 'saveme',
+    images: [
+      {
+        url: '/saveme.png',
+      },
+    ],
+    locale: 'ko_KR',
+    type: 'website',
+  },
 };
 
 export default function RootLayout({
