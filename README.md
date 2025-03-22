@@ -57,19 +57,19 @@ saveme는 사용자의 위치를 기반으로 빠르게 주변 화장실 정보�
 ## 🗂️ 개발 히스토리
 
 <p align="center">
-  <a href="https://velog.io/@donggoo/%EA%B8%B0%EB%8A%A5-%EA%B5%AC%ED%98%84-%EB%84%A4%EC%9D%B4%EB%B2%84-%EC%A7%80%EB%8F%84-api%EB%A5%BC-%EC%9D%B4%EC%9A%A9%ED%95%98%EC%97%AC-%EC%A7%80%EB%8F%84-%EB%A7%8C%EB%93%A4%EA%B8%B0">
+  <a href="https://velog.io/@donggoo/%EA%B8%B0%EB%8A%A5-%EA%B5%AC%ED%98%84-%EB%84%A4%EC%9D%B4%EB%B2%84-%EC%A7%80%EB%8F%84-api%EB%A5%BC-%EC%9D%B4%EC%9A%A9%ED%95%98%EC%97%AC-%EC%A7%80%EB%8F%84-%EB%A7%8C%EB%93%A4%EA%B8%B0" target="_blank" rel="noopener noreferrer">
     <img width="49.7%" src="https://velog-readme-stats.vercel.app/api?name=donggoo&slug=기능-구현-네이버-지도-api를-이용하여-지도-만들기" />
   </a>
 
-  <a href="https://velog.io/@donggoo/%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0-%EC%9E%AC%EA%B7%80%EC%A0%81%EC%9C%BC%EB%A1%9C-API-%ED%98%B8%EC%B6%9C%ED%95%98%EA%B8%B0">
+  <a href="https://velog.io/@donggoo/%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0-%EC%9E%AC%EA%B7%80%EC%A0%81%EC%9C%BC%EB%A1%9C-API-%ED%98%B8%EC%B6%9C%ED%95%98%EA%B8%B0" target="_blank" rel="noopener noreferrer">
     <img width="49.7%" src="https://velog-readme-stats.vercel.app/api?name=donggoo&slug=문제-해결-재귀적으로-API-호출하기" />
   </a>
 
-  <a href="https://velog.io/@donggoo/%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0-un6ynbcv">
+  <a href="https://velog.io/@donggoo/%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0-un6ynbcv" target="_blank" rel="noopener noreferrer">
     <img width="49.7%" src="https://velog-readme-stats.vercel.app/api?name=donggoo&slug=문제-해결-un6ynbcv" />
   </a>
 
-  <a href="https://velog.io/@donggoo/%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0-Mixed-content-%EC%97%90%EB%9F%AC">
+  <a href="https://velog.io/@donggoo/%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0-Mixed-content-%EC%97%90%EB%9F%AC" target="_blank" rel="noopener noreferrer">
     <img width="49.7%" src="https://velog-readme-stats.vercel.app/api?name=donggoo&slug=문제-해결-Mixed-content-에러" />
   </a>
 </p>
