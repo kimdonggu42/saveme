@@ -30,40 +30,40 @@ saveme는 사용자의 위치를 기반으로 빠르게 주변 화장실 정보�
 
 ## 💻 개발 환경
 
-<img src="https://img.shields.io/badge/-TypeScript-3178C6?style=for-the-badge&logo=TypeScript&logoColor=white" style="border-radius: 4px;"/>
+<img src="https://img.shields.io/badge/-TypeScript-3178C6?style=for-the-badge&logo=TypeScript&logoColor=white" />
 
 - Naver Map API와 공공데이터 API를 활용해 지도 기능 및 데이터 통신을 구현하면서, 정적 타입 체크를 통해 API 응답과 지도 객체들의 구조를 명확하게 정의함으로써 런타임 오류를 예방하고 안정적인 데이터 처리를 보장할 수 있었습니다.
 
-<img src="https://img.shields.io/badge/-Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white" style="border-radius: 4px;" />
+<img src="https://img.shields.io/badge/-Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white" />
 
 - Next.js를 선택한 첫 번째 이유는 프로젝트에서 사용한 공공데이터 API가 HTTP 프로토콜만 지원되어 HTTPS 환경의 브라우저에서 직접 호출 시 보안상의 Mixed Content 에러를 발생시키는 문제가 있었습니다. 이를 해결하기 위해 Next.js의 서버 컴포넌트를 활용하여 서버 측에서 API를 호출하고, 그 결과를 HTTPS를 통해 클라이언트로 전달하는 방식을 채택했습니다. 이를 통해 브라우저 환경의 보안 제약을 우회하고, 안정적으로 데이터를 호출하고자 했습니다.
 
 - 두 번째 이유는 성능 개선입니다. 공공데이터가 약 5천 개에 달해 브라우저 렌더링 후 클라이언트 측에서 매번 API를 호출하면 지도 위의 마커를 표시하는 데 시간이 오래 걸렸습니다. 이를 개선하기 위해 ISR(Incremental Static Regeneration)을 활용해 서버에서 데이터를 미리 가져와 정적 페이지로 생성하고, 일정 주기마다만 데이터를 갱신하도록 하여 빠른 렌더링과 효율적인 캐싱을 구현하고자 했습니다. 특히 공공데이터는 자주 변경되지 않는 특성을 가지고 있어 ISR이 적합한 해결책이라고 판단했습니다.
 
-<img src="https://img.shields.io/badge/-TailwindCSS-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white" style="border-radius: 4px;"/>
+<img src="https://img.shields.io/badge/-TailwindCSS-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white" />
 
 - Tailwind CSS는 Next.js 환경에서 복잡한 추가 설정 없이 바로 사용할 수 있기 때문에 선택했습니다. styled components는 SSR 환경에서 사용하기 위해 컴파일러 설정과 전역 스타일 레지스트리 구성 등 초기 설정이 필요한 반면, Tailwind는 런타임에 스타일시트를 생성하지 않고 빌드 타임에 스타일시트를 가져오는 방식으로 작동하기 때문에, SSR 환경에서도 안정적으로 동작한다는 장점이 있습니다.
 
-<img src="https://img.shields.io/badge/-shadcn%20UI-111827?style=for-the-badge&logo=&logoColor=white" style="border-radius: 4px;"/>
+<img src="https://img.shields.io/badge/-shadcn%20UI-111827?style=for-the-badge&logo=&logoColor=white" />
 
 - shadcn UI를 선택한 이유는 컴포넌트의 코드를 직접 가져와 사용하는 방식 덕분에 원하는 대로 자유롭게 커스터마이징할 수 있기 때문입니다. 이전에 사용했던 MUI의 경우 세부적인 스타일 변경이 쉽지 않아 불편했는데, shadcn UI는 이러한 제약 없이 자유로운 조정이 가능하다는 점이 큰 장점이었습니다. 또한 Tailwind를 사용하는 점도 개발 과정에서 효율성과 편리성을 높여주었습니다.
 
 ## 개발 히스토리
 
-<div style="display: flex; flex-wrap: wrap; width: 100%;">
-  <div style="width: 50%; box-sizing: border-box; padding: 4px;">
-    <a href="https://velog.io/@donggoo/%EA%B8%B0%EB%8A%A5-%EA%B5%AC%ED%98%84-%EB%84%A4%EC%9D%B4%EB%B2%84-%EC%A7%80%EB%8F%84-api%EB%A5%BC-%EC%9D%B4%EC%9A%A9%ED%95%98%EC%97%AC-%EC%A7%80%EB%8F%84-%EB%A7%8C%EB%93%A4%EA%B8%B0">
-      <img width="100%" src="https://velog-readme-stats.vercel.app/api?name=donggoo&slug=기능-구현-네이버-지도-api를-이용하여-지도-만들기" />
-    </a>
-  </div>
-  <div style="width: 50%; box-sizing: border-box; padding: 4px;">
-    <a href="https://velog.io/@donggoo/%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0-%EC%9E%AC%EA%B7%80%EC%A0%81%EC%9C%BC%EB%A1%9C-API-%ED%98%B8%EC%B6%9C%ED%95%98%EA%B8%B0">
-      <img width="100%" src="https://velog-readme-stats.vercel.app/api?name=donggoo&slug=문제-해결-재귀적으로-API-호출하기" />
-    </a>
-  </div>
-  <div style="width: 50%; box-sizing: border-box; padding: 4px;">
-    <a href="https://velog.io/@donggoo/%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0-un6ynbcv">
-      <img width="100%" src="https://velog-readme-stats.vercel.app/api?name=donggoo&slug=문제-해결-un6ynbcv" />
-    </a>
-  </div>
-</div>
+<p align="center">
+  <a href="https://velog.io/@donggoo/%EA%B8%B0%EB%8A%A5-%EA%B5%AC%ED%98%84-%EB%84%A4%EC%9D%B4%EB%B2%84-%EC%A7%80%EB%8F%84-api%EB%A5%BC-%EC%9D%B4%EC%9A%A9%ED%95%98%EC%97%AC-%EC%A7%80%EB%8F%84-%EB%A7%8C%EB%93%A4%EA%B8%B0">
+    <img width="49.7%" src="https://velog-readme-stats.vercel.app/api?name=donggoo&slug=기능-구현-네이버-지도-api를-이용하여-지도-만들기" />
+  </a>
+
+  <a href="https://velog.io/@donggoo/%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0-%EC%9E%AC%EA%B7%80%EC%A0%81%EC%9C%BC%EB%A1%9C-API-%ED%98%B8%EC%B6%9C%ED%95%98%EA%B8%B0">
+    <img width="49.7%" src="https://velog-readme-stats.vercel.app/api?name=donggoo&slug=문제-해결-재귀적으로-API-호출하기" />
+  </a>
+
+  <a href="https://velog.io/@donggoo/%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0-un6ynbcv">
+    <img width="49.7%" src="https://velog-readme-stats.vercel.app/api?name=donggoo&slug=문제-해결-un6ynbcv" />
+  </a>
+
+  <a href="https://velog.io/@donggoo/%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0-Mixed-content-%EC%97%90%EB%9F%AC">
+    <img width="49.7%" src="https://velog-readme-stats.vercel.app/api?name=donggoo&slug=문제-해결-Mixed-content-에러" />
+  </a>
+</p>
