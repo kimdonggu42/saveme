@@ -1,7 +1,9 @@
 {
   "name": "saveme",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
+  "description": "급할 때 바로 찾는 서울시 공공화장실 위치 안내 서비스",
+  "homepage": "https://saveme-restroom.com",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,7 +13,6 @@
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.6",
     "@radix-ui/react-slot": "^1.1.2",
-    "axios": "^1.4.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.479.0",
