@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     siteName: 'saveme',
     images: [
       {
-        url: '/saveme.png',
+        url: '/images/saveme.png',
       },
     ],
     locale: 'ko_KR',

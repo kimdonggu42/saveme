@@ -19,7 +19,7 @@ export default function MainPage() {
         <div className='mt-8 flex items-center justify-center'>
           <div className='relative top-4 z-10'>
             <Image
-              src='/main-mobile.png'
+              src='/images/main-mobile.png'
               alt='Mobile Image'
               width={160}
               height={400}
@@ -28,7 +28,7 @@ export default function MainPage() {
           </div>
           <div className='relative z-0 -ml-12'>
             <Image
-              src='/main-tablet.png'
+              src='/images/main-tablet.png'
               alt='Tablet Image'
               width={500}
               height={300}

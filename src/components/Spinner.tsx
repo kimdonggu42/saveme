@@ -4,7 +4,7 @@ export default function Spinner() {
   return (
     <div className='flex h-dvh w-dvw flex-col items-center justify-center bg-white'>
       <Image
-        src='/mainIcon.png'
+        src='/images/mainIcon.png'
         alt='spinner'
         width='150'
         height='150'

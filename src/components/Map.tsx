@@ -27,9 +27,9 @@ import { useGeolocation } from '@/hooks/useGeolocation';
 import { defalutCoordinates } from '@/hooks/useGeolocation';
 import { distanceCalculation } from '@/util/helpers/distanceCalculation';
 import { Coords } from '@/util/types';
-import normalMap from '../../public/normal-map.png';
-import terrainMap from '../../public/terrain-map.png';
-import satelliteMap from '../../public/satellite-map.png';
+import normalMap from '../../public/images/normal-map.png';
+import terrainMap from '../../public/images/terrain-map.png';
+import satelliteMap from '../../public/images/satellite-map.png';
 
 declare const MarkerClustering: any;
 
@@ -154,7 +154,7 @@ export default function Map({ toilets }: MapProps) {
       const marker = new naver.maps.Marker({
         position: new naver.maps.LatLng(Y_WGS84, X_WGS84),
         icon: {
-          url: '/aroundToilet.png',
+          url: '/images/aroundToilet.png',
           size: new naver.maps.Size(32, 32),
           scaledSize: new naver.maps.Size(32, 32),
           anchor: new naver.maps.Point(16, 16),
