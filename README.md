@@ -28,6 +28,12 @@ saveme는 사용자의 위치를 기반으로 빠르게 주변 화장실 정보�
 
 ![Mar-22-2025 13-00-05](https://github.com/user-attachments/assets/d54b7f4b-8534-4fb3-9270-d5810075d65e)
 
+## 📆 개발 기간
+
+- MVP 개발: 2023. 05 ~ 2023. 06
+
+- 추가 기능 개발 및 성능 개선: 2025. 02 ~ 2025. 03
+
 ## 💻 개발 환경
 
 <img src="https://img.shields.io/badge/-TypeScript-3178C6?style=for-the-badge&logo=TypeScript&logoColor=white" />
@@ -48,7 +54,7 @@ saveme는 사용자의 위치를 기반으로 빠르게 주변 화장실 정보�
 
 - shadcn UI를 선택한 이유는 컴포넌트의 코드를 직접 가져와 사용하는 방식 덕분에 원하는 대로 자유롭게 커스터마이징할 수 있기 때문입니다. 이전에 사용했던 MUI의 경우 세부적인 스타일 변경이 쉽지 않아 불편했는데, shadcn UI는 이러한 제약 없이 자유로운 조정이 가능하다는 점이 큰 장점이었습니다. 또한 Tailwind를 사용하는 점도 개발 과정에서 효율성과 편리성을 높여주었습니다.
 
-## 개발 히스토리
+## 🗂️ 개발 히스토리
 
 <p align="center">
   <a href="https://velog.io/@donggoo/%EA%B8%B0%EB%8A%A5-%EA%B5%AC%ED%98%84-%EB%84%A4%EC%9D%B4%EB%B2%84-%EC%A7%80%EB%8F%84-api%EB%A5%BC-%EC%9D%B4%EC%9A%A9%ED%95%98%EC%97%AC-%EC%A7%80%EB%8F%84-%EB%A7%8C%EB%93%A4%EA%B8%B0">
