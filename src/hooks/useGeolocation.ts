@@ -20,8 +20,8 @@ export const useGeolocation = () => {
   const getCurPosition = () => {
     const success = (location: { coords: { latitude: number; longitude: number } }) => {
       const newCoords = {
-        lat: location.coords.latitude,
-        lng: location.coords.longitude,
+        lat: defalutCoordinates.lat,
+        lng: defalutCoordinates.lng,
       };
       setCurrentMyCoordinates(newCoords);
       setGeoStatus('success');
